@@ -1,4 +1,15 @@
 <?php
+/**
+ * YOURLS AJAX Handler
+ *
+ * This file handles all AJAX requests for the admin interface. It is
+ * responsible for processing the requests and returning the results in JSON
+ * format.
+ *
+ * @package YOURLS
+ * @since 1.0
+ */
+
 define( 'YOURLS_ADMIN', true );
 define( 'YOURLS_AJAX', true );
 require_once( dirname( __DIR__ ) .'/includes/load-yourls.php' );

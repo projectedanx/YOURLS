@@ -1,4 +1,15 @@
 <?php
+/**
+ * YOURLS Admin Interface
+ *
+ * This file is the main entry point for the YOURLS admin interface. It is
+ * responsible for displaying the main admin page, which includes the form for
+ * adding new URLs, the list of existing URLs, and the search and filter options.
+ *
+ * @package YOURLS
+ * @since 1.0
+ */
+
 define( 'YOURLS_ADMIN', true );
 require_once( dirname( __DIR__ ).'/includes/load-yourls.php' );
 yourls_maybe_require_auth();

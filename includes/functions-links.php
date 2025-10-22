@@ -1,26 +1,23 @@
 <?php
-/*
- * Functions relative to how YOURLS handle some links
+/**
+ * YOURLS Link Functions
  *
+ * This file contains functions that are used for handling links. These functions
+ * are used to add, remove, and modify query arguments in URLs, as well as to
+ * generate short links and stat links.
+ *
+ * @package YOURLS
+ * @since 1.5
  */
 
 /**
- * Add a query var to a URL and return URL. Completely stolen from WP.
- *
- * Works with one of these parameter patterns:
- *     array( 'var' => 'value' )
- *     array( 'var' => 'value' ), $url
- *     'var', 'value'
- *     'var', 'value', $url
- * If $url omitted, uses $_SERVER['REQUEST_URI']
- *
- * The result of this function call is a URL : it should be escaped before being printed as HTML
+ * Adds a query argument to a URL.
  *
  * @since 1.5
- * @param string|array $param1 Either newkey or an associative_array.
- * @param string       $param2 Either newvalue or oldquery or URI.
- * @param string       $param3 Optional. Old query or URI.
- * @return string New URL query string.
+ * @param string|array $param1 A query key or an associative array of query keys and values.
+ * @param string       $param2 The query value.
+ * @param string       $param3 Optional. The URL to add the query argument to.
+ * @return string The modified URL.
  */
 function yourls_add_query_arg() {
     $ret = '';
@@ -91,10 +88,11 @@ function yourls_add_query_arg() {
 }
 
 /**
- * Navigates through an array and encodes the values to be used in a URL. Stolen from WP, used in yourls_add_query_arg()
+ * URL-encodes a string or every value in an array.
  *
+ * @since 1.5
  * @param array|string $value The array or string to be encoded.
- * @return array|string
+ * @return array|string The encoded array or string.
  */
 function yourls_urlencode_deep( $value ) {
     $value = is_array( $value ) ? array_map( 'yourls_urlencode_deep', $value ) : urlencode( $value );
@@ -102,14 +100,13 @@ function yourls_urlencode_deep( $value ) {
 }
 
 /**
- * Remove arg from query. Opposite of yourls_add_query_arg. Stolen from WP.
- *
- * The result of this function call is a URL : it should be escaped before being printed as HTML
+ * Removes a query argument from a URL.
  *
  * @since 1.5
- * @param string|array $key   Query key or keys to remove.
- * @param bool|string  $query Optional. When false uses the $_SERVER value. Default false.
- * @return string New URL query string.
+ * @param string|array $key   The query key or keys to remove.
+ * @param string|bool  $query Optional. The URL to remove the query argument from.
+ *                            Default false (current URL).
+ * @return string The modified URL.
  */
 function yourls_remove_query_arg( $key, $query = false ) {
     if ( is_array( $key ) ) { // removing multiple keys
@@ -121,14 +118,13 @@ function yourls_remove_query_arg( $key, $query = false ) {
 }
 
 /**
- * Converts keyword into short link (prepend with YOURLS base URL) or stat link (sho.rt/abc+)
+ * Converts a keyword into a short link or a stat link.
  *
- * This function does not check for a valid keyword.
- * The resulting link is normalized to allow for IDN translation to UTF8
- *
- * @param  string $keyword  Short URL keyword
- * @param  bool   $stats    Optional, true to return a stat link (eg sho.rt/abc+)
- * @return string           Short URL, or keyword stat URL
+ * @since 1.0
+ * @param string $keyword The short URL keyword.
+ * @param bool   $stats   Optional. True to return a stat link (e.g., 'http://sho.rt/abc+').
+ *                        Default false.
+ * @return string The short URL or stat link.
  */
 function yourls_link( $keyword = '', $stats = false ) {
     $keyword = yourls_sanitize_keyword($keyword);
@@ -145,12 +141,11 @@ function yourls_link( $keyword = '', $stats = false ) {
 }
 
 /**
- * Converts keyword into stat link (prepend with YOURLS base URL, append +)
+ * Converts a keyword into a stat link.
  *
- * This function does not make sure the keyword matches an actual short URL
- *
- * @param  string $keyword  Short URL keyword
- * @return string           Short URL stat link
+ * @since 1.0
+ * @param string $keyword The short URL keyword.
+ * @return string The stat link.
  */
 function yourls_statlink( $keyword = '' ) {
     $link = yourls_link( $keyword, true );
@@ -158,10 +153,11 @@ function yourls_statlink( $keyword = '' ) {
 }
 
 /**
- * Return admin link, with SSL preference if applicable.
+ * Returns an admin URL.
  *
- * @param string $page  Page name, eg "index.php"
- * @return string
+ * @since 1.0
+ * @param string $page Optional. The admin page to link to. Default ''.
+ * @return string The admin URL.
  */
 function yourls_admin_url( $page = '' ) {
     $admin = yourls_get_yourls_site() . '/admin/' . $page;
@@ -172,11 +168,12 @@ function yourls_admin_url( $page = '' ) {
 }
 
 /**
- * Return YOURLS_SITE or URL under YOURLS setup, with SSL preference
+ * Returns the site URL.
  *
- * @param bool $echo   Echo if true, or return if false
- * @param string $url
- * @return string
+ * @since 1.0
+ * @param bool   $echo Optional. Whether to echo the URL. Default true.
+ * @param string $url  Optional. A path to append to the site URL. Default ''.
+ * @return string The site URL.
  */
 function yourls_site_url($echo = true, $url = '' ) {
     $url = yourls_get_relative_url( $url );
@@ -194,34 +191,23 @@ function yourls_site_url($echo = true, $url = '' ) {
 }
 
 /**
- *  Get YOURLS_SITE value, trimmed and filtered
+ * Returns the YOURLS site URL.
  *
- *  In addition of being filtered for plugins to hack this, this function is mostly here
- *  to help people entering "sho.rt/" instead of "sho.rt" in their config
- *
- *  @since 1.7.7
- *  @return string  YOURLS_SITE, trimmed and filtered
+ * @since 1.7.7
+ * @return string The YOURLS site URL, trimmed and filtered.
  */
 function yourls_get_yourls_site() {
     return yourls_apply_filter('get_yourls_site', trim(YOURLS_SITE, '/'));
 }
 
 /**
- * Change protocol of a URL to HTTPS if we are currently on HTTPS
- *
- * This function is used to avoid insert 'http://' images or scripts in a page when it's served through HTTPS,
- * to avoid "mixed content" errors.
- * So:
- *   - if you are on http://sho.rt/, 'http://something' and 'https://something' are left untouched.
- *   - if you are on https:/sho.rt/, 'http://something' is changed to 'https://something'
- *
- * So, arguably, this function is poorly named. It should be something like yourls_match_current_protocol_if_we_re_on_https
+ * Changes the protocol of a URL to HTTPS if the current page is served over HTTPS.
  *
  * @since 1.5.1
- * @param string $url        a URL
- * @param string $normal     Optional, the standard scheme (defaults to 'http://')
- * @param string $ssl        Optional, the SSL scheme (defaults to 'https://')
- * @return string            the modified URL, if applicable
+ * @param string $url    The URL to modify.
+ * @param string $normal Optional. The standard scheme. Default 'http://'.
+ * @param string $ssl    Optional. The SSL scheme. Default 'https://'.
+ * @return string The modified URL.
  */
 function yourls_match_current_protocol( $url, $normal = 'http://', $ssl = 'https://' ) {
     // we're only doing something if we're currently serving through SSL and the input URL begins with 'http://' or 'https://'
@@ -233,14 +219,14 @@ function yourls_match_current_protocol( $url, $normal = 'http://', $ssl = 'https
 }
 
 /**
- * Auto detect custom favicon in /user directory, fallback to YOURLS favicon, and echo/return its URL
+ * Returns the URL of the favicon.
  *
- * This function supersedes function yourls_favicon(), deprecated in 1.7.10, with a better naming.
+ * This function auto-detects a custom favicon in the /user directory, and falls
+ * back to the default YOURLS favicon if one is not found.
  *
  * @since 1.7.10
- * @param  bool $echo   true to echo, false to silently return
- * @return string       favicon URL
- *
+ * @param bool $echo Optional. Whether to echo the URL. Default true.
+ * @return string The favicon URL.
  */
 function yourls_get_yourls_favicon_url( $echo = true ) {
     static $favicon = null;

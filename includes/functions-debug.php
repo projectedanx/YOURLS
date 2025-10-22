@@ -1,17 +1,20 @@
 <?php
-/*
- * Functions relative to debugging
+/**
+ * YOURLS Debug Functions
+ *
+ * This file contains functions that are used for debugging purposes. These
+ * functions are only active when the `YOURLS_DEBUG` constant is set to `true`.
+ *
+ * @package YOURLS
+ * @since 1.7
  */
 
 /**
- * Add a message to the debug log
- *
- * When in debug mode ( YOURLS_DEBUG == true ) the debug log is echoed in yourls_html_footer()
- * Log messages are appended to $ydb->debug_log array, which is instanciated within class Database\YDB
+ * Adds a message to the debug log.
  *
  * @since 1.7
- * @param string $msg Message to add to the debug log
- * @return string The message itself
+ * @param string $msg The message to add to the debug log.
+ * @return string The message itself.
  */
 function yourls_debug_log( $msg ) {
     yourls_do_action( 'debug_log', $msg );
@@ -25,29 +28,30 @@ function yourls_debug_log( $msg ) {
 }
 
 /**
- * Get the debug log
+ * Gets the debug log.
  *
- * @since  1.7.3
- * @return array
+ * @since 1.7.3
+ * @return array The debug log.
  */
 function yourls_get_debug_log() {
     return yourls_get_db()->getProfiler()->getLogger()->getMessages();
 }
 
 /**
- * Get number of SQL queries performed
+ * Gets the number of SQL queries performed.
  *
- * @return int
+ * @since 1.0
+ * @return int The number of SQL queries performed.
  */
 function yourls_get_num_queries() {
     return yourls_apply_filter( 'get_num_queries', yourls_get_db()->get_num_queries() );
 }
 
 /**
- * Debug mode set
+ * Sets the debug mode.
  *
  * @since 1.7.3
- * @param bool $bool Debug on or off
+ * @param bool $bool True to enable debug mode, false to disable.
  * @return void
  */
 function yourls_debug_mode( $bool ) {
@@ -60,10 +64,10 @@ function yourls_debug_mode( $bool ) {
 }
 
 /**
- * Return YOURLS debug mode
+ * Gets the debug mode.
  *
  * @since 1.7.7
- * @return bool
+ * @return bool True if debug mode is enabled, false otherwise.
  */
 function yourls_get_debug_mode() {
     return defined( 'YOURLS_DEBUG' ) && YOURLS_DEBUG;

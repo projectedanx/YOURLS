@@ -1,8 +1,18 @@
 <?php
+/**
+ * YOURLS HTML Functions
+ *
+ * This file contains functions that are used for generating HTML output. These
+ * functions are used to display the header, footer, and other HTML elements.
+ *
+ * @package YOURLS
+ * @since 1.0
+ */
 
 /**
- * Display <h1> header and logo
+ * Displays the YOURLS logo.
  *
+ * @since 1.0
  * @return void
  */
 function yourls_html_logo() {
@@ -19,10 +29,11 @@ function yourls_html_logo() {
 }
 
 /**
- * Display HTML head and <body> tag
+ * Displays the HTML head and opening body tag.
  *
- * @param string $context Context of the page (stats, index, infos, ...)
- * @param string $title HTML title of the page
+ * @since 1.0
+ * @param string $context Optional. The context of the page (e.g., 'stats', 'index', 'infos'). Default 'index'.
+ * @param string $title   Optional. The HTML title of the page.
  * @return void
  */
 function yourls_html_head( $context = 'index', $title = '' ) {
@@ -137,12 +148,13 @@ function yourls_html_head( $context = 'index', $title = '' ) {
 }
 
 /**
- * Display HTML footer (including closing body & html tags)
+ * Displays the HTML footer.
  *
- * Function yourls_die() will call this function with the optional param set to false: most likely, if we're using yourls_die(),
- * there's a problem, so don't maybe add to it by sending another SQL query
+ * This function displays the HTML footer, including the closing body and html tags.
+ * It also displays the number of SQL queries if debug mode is enabled.
  *
- * @param  bool $can_query  If set to false, will not try to send another query to DB server
+ * @since 1.0
+ * @param bool $can_query Optional. If set to false, will not try to send another query to DB server. Default true.
  * @return void
  */
 function yourls_html_footer($can_query = true) {
@@ -174,10 +186,11 @@ function yourls_html_footer($can_query = true) {
 }
 
 /**
- * Display "Add new URL" box
+ * Displays the "Add new URL" box.
  *
- * @param string $url URL to prefill the input with
- * @param string $keyword Keyword to prefill the input with
+ * @since 1.0
+ * @param string $url     Optional. URL to prefill the input with. Default ''.
+ * @param string $keyword Optional. Keyword to prefill the input with. Default ''.
  * @return void
  */
 function yourls_html_addnew( $url = '', $keyword = '' ) {
@@ -207,11 +220,29 @@ function yourls_html_addnew( $url = '', $keyword = '' ) {
 }
 
 /**
- * Display main table's footer
+ * Displays the main table's footer.
  *
- * The $param array is defined in /admin/index.php, check the yourls_html_tfooter() call
+ * This function displays the footer of the main table in the admin interface,
+ * which includes filter and pagination controls.
  *
- * @param array $params Array of all required parameters
+ * @since 1.0
+ * @param array $params {
+ *     Array of all required parameters.
+ *
+ *     @type string $search       The search query.
+ *     @type string $search_text  The text being searched for.
+ *     @type string $search_in    The field to search in (e.g., 'all', 'keyword', 'url').
+ *     @type string $sort_by      The field to sort by (e.g., 'keyword', 'timestamp', 'clicks').
+ *     @type string $sort_order   The sort order ('asc' or 'desc').
+ *     @type int    $page         The current page number.
+ *     @type int    $perpage      The number of items per page.
+ *     @type string $click_filter Filter by number of clicks ('more' or 'less').
+ *     @type int    $click_limit  The click limit for the filter.
+ *     @type int    $total_pages  The total number of pages.
+ *     @type string $date_filter  Filter by date ('before', 'after', 'between').
+ *     @type string $date_first   The first date for the filter.
+ *     @type string $date_second  The second date for the filter.
+ * }
  * @return void
  */
 function yourls_html_tfooter( $params = array() ) {
@@ -364,16 +395,15 @@ function yourls_html_tfooter( $params = array() ) {
 }
 
 /**
- * Return or display a select dropdown field
+ * Returns or displays a select dropdown field.
  *
  * @since 1.6
- *
- * @param  string  $name      HTML 'name' (also use as the HTML 'id')
- * @param  array   $options   array of 'value' => 'Text displayed'
- * @param  string  $selected  optional 'value' from the $options array that will be highlighted
- * @param  boolean $display   false (default) to return, true to echo
- * @param  string  $label     ARIA label of the element
- * @return string HTML content of the select element
+ * @param string  $name      The HTML 'name' and 'id' attribute for the select element.
+ * @param array   $options   An associative array of options, where the key is the 'value' and the value is the text displayed.
+ * @param string  $selected  Optional. The 'value' from the $options array that should be selected. Default ''.
+ * @param bool    $display   Optional. False (default) to return the HTML, true to echo it. Default false.
+ * @param string  $label     Optional. The ARIA label for the element. Default ''.
+ * @return string The HTML content of the select element.
  */
 function yourls_html_select( $name, $options, $selected = '', $display = false, $label = '' ) {
     // Allow plugins to filter the options -- see #3262
@@ -393,15 +423,16 @@ function yourls_html_select( $name, $options, $selected = '', $display = false, 
 
 
 /**
- * Display the Quick Share box
+ * Displays the Quick Share box.
  *
- * @param string $longurl          Long URL
- * @param string $shorturl         Short URL
- * @param string $title            Title
- * @param string $text             Text to display
- * @param string $shortlink_title  Optional replacement for 'Your short link'
- * @param string $share_title      Optional replacement for 'Quick Share'
- * @param bool   $hidden           Optional. Hide the box by default (with css "display:none")
+ * @since 1.0
+ * @param string $longurl          The long URL.
+ * @param string $shorturl         The short URL.
+ * @param string $title            Optional. The title of the page. Default ''.
+ * @param string $text             Optional. Text to display in the share box. Default ''.
+ * @param string $shortlink_title  Optional. Replacement for 'Your short link'. Default ''.
+ * @param string $share_title      Optional. Replacement for 'Quick Share'. Default ''.
+ * @param bool   $hidden           Optional. True to hide the box by default. Default false.
  * @return void
  */
 function yourls_share_box( $longurl, $shorturl, $title = '', $text='', $shortlink_title = '', $share_title = '', $hidden = false ) {
@@ -474,12 +505,16 @@ function yourls_share_box( $longurl, $shorturl, $title = '', $text='', $shortlin
 }
 
 /**
- * Die die die
+ * Kills YOURLS execution and displays an HTML page with an error message.
  *
+ * This function is used to stop YOURLS execution and display a custom error page.
+ * It is a YOURLS-flavored version of `wp_die()`.
+ *
+ * @since 1.0
  * @see https://www.youtube.com/watch?v=zSiKETBjARk
- * @param string $message
- * @param string $title
- * @param int $header_code
+ * @param string $message     Optional. The error message. Default ''.
+ * @param string $title       Optional. The page title. Default ''.
+ * @param int    $header_code Optional. The HTTP status code to send. Default 200.
  * @return void
  */
 function yourls_die( $message = '', $title = '', $header_code = 200 ) {
@@ -504,11 +539,15 @@ function yourls_die( $message = '', $title = '', $header_code = 200 ) {
 }
 
 /**
- * Return an "Edit" row for the main table
+ * Returns an "Edit" row for the main table.
  *
- * @param string $keyword Keyword to edit
- * @param string $id
- * @return string HTML of the edit row
+ * This function generates the HTML for the "Edit" row that appears when a user
+ * clicks the "Edit" button for a particular short URL.
+ *
+ * @since 1.0
+ * @param string $keyword The keyword to edit.
+ * @param string $id      The ID of the row.
+ * @return string The HTML of the edit row.
  */
 function yourls_table_edit_row( $keyword, $id ) {
     $keyword = yourls_sanitize_keyword($keyword);
@@ -541,16 +580,17 @@ RETURN;
 }
 
 /**
- * Return an "Add" row for the main table
+ * Returns an "Add" row for the main table.
  *
- * @param string $keyword     Keyword (short URL)
- * @param string $url         URL (long URL)
- * @param string $title       Title
- * @param string $ip          IP
- * @param string|int $clicks  Number of clicks
- * @param string $timestamp   Timestamp
- * @param int    $row_id      Numeric value used to form row IDs, defaults to one
- * @return string             HTML of the row
+ * @since 1.0
+ * @param string     $keyword   The short URL keyword.
+ * @param string     $url       The long URL.
+ * @param string     $title     The title of the URL.
+ * @param string     $ip        The IP address of the creator.
+ * @param string|int $clicks    The number of clicks.
+ * @param string     $timestamp The timestamp of creation.
+ * @param int        $row_id    Optional. A numeric value used to form row IDs. Defaults to 1.
+ * @return string The HTML of the row.
  */
 function yourls_table_add_row( $keyword, $url, $title, $ip, $clicks, $timestamp, $row_id = 1 ) {
     $keyword  = yourls_sanitize_keyword($keyword);
@@ -667,8 +707,9 @@ function yourls_table_add_row( $keyword, $url, $title, $ip, $clicks, $timestamp,
 }
 
 /**
- * Echo the main table head
+ * Echos the main table head.
  *
+ * @since 1.0
  * @return void
  */
 function yourls_table_head() {
@@ -692,8 +733,9 @@ function yourls_table_head() {
 }
 
 /**
- * Echo the tbody start tag
+ * Echos the tbody start tag.
  *
+ * @since 1.0
  * @return void
  */
 function yourls_table_tbody_start() {
@@ -701,8 +743,9 @@ function yourls_table_tbody_start() {
 }
 
 /**
- * Echo the tbody end tag
+ * Echos the tbody end tag.
  *
+ * @since 1.0
  * @return void
  */
 function yourls_table_tbody_end() {
@@ -710,8 +753,9 @@ function yourls_table_tbody_end() {
 }
 
 /**
- * Echo the table start tag
+ * Echos the table end tag.
  *
+ * @since 1.0
  * @return void
  */
 function yourls_table_end() {
@@ -721,13 +765,14 @@ function yourls_table_end() {
 
 
 /**
- * Echo HTML tag for a link
+ * Echos an HTML link.
  *
- * @param string $href     URL to link to
- * @param string $anchor   Anchor text
- * @param string $element  Element id
+ * @since 1.0
+ * @param string $href    The URL to link to.
+ * @param string $anchor  Optional. The anchor text. Default ''.
+ * @param string $element Optional. The element ID. Default ''.
  * @return void
-*/
+ */
 function yourls_html_link( $href, $anchor = '', $element = '' ) {
     if( !$anchor )
         $anchor = $href;
@@ -738,9 +783,12 @@ function yourls_html_link( $href, $anchor = '', $element = '' ) {
 }
 
 /**
- * Display the login screen. Nothing past this point.
+ * Displays the login screen.
  *
- * @param string $error_msg  Optional error message to display
+ * This function displays the login screen and exits.
+ *
+ * @since 1.0
+ * @param string $error_msg Optional. An error message to display. Default ''.
  * @return void
  */
 function yourls_login_screen( $error_msg = '' ) {
@@ -788,8 +836,9 @@ function yourls_login_screen( $error_msg = '' ) {
 
 
 /**
- * Display the admin menu
+ * Displays the admin menu.
  *
+ * @since 1.0
  * @return void
  */
 function yourls_html_menu() {
@@ -869,10 +918,11 @@ function yourls_html_menu() {
 }
 
 /**
- * Wrapper function to display admin notices
+ * Displays a notice in the admin interface.
  *
- * @param string $message Message to display
- * @param string $style    Message style (default: 'notice')
+ * @since 1.0
+ * @param string $message The message to display.
+ * @param string $style   Optional. The style of the notice (e.g., 'notice', 'error', 'success'). Default 'notice'.
  * @return void
  */
 function yourls_add_notice( $message, $style = 'notice' ) {
@@ -882,11 +932,12 @@ function yourls_add_notice( $message, $style = 'notice' ) {
 }
 
 /**
- * Return a formatted notice
+ * Returns a formatted notice.
  *
- * @param string $message  Message to display
- * @param string $style    CSS class to use for the notice
- * @return string          HTML of the notice
+ * @since 1.0
+ * @param string $message The message to display.
+ * @param string $style   Optional. The CSS class to use for the notice. Default 'notice'.
+ * @return string The HTML of the notice.
  */
 function yourls_notice_box( $message, $style = 'notice' ) {
     return <<<HTML
@@ -897,13 +948,13 @@ HTML;
 }
 
 /**
- * Display a page
+ * Displays a page from the YOURLS page directory.
  *
- * Includes content of a PHP file from the YOURLS_PAGEDIR directory, as if it
- * were a standard short URL (ie http://sho.rt/$page)
+ * This function includes and displays a PHP file from the YOURLS_PAGEDIR
+ * directory, as if it were a standard short URL (e.g., http://sho.rt/$page).
  *
  * @since 1.0
- * @param string $page  PHP file to display
+ * @param string $page The PHP file to display (without the .php extension).
  * @return void
  */
 function yourls_page( $page ) {
@@ -920,10 +971,10 @@ function yourls_page( $page ) {
 }
 
 /**
- * Display the language attributes for the HTML tag.
+ * Displays the language attributes for the HTML tag.
  *
- * Builds up a set of html attributes containing the text direction and language
- * information for the page. Stolen from WP.
+ * Builds up a set of HTML attributes containing the text direction and language
+ * information for the page.
  *
  * @since 1.6
  * @return void
@@ -950,7 +1001,7 @@ function yourls_html_language_attributes() {
 }
 
 /**
- * Output translated strings used by the Javascript calendar
+ * Outputs translated strings used by the Javascript calendar.
  *
  * @since 1.6
  * @return void
@@ -970,10 +1021,10 @@ function yourls_l10n_calendar_strings() {
 
 
 /**
- * Display a notice if there is a newer version of YOURLS available
+ * Displays a notice if a newer version of YOURLS is available.
  *
  * @since 1.7
- * @param string $compare_with Optional, YOURLS version to compare to
+ * @param string|null $compare_with Optional. The YOURLS version to compare to. Defaults to the current version.
  * @return void
  */
 function yourls_new_core_version_notice($compare_with = null) {
@@ -990,13 +1041,13 @@ function yourls_new_core_version_notice($compare_with = null) {
 }
 
 /**
- * Display or return HTML for a bookmarklet link
+ * Displays or returns the HTML for a bookmarklet link.
  *
  * @since 1.7.1
- * @param string $href    bookmarklet link (presumably minified code with "javascript:" scheme)
- * @param string $anchor  link anchor
- * @param bool   $echo    true to display, false to return the HTML
- * @return string         the HTML for a bookmarklet link
+ * @param string $href   The bookmarklet link (a minified "javascript:" URI).
+ * @param string $anchor The link anchor text.
+ * @param bool   $echo   Optional. True to display, false to return the HTML. Default true.
+ * @return string The HTML for the bookmarklet link.
  */
 function yourls_bookmarklet_link( $href, $anchor, $echo = true ) {
     $alert = yourls_esc_attr__( 'Drag to your toolbar!' );
@@ -1010,10 +1061,10 @@ LINK;
 }
 
 /**
- * Set HTML context (stats, index, infos, ...)
+ * Sets the HTML context.
  *
- * @since  1.7.3
- * @param  string  $context
+ * @since 1.7.3
+ * @param string $context The HTML context (e.g., 'stats', 'index', 'infos').
  * @return void
  */
 function yourls_set_html_context($context) {
@@ -1021,10 +1072,10 @@ function yourls_set_html_context($context) {
 }
 
 /**
- * Get HTML context (stats, index, infos, ...)
+ * Gets the HTML context.
  *
- * @since  1.7.3
- * @return string
+ * @since 1.7.3
+ * @return string The HTML context.
  */
 function yourls_get_html_context() {
     return yourls_get_db()->get_html_context();

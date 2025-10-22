@@ -1,4 +1,14 @@
 <?php
+/**
+ * YOURLS Database Functions
+ *
+ * This file contains functions that are used for connecting to the database.
+ * These functions are used to establish a connection to the database and to
+ * get the database object.
+ *
+ * @package YOURLS
+ * @since 1.0
+ */
 
 /**
  * Connect to DB

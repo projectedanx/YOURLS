@@ -1,4 +1,14 @@
 <?php
+/**
+ * YOURLS Upgrade
+ *
+ * This file handles the upgrade process for YOURLS. It checks if an upgrade is
+ * needed and, if so, guides the user through the upgrade process.
+ *
+ * @package YOURLS
+ * @since 1.0
+ */
+
 define( 'YOURLS_ADMIN', true );
 define( 'YOURLS_UPGRADING', true );
 require_once( dirname( __DIR__ ).'/includes/load-yourls.php' );

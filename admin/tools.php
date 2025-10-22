@@ -1,4 +1,15 @@
 <?php
+/**
+ * YOURLS Tools
+ *
+ * This file handles the display of the tools page in the admin interface. It
+ * includes the bookmarklets for easy link shortening and sharing, as well as
+ * information about the secure passwordless API.
+ *
+ * @package YOURLS
+ * @since 1.0
+ */
+
 define( 'YOURLS_ADMIN', true );
 require_once( dirname( __DIR__ ).'/includes/load-yourls.php' );
 yourls_maybe_require_auth();

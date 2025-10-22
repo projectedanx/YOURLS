@@ -1,10 +1,21 @@
 <?php
+/**
+ * YOURLS Stats Functions
+ *
+ * This file contains functions that are used for generating statistical charts
+ * and graphs. These functions are used to display information about the usage
+ * of short URLs.
+ *
+ * @package YOURLS
+ * @since 1.0
+ */
 
 /**
- * Echoes an image tag of Google Charts map from sorted array of 'country_code' => 'number of visits' (sort by DESC)
+ * Echos a Google Charts map of countries.
  *
- * @param array $countries  Array of 'country_code' => 'number of visits'
- * @param string $id        Optional HTML element ID
+ * @since 1.0
+ * @param array       $countries An array of 'country_code' => 'number of visits', sorted by number of visits DESC.
+ * @param string|null $id        Optional. The HTML element ID. Default null.
  * @return void
  */
 function yourls_stats_countries_map($countries, $id = null) {
@@ -34,12 +45,13 @@ function yourls_stats_countries_map($countries, $id = null) {
 
 
 /**
- * Echoes an image tag of Google Charts pie from sorted array of 'data' => 'value' (sort by DESC). Optional $limit = (integer) limit list of X first countries, sorted by most visits
+ * Echos a Google Charts pie chart.
  *
- * @param array $data  Array of 'data' => 'value'
- * @param int $limit   Optional limit list of X first countries
- * @param $size        Optional size of the image
- * @param $id          Optional HTML element ID
+ * @since 1.0
+ * @param array       $data  An array of 'data' => 'value', sorted by value DESC.
+ * @param int         $limit Optional. The number of items to show in the pie chart. Default 10.
+ * @param string      $size  Optional. The size of the chart in pixels (e.g., '340x220'). Default '340x220'.
+ * @param string|null $id    Optional. The HTML element ID. Default null.
  * @return void
  */
 function yourls_stats_pie($data, $limit = 10, $size = '340x220', $id = null) {
@@ -91,10 +103,11 @@ function yourls_stats_pie($data, $limit = 10, $size = '340x220', $id = null) {
 
 
 /**
- * Build a list of all daily values between d1/m1/y1 to d2/m2/y2.
+ * Builds a list of all daily values between two dates.
  *
- * @param array $dates
- * @return array[]  Array of arrays of days, months, years
+ * @since 1.0
+ * @param array $dates An array of dates and values.
+ * @return array An array containing lists of days, months, and years with their corresponding values.
  */
 function yourls_build_list_of_days($dates) {
     /* Say we have an array like:
@@ -174,12 +187,11 @@ function yourls_build_list_of_days($dates) {
 
 
 /**
- * Echoes an image tag of Google Charts line graph from array of values (eg 'number of clicks').
+ * Echos a Google Charts line graph.
  *
- * $legend1_list & legend2_list are values used for the 2 x-axis labels. $id is an HTML/JS id
- *
- * @param array $values  Array of values (eg 'number of clicks')
- * @param string $id     HTML element id
+ * @since 1.0
+ * @param array       $values An array of values (e.g., number of clicks).
+ * @param string|null $id     Optional. The HTML element ID. Default null.
  * @return void
  */
 function yourls_stats_line($values, $id = null) {
@@ -220,11 +232,12 @@ function yourls_stats_line($values, $id = null) {
 
 
 /**
- * Return the number of days in a month. From php.net.
+ * Returns the number of days in a month.
  *
- * @param int $month
- * @param int $year
- * @return int
+ * @since 1.0
+ * @param int $month The month (1-12).
+ * @param int $year  The year.
+ * @return int The number of days in the month.
  */
 function yourls_days_in_month($month, $year) {
     // calculate number of days in a month
@@ -233,10 +246,11 @@ function yourls_days_in_month($month, $year) {
 
 
 /**
- * Get max value from date array of 'Aug 12, 2012' = '1337'
+ * Gets the day with the highest value from a list of days.
  *
- * @param array $list_of_days
- * @return array
+ * @since 1.0
+ * @param array $list_of_days An array of 'date' => 'value'.
+ * @return array An array containing the 'day' and 'max' value.
  */
 function yourls_stats_get_best_day($list_of_days) {
     $max = max( $list_of_days );
@@ -247,11 +261,12 @@ function yourls_stats_get_best_day($list_of_days) {
 }
 
 /**
- * Return domain of a URL
+ * Returns the domain of a URL.
  *
- * @param string $url
- * @param bool $include_scheme
- * @return string
+ * @since 1.0
+ * @param string $url            The URL to parse.
+ * @param bool   $include_scheme Optional. Whether to include the scheme (e.g., 'http://'). Default false.
+ * @return string The domain of the URL.
  */
 function yourls_get_domain($url, $include_scheme = false) {
     $parse = @parse_url( $url ); // Hiding ugly stuff coming from malformed referrer URLs
@@ -271,20 +286,22 @@ function yourls_get_domain($url, $include_scheme = false) {
 
 
 /**
- * Return favicon URL
+ * Returns the favicon URL for a given URL.
  *
- * @param string $url
- * @return string
+ * @since 1.0
+ * @param string $url The URL to get the favicon for.
+ * @return string The favicon URL.
  */
 function yourls_get_favicon_url($url) {
     return yourls_match_current_protocol( '//www.google.com/s2/favicons?domain=' . yourls_get_domain( $url, false ) );
 }
 
 /**
- * Scale array of data from 0 to 100 max
+ * Scales an array of data to a maximum of 100.
  *
- * @param array $data
- * @return array
+ * @since 1.0
+ * @param array $data The array of data to scale.
+ * @return array The scaled array.
  */
 function yourls_scale_data($data ) {
     $max = max( $data );
@@ -298,15 +315,16 @@ function yourls_scale_data($data ) {
 
 
 /**
- * Tweak granularity of array $array: keep only $grain values.
+ * Tweaks the granularity of an array to keep a certain number of values.
  *
- * This make less accurate but less messy graphs when too much values.
- * See https://developers.google.com/chart/image/docs/gallery/line_charts?hl=en#data-granularity
+ * This function reduces the number of data points in an array to make graphs
+ * less cluttered.
  *
- * @param array $array
- * @param int $grain
- * @param bool $preserve_max
- * @return array
+ * @since 1.0
+ * @param array $array        The array to process.
+ * @param int   $grain        The number of values to keep. Default 100.
+ * @param bool  $preserve_max Optional. Whether to preserve the maximum value. Default true.
+ * @return array The array with adjusted granularity.
  */
 function yourls_array_granularity($array, $grain = 100, $preserve_max = true) {
     if ( count( $array ) > $grain ) {
@@ -330,10 +348,11 @@ function yourls_array_granularity($array, $grain = 100, $preserve_max = true) {
 }
 
 /**
- * Transform data array to data table for Google API
+ * Transforms a data array into a Google Charts data table.
  *
- * @param array $data
- * @return string
+ * @since 1.0
+ * @param array $data The data array to transform.
+ * @return string The Javascript code for the data table.
  */
 function yourls_google_array_to_data_table($data){
     $str  = "var data = google.visualization.arrayToDataTable([\n";
@@ -356,13 +375,14 @@ function yourls_google_array_to_data_table($data){
 }
 
 /**
- * Return javascript code that will display the Google Chart
+ * Returns the Javascript code to display a Google Chart.
  *
- * @param string $graph_type
- * @param string $data
- * @param var $options
- * @param string $id
- * @return string
+ * @since 1.0
+ * @param string $graph_type The type of graph (e.g., 'PieChart', 'LineChart').
+ * @param string $data       The data for the graph, formatted as a Javascript data table.
+ * @param array  $options    An array of options for the graph.
+ * @param string $id         The HTML element ID for the graph.
+ * @return string The Javascript code for the Google Chart.
  */
 function yourls_google_viz_code($graph_type, $data, $options, $id ) {
     $function_name = 'yourls_graph' . $id;

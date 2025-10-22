@@ -1,5 +1,16 @@
 <?php
 /**
+ * YOURLS Version
+ *
+ * This file contains the version number of the YOURLS application. This
+ * information is used to track the version of the application that is
+ * installed and to determine if an upgrade is required.
+ *
+ * @package YOURLS
+ * @since 1.0
+ */
+
+/**
  * YOURLS version
  *
  * Must be one of the following :

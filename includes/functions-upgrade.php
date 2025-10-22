@@ -1,17 +1,25 @@
 <?php
+/**
+ * YOURLS Upgrade Functions
+ *
+ * This file contains functions that are used for upgrading the YOURLS
+ * installation to a new version. These functions are responsible for
+ * updating the database schema, converting data to new formats, and
+ * performing other tasks that are required to upgrade the application.
+ *
+ * @package YOURLS
+ * @since 1.3
+ */
 
 /**
- * Upgrade YOURLS and DB schema
+ * Upgrades YOURLS and the database schema.
  *
- * Note to devs : prefer update function names using the SQL version, eg yourls_update_to_506(),
- * rather than using the YOURLS version number, eg yourls_update_to_18(). This is to allow having
- * multiple SQL update during the dev cycle of the same YOURLS version
- *
- * @param string|int $step
- * @param string $oldver
- * @param string $newver
- * @param string|int $oldsql
- * @param string|int $newsql
+ * @since 1.3
+ * @param int    $step   The upgrade step.
+ * @param string $oldver The old YOURLS version.
+ * @param string $newver The new YOURLS version.
+ * @param int    $oldsql The old database version.
+ * @param int    $newsql The new database version.
  * @return void
  */
 function yourls_upgrade($step, $oldver, $newver, $oldsql, $newsql ) {
@@ -84,8 +92,12 @@ function yourls_upgrade($step, $oldver, $newver, $oldsql, $newsql ) {
 /************************** 1.6 -> 1.8 **************************/
 
 /**
- * Update to 506, just the fix for people who had updated to master on 1.7.10
+ * Upgrades the database from version 505 to 506.
  *
+ * This function fixes a collation issue that was introduced in version 1.7.10.
+ *
+ * @since 1.7.10
+ * @return void
  */
 function yourls_upgrade_505_to_506() {
     echo "<p>Updating DB. Please wait...</p>";
@@ -107,8 +119,12 @@ function yourls_upgrade_505_to_506() {
 }
 
 /**
- * Update to 506
+ * Upgrades the database to version 506.
  *
+ * This function updates the database character set and collation to utf8mb4.
+ *
+ * @since 1.7.10
+ * @return void
  */
 function yourls_upgrade_to_506() {
     $ydb = yourls_get_db();
@@ -151,8 +167,13 @@ function yourls_upgrade_to_506() {
 /************************** 1.5 -> 1.6 **************************/
 
 /**
- * Upgrade r482
+ * Upgrades the database to revision 482.
  *
+ * This function changes the character set of the 'title' column in the URL
+ * table to utf8.
+ *
+ * @since 1.5.1
+ * @return void
  */
 function yourls_upgrade_482() {
     // Change URL title charset to UTF8
@@ -165,8 +186,10 @@ function yourls_upgrade_482() {
 /************************** 1.4.3 -> 1.5 **************************/
 
 /**
- * Main func for upgrade from 1.4.3 to 1.5
+ * Upgrades the database from version 1.4.3 to 1.5.
  *
+ * @since 1.5
+ * @return void
  */
 function yourls_upgrade_to_15( ) {
     // Create empty 'active_plugins' entry in the option if needed
@@ -188,8 +211,10 @@ function yourls_upgrade_to_15( ) {
 /************************** 1.4.1 -> 1.4.3 **************************/
 
 /**
- * Main func for upgrade from 1.4.1 to 1.4.3
+ * Upgrades the database from version 1.4.1 to 1.4.3.
  *
+ * @since 1.4.3
+ * @return void
  */
 function yourls_upgrade_to_143( ) {
     // Check if we have 'keyword' (borked install) or 'shorturl' (ok install)
@@ -207,8 +232,10 @@ function yourls_upgrade_to_143( ) {
 /************************** 1.4 -> 1.4.1 **************************/
 
 /**
- * Main func for upgrade from 1.4 to 1.4.1
+ * Upgrades the database from version 1.4 to 1.4.1.
  *
+ * @since 1.4.1
+ * @return void
  */
 function yourls_upgrade_to_141( ) {
     // Kill old cookies from 1.3 and prior
@@ -221,8 +248,10 @@ function yourls_upgrade_to_141( ) {
 }
 
 /**
- * Alter table URL to 1.4.1
+ * Alters the URL table for version 1.4.1.
  *
+ * @since 1.4.1
+ * @return void
  */
 function yourls_alter_url_table_to_141() {
     $table_url = YOURLS_DB_TABLE_URL;
@@ -235,8 +264,11 @@ function yourls_alter_url_table_to_141() {
 /************************** 1.3 -> 1.4 **************************/
 
 /**
- * Main func for upgrade from 1.3-RC1 to 1.4
+ * Upgrades the database from version 1.3 to 1.4.
  *
+ * @since 1.4
+ * @param int $step The upgrade step.
+ * @return void
  */
 function yourls_upgrade_to_14( $step ) {
 
@@ -272,8 +304,10 @@ function yourls_upgrade_to_14( $step ) {
 }
 
 /**
- * Update options to reflect new version
+ * Updates the options for version 1.4.
  *
+ * @since 1.4
+ * @return void
  */
 function yourls_update_options_to_14() {
     yourls_update_option( 'version', '1.4' );
@@ -290,8 +324,10 @@ function yourls_update_options_to_14() {
 }
 
 /**
- * Create new tables for YOURLS 1.4: options & log
+ * Creates the options and log tables for version 1.4.
  *
+ * @since 1.4
+ * @return void
  */
 function yourls_create_tables_for_14() {
     $ydb = yourls_get_db();
@@ -329,8 +365,12 @@ function yourls_create_tables_for_14() {
 }
 
 /**
- * Alter table structure, part 1 (change schema, drop index)
+ * Alters the URL table for version 1.4 (part 1).
  *
+ * This function changes the schema and drops the primary key.
+ *
+ * @since 1.4
+ * @return void
  */
 function yourls_alter_url_table_to_14() {
     $ydb = yourls_get_db();
@@ -350,8 +390,12 @@ function yourls_alter_url_table_to_14() {
 }
 
 /**
- * Alter table structure, part 2 (recreate indexes after the table is up to date)
+ * Alters the URL table for version 1.4 (part 2).
  *
+ * This function recreates the table indexes.
+ *
+ * @since 1.4
+ * @return void
  */
 function yourls_alter_url_table_to_14_part_two() {
     $ydb = yourls_get_db();
@@ -370,8 +414,13 @@ function yourls_alter_url_table_to_14_part_two() {
 }
 
 /**
- * Convert each link from 1.3 (id) to 1.4 (keyword) structure
+ * Converts the URL table from version 1.3 to 1.4.
  *
+ * This function converts the old ID-based short URLs to the new keyword-based
+ * ones. It processes the table in chunks to avoid timeouts on large databases.
+ *
+ * @since 1.4
+ * @return void
  */
 function yourls_update_table_to_14() {
     $ydb = yourls_get_db();
@@ -424,8 +473,13 @@ function yourls_update_table_to_14() {
 }
 
 /**
- * Clean .htaccess as it existed before 1.4. Returns boolean
+ * Cleans the .htaccess file for version 1.4.
  *
+ * This function removes the old 'ShortURL' block and comments out a deprecated
+ * RewriteRule.
+ *
+ * @since 1.4
+ * @return bool True on success, false on failure.
  */
 function yourls_clean_htaccess_for_14() {
     $filename = YOURLS_ABSPATH.'/.htaccess';

@@ -1,4 +1,15 @@
 <?php
+/**
+ * YOURLS Stats
+ *
+ * This file handles the display of the statistics for a short URL. It is
+ * responsible for gathering the data and displaying it in a user-friendly
+ * format.
+ *
+ * @package YOURLS
+ * @since 1.0
+ */
+
 // TODO: make things cleaner. This file is an awful HTML/PHP soup.
 define( 'YOURLS_INFOS', true );
 require_once( dirname( __FILE__ ).'/includes/load-yourls.php' );

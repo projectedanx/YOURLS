@@ -1,7 +1,13 @@
 <?php
-/*
- * YOURLS
- * Compatibility functions when either missing from older PHP versions or not included by default
+/**
+ * YOURLS Compatibility Functions
+ *
+ * This file contains compatibility functions for older PHP versions that may
+ * be missing certain features or functions. It ensures that YOURLS can run
+ * on a wider range of server environments.
+ *
+ * @package YOURLS
+ * @since 1.0
  */
 
 // @codeCoverageIgnoreStart
@@ -17,12 +23,11 @@ if( !function_exists( 'json_encode' ) ) {
 }
 
 /**
- * Converts an associative array of arbitrary depth and dimension into JSON representation. Used for compatibility with older PHP builds.
+ * Converts an array to a JSON string.
  *
- * @param array $array the array to convert.
- * @return mixed The resulting JSON string, or false if the argument was not an array.
- * @author Andy Rusterholz
- * @link http://php.net/json_encode (see comments)
+ * @since 1.0
+ * @param array $array The array to convert.
+ * @return string|false The JSON string, or false on failure.
  */
 function yourls_array_to_json( $array ){
 

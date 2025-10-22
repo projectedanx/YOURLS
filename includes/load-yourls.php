@@ -1,8 +1,14 @@
 <?php
-/* Bootstrap YOURLS
+/**
+ * YOURLS Bootstrap
  *
- * This file initialize everything needed for YOURLS
- * If you need to bootstrap YOURLS (ie access its functions and features) simply include this file.
+ * This file initializes the YOURLS application environment, loading all
+ * necessary configurations, constants, and default settings. It serves as the
+ * primary entry point for bootstrapping YOURLS, making its functions and
+ * features accessible to any script that includes it.
+ *
+ * @package YOURLS
+ * @since 1.0
  */
 
 require __DIR__ . '/vendor/autoload.php';

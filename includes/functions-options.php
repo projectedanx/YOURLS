@@ -1,18 +1,24 @@
 <?php
-/*
- * Functions to deal with the option API
+/**
+ * YOURLS Options Functions
  *
+ * This file contains functions that are used for managing options. These
+ * functions are used to get, set, and delete options from the database.
+ *
+ * @package YOURLS
+ * @since 1.4
  */
 
 /**
- * Read an option from DB (or from cache if available). Return value or $default if not found
+ * Retrieves an option value from the database.
  *
- * Pretty much stolen from WordPress
+ * If the option does not exist, the function returns the default value.
  *
  * @since 1.4
- * @param string $option_name Option name. Expected to not be SQL-escaped.
- * @param mixed $default Optional value to return if option doesn't exist. Default false.
- * @return mixed Value set for the option.
+ * @param string $option_name The name of the option to retrieve.
+ * @param mixed  $default     Optional. The default value to return if the option does not exist.
+ *                            Default false.
+ * @return mixed The value of the option, or the default value if the option does not exist.
  */
 function yourls_get_option( $option_name, $default = false ) {
     // Allow plugins to short-circuit options
@@ -28,12 +34,10 @@ function yourls_get_option( $option_name, $default = false ) {
 }
 
 /**
- * Read all options from DB at once
+ * Retrieves all options from the database.
  *
- * The goal is to read all options at once and then populate array $ydb->option, to prevent further
- * SQL queries if we need to read an option value later.
- * It's also a simple check whether YOURLS is installed or not (no option = assuming not installed) after
- * a check for DB server reachability has been performed
+ * This function populates the options cache, which prevents the need for
+ * subsequent SQL queries when retrieving individual options.
  *
  * @since 1.4
  * @return void
@@ -57,14 +61,14 @@ function yourls_get_all_options() {
 }
 
 /**
- * Update (add if doesn't exist) an option to DB
+ * Updates an option in the database.
  *
- * Pretty much stolen from WordPress
+ * If the option does not exist, it will be added.
  *
  * @since 1.4
- * @param string $option_name Option name. Expected to not be SQL-escaped.
- * @param mixed $newvalue Option value. Must be serializable if non-scalar. Expected to not be SQL-escaped.
- * @return bool False if value was not updated, true otherwise.
+ * @param string $option_name The name of the option to update.
+ * @param mixed  $newvalue    The new value for the option.
+ * @return bool True if the value was updated, false otherwise.
  */
 function yourls_update_option( $option_name, $newvalue ) {
     $option = new \YOURLS\Database\Options(yourls_get_db());
@@ -74,14 +78,12 @@ function yourls_update_option( $option_name, $newvalue ) {
 }
 
 /**
- * Add an option to the DB
- *
- * Pretty much stolen from WordPress
+ * Adds an option to the database.
  *
  * @since 1.4
- * @param string $name Name of option to add. Expected to not be SQL-escaped.
- * @param mixed $value Optional option value. Must be serializable if non-scalar. Expected to not be SQL-escaped.
- * @return bool False if option was not added and true otherwise.
+ * @param string $name  The name of the option to add.
+ * @param mixed  $value Optional. The value for the option. Default ''.
+ * @return bool True if the option was added, false otherwise.
  */
 function yourls_add_option( $name, $value = '' ) {
     $option = new \YOURLS\Database\Options(yourls_get_db());
@@ -91,13 +93,11 @@ function yourls_add_option( $name, $value = '' ) {
 }
 
 /**
- * Delete an option from the DB
- *
- * Pretty much stolen from WordPress
+ * Deletes an option from the database.
  *
  * @since 1.4
- * @param string $name Option name to delete. Expected to not be SQL-escaped.
- * @return bool True, if option is successfully deleted. False on failure.
+ * @param string $name The name of the option to delete.
+ * @return bool True if the option was deleted, false on failure.
  */
 function yourls_delete_option( $name ) {
     $option = new \YOURLS\Database\Options(yourls_get_db());
@@ -107,11 +107,11 @@ function yourls_delete_option( $name ) {
 }
 
 /**
- * Serialize data if needed. Stolen from WordPress
+ * Serializes data if needed.
  *
  * @since 1.4
- * @param mixed $data Data that might be serialized.
- * @return mixed A scalar data
+ * @param mixed $data The data to serialize.
+ * @return mixed The serialized data.
  */
 function yourls_maybe_serialize( $data ) {
     if ( is_array( $data ) || is_object( $data ) )
@@ -124,11 +124,11 @@ function yourls_maybe_serialize( $data ) {
 }
 
 /**
- * Unserialize value only if it was serialized. Stolen from WP
+ * Unserializes a value if it was serialized.
  *
  * @since 1.4
- * @param string $original Maybe unserialized original, if is needed.
- * @return mixed Unserialized data can be any type.
+ * @param string $original The value to unserialize.
+ * @return mixed The unserialized value.
  */
 function yourls_maybe_unserialize( $original ) {
     if ( yourls_is_serialized( $original ) ) // don't attempt to unserialize data that wasn't serialized going in
@@ -137,12 +137,12 @@ function yourls_maybe_unserialize( $original ) {
 }
 
 /**
- * Check value to find if it was serialized. Stolen from WordPress
+ * Checks if a value is serialized.
  *
  * @since 1.4
- * @param mixed $data Value to check to see if was serialized.
- * @param bool $strict Optional. Whether to be strict about the end of the string. Defaults true.
- * @return bool False if not serialized and true if it was.
+ * @param mixed $data   The value to check.
+ * @param bool  $strict Optional. Whether to be strict about the end of the string. Default true.
+ * @return bool True if the value is serialized, false otherwise.
  */
 function yourls_is_serialized( $data, $strict = true ) {
     // if it isn't a string, it isn't serialized

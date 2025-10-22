@@ -1,4 +1,15 @@
 <?php
+/**
+ * YOURLS Plugin Manager
+ *
+ * This file handles the plugin management interface. It is responsible for
+ * displaying the list of available plugins, as well as handling the activation
+ * and deactivation of plugins.
+ *
+ * @package YOURLS
+ * @since 1.5
+ */
+
 define( 'YOURLS_ADMIN', true );
 require_once( dirname( __DIR__ ).'/includes/load-yourls.php' );
 yourls_maybe_require_auth();

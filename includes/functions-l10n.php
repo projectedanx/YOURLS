@@ -2,11 +2,12 @@
 /**
  * YOURLS Translation API
  *
- * YOURLS modification of a small subset from WordPress' Translation API implementation.
- * GPL License
+ * This file is a modified subset of WordPress's Translation API. It is
+ * responsible for handling language localization and providing functions for
+ * translating text.
  *
- * @package POMO
- * @subpackage i18n
+ * @package YOURLS
+ * @since 1.6
  */
 
 /**
@@ -18,21 +19,8 @@ use POMO\Translations\NOOPTranslations;
 /**
  * Gets the current locale.
  *
- * If the locale is set, then it will filter the locale in the 'get_locale' filter
- * hook and return the value.
- *
- * If the locale is not set already, then the YOURLS_LANG constant is used if it is
- * defined. Then it is filtered through the 'get_locale' filter hook and the value
- * for the locale global set and the locale is returned.
- *
- * The process to get the locale should only be done once, but the locale will
- * always be filtered using the 'get_locale' hook.
- *
  * @since 1.6
- * @uses yourls_apply_filter() Calls 'get_locale' hook on locale value.
- * @uses $yourls_locale Gets the locale stored in the global.
- *
- * @return string The locale of the YOURLS instance
+ * @return string The locale of the YOURLS installation (e.g., 'en_US').
  */
 function yourls_get_locale() {
     global $yourls_locale;
@@ -50,17 +38,15 @@ function yourls_get_locale() {
 }
 
 /**
- * Retrieves the translation of $text. If there is no translation, or
- * the domain isn't loaded, the original text is returned.
+ * Retrieves the translation of a string.
  *
- * @see yourls__() Don't use yourls_translate() directly, use yourls__()
+ * If there is no translation, or the text domain isn't loaded, the original
+ * string is returned.
+ *
  * @since 1.6
- * @uses yourls_apply_filter() Calls 'translate' on domain translated text
- *        with the untranslated text as second parameter.
- *
- * @param string $text Text to translate.
- * @param string $domain Domain to retrieve the translated text.
- * @return string Translated text
+ * @param string $text   The string to translate.
+ * @param string $domain Optional. The text domain. Default 'default'.
+ * @return string The translated string.
  */
 function yourls_translate( $text, $domain = 'default' ) {
     $translations = yourls_get_translations_for_domain( $domain );
@@ -68,20 +54,16 @@ function yourls_translate( $text, $domain = 'default' ) {
 }
 
 /**
- * Retrieves the translation of $text with a given $context. If there is no translation, or
- * the domain isn't loaded, the original text is returned.
+ * Retrieves the translation of a string with a given context.
  *
- * Quite a few times, there will be collisions with similar translatable text
- * found in more than two places but with different translated context.
- *
- * By including the context in the pot file translators can translate the two
- * strings differently.
+ * This function is used when a string has multiple meanings and needs to be
+ * translated differently depending on the context.
  *
  * @since 1.6
- * @param string $text Text to translate.
- * @param string $context Context.
- * @param string $domain Domain to retrieve the translated text.
- * @return string Translated text
+ * @param string $text    The string to translate.
+ * @param string $context The context of the string.
+ * @param string $domain  Optional. The text domain. Default 'default'.
+ * @return string The translated string.
  */
 function yourls_translate_with_context( $text, $context, $domain = 'default' ) {
     $translations = yourls_get_translations_for_domain( $domain );
@@ -89,35 +71,29 @@ function yourls_translate_with_context( $text, $context, $domain = 'default' ) {
 }
 
 /**
- * Retrieves the translation of $text. If there is no translation, or
- * the domain isn't loaded, the original text is returned.
+ * Retrieves the translation of a string.
  *
- * @see yourls_translate() An alias of yourls_translate()
+ * This is an alias of yourls_translate().
+ *
  * @since 1.6
- *
- * @param string $text Text to translate
- * @param string $domain Optional. Domain to retrieve the translated text
- * @return string Translated text
+ * @param string $text   The string to translate.
+ * @param string $domain Optional. The text domain. Default 'default'.
+ * @return string The translated string.
  */
 function yourls__( $text, $domain = 'default' ) {
     return yourls_translate( $text, $domain );
 }
 
 /**
- * Return a translated sprintf() string (mix yourls__() and sprintf() in one func)
+ * Returns a translated sprintf() string.
  *
- * Instead of doing sprintf( yourls__( 'string %s' ), $arg ) you can simply use:
- * yourls_s( 'string %s', $arg )
- * This function accepts an arbitrary number of arguments:
- * - first one will be the string to translate, eg "hello %s my name is %s"
- * - following ones will be the sprintf arguments, eg "world" and "Ozh"
- * - if there are more arguments passed than needed, the last one will be used as the translation domain
+ * This function is a wrapper for `sprintf()` that translates the format string
+ * before formatting it.
  *
- * @see sprintf()
  * @since 1.6
- *
- * @param mixed ...$pattern Text to translate, then $arg1: optional sprintf tokens, and $arg2: translation domain
- * @return string Translated text
+ * @param string $pattern The format string to translate.
+ * @param mixed  ...$args The arguments for the format string.
+ * @return string The translated and formatted string.
  */
 function yourls_s( $pattern ) {
     // Get pattern and pattern arguments
@@ -144,21 +120,15 @@ function yourls_s( $pattern ) {
 }
 
 /**
- * Echo a translated sprintf() string (mix yourls__() and sprintf() in one func)
+ * Echos a translated sprintf() string.
  *
- * Instead of doing printf( yourls__( 'string %s' ), $arg ) you can simply use:
- * yourls_se( 'string %s', $arg )
- * This function accepts an arbitrary number of arguments:
- * - first one will be the string to translate, eg "hello %s my name is %s"
- * - following ones will be the sprintf arguments, eg "world" and "Ozh"
- * - if there are more arguments passed than needed, the last one will be used as the translation domain
+ * This function is a wrapper for `printf()` that translates the format string
+ * before formatting it.
  *
- * @see yourls_s()
- * @see sprintf()
  * @since 1.6
- *
- * @param string ...$pattern Text to translate, then optional sprintf tokens, and optional translation domain
- * @return void Translated text
+ * @param string $pattern The format string to translate.
+ * @param mixed  ...$args The arguments for the format string.
+ * @return void
  */
 function yourls_se( $pattern ) {
     echo yourls_s( func_get_args() );
@@ -166,45 +136,35 @@ function yourls_se( $pattern ) {
 
 
 /**
- * Retrieves the translation of $text and escapes it for safe use in an attribute.
- * If there is no translation, or the domain isn't loaded, the original text is returned.
+ * Retrieves the translation of a string and escapes it for safe use in an attribute.
  *
- * @see yourls_translate() An alias of yourls_translate()
- * @see yourls_esc_attr()
  * @since 1.6
- *
- * @param string $text Text to translate
- * @param string $domain Optional. Domain to retrieve the translated text
- * @return string Translated text
+ * @param string $text   The string to translate.
+ * @param string $domain Optional. The text domain. Default 'default'.
+ * @return string The translated and escaped string.
  */
 function yourls_esc_attr__( $text, $domain = 'default' ) {
     return yourls_esc_attr( yourls_translate( $text, $domain ) );
 }
 
 /**
- * Retrieves the translation of $text and escapes it for safe use in HTML output.
- * If there is no translation, or the domain isn't loaded, the original text is returned.
+ * Retrieves the translation of a string and escapes it for safe use in HTML.
  *
- * @see yourls_translate() An alias of yourls_translate()
- * @see yourls_esc_html()
  * @since 1.6
- *
- * @param string $text Text to translate
- * @param string $domain Optional. Domain to retrieve the translated text
- * @return string Translated text
+ * @param string $text   The string to translate.
+ * @param string $domain Optional. The text domain. Default 'default'.
+ * @return string The translated and escaped string.
  */
 function yourls_esc_html__( $text, $domain = 'default' ) {
     return yourls_esc_html( yourls_translate( $text, $domain ) );
 }
 
 /**
- * Displays the returned translated text from yourls_translate().
+ * Displays the translation of a string.
  *
- * @see yourls_translate() Echoes returned yourls_translate() string
  * @since 1.6
- *
- * @param string $text Text to translate
- * @param string $domain Optional. Domain to retrieve the translated text
+ * @param string $text   The string to translate.
+ * @param string $domain Optional. The text domain. Default 'default'.
  * @return void
  */
 function yourls_e( $text, $domain = 'default' ) {
@@ -212,14 +172,11 @@ function yourls_e( $text, $domain = 'default' ) {
 }
 
 /**
- * Displays translated text that has been escaped for safe use in an attribute.
+ * Displays a translated string that has been escaped for safe use in an attribute.
  *
- * @see yourls_translate() Echoes returned yourls_translate() string
- * @see yourls_esc_attr()
  * @since 1.6
- *
- * @param string $text Text to translate
- * @param string $domain Optional. Domain to retrieve the translated text
+ * @param string $text   The string to translate.
+ * @param string $domain Optional. The text domain. Default 'default'.
  * @return void
  */
 function yourls_esc_attr_e( $text, $domain = 'default' ) {
@@ -227,14 +184,11 @@ function yourls_esc_attr_e( $text, $domain = 'default' ) {
 }
 
 /**
- * Displays translated text that has been escaped for safe use in HTML output.
+ * Displays a translated string that has been escaped for safe use in HTML.
  *
- * @see yourls_translate() Echoes returned yourls_translate() string
- * @see yourls_esc_html()
  * @since 1.6
- *
- * @param string $text Text to translate
- * @param string $domain Optional. Domain to retrieve the translated text
+ * @param string $text   The string to translate.
+ * @param string $domain Optional. The text domain. Default 'default'.
  * @return void
  */
 function yourls_esc_html_e( $text, $domain = 'default' ) {
@@ -242,35 +196,26 @@ function yourls_esc_html_e( $text, $domain = 'default' ) {
 }
 
 /**
- * Retrieve translated string with gettext context
- *
- * Quite a few times, there will be collisions with similar translatable text
- * found in more than two places but with different translated context.
- *
- * By including the context in the pot file translators can translate the two
- * strings differently.
+ * Retrieves the translation of a string with a given context.
  *
  * @since 1.6
- *
- * @param string $text Text to translate
- * @param string $context Context information for the translators
- * @param string $domain Optional. Domain to retrieve the translated text
- * @return string Translated context string
+ * @param string $text    The string to translate.
+ * @param string $context The context of the string.
+ * @param string $domain  Optional. The text domain. Default 'default'.
+ * @return string The translated string.
  */
 function yourls_x( $text, $context, $domain = 'default' ) {
     return yourls_translate_with_context( $text, $context, $domain );
 }
 
 /**
- * Displays translated string with gettext context
+ * Displays a translated string with a given context.
  *
- * @see yourls_x()
  * @since 1.7.1
- *
- * @param string $text Text to translate
- * @param string $context Context information for the translators
- * @param string $domain Optional. Domain to retrieve the translated text
- * @return void Echoes translated context string
+ * @param string $text    The string to translate.
+ * @param string $context The context of the string.
+ * @param string $domain  Optional. The text domain. Default 'default'.
+ * @return void
  */
 function yourls_xe( $text, $context, $domain = 'default' ) {
     echo yourls_x( $text, $context, $domain );
@@ -278,62 +223,40 @@ function yourls_xe( $text, $context, $domain = 'default' ) {
 
 
 /**
- * Return translated text, with context, that has been escaped for safe use in an attribute
+ * Retrieves the translation of a string with a given context, and escapes it for safe use in an attribute.
  *
- * @see yourls_translate() Return returned yourls_translate() string
- * @see yourls_esc_attr()
- * @see yourls_x()
  * @since 1.6
- *
- * @param string   $single
- * @param string   $context
- * @param string   $domain Optional. Domain to retrieve the translated text
- * @internal param string $text Text to translate
- * @return string
+ * @param string $single  The string to translate.
+ * @param string $context The context of the string.
+ * @param string $domain  Optional. The text domain. Default 'default'.
+ * @return string The translated and escaped string.
  */
 function yourls_esc_attr_x( $single, $context, $domain = 'default' ) {
     return yourls_esc_attr( yourls_translate_with_context( $single, $context, $domain ) );
 }
 
 /**
- * Return translated text, with context, that has been escaped for safe use in HTML output
+ * Retrieves the translation of a string with a given context, and escapes it for safe use in HTML.
  *
- * @see yourls_translate() Return returned yourls_translate() string
- * @see yourls_esc_attr()
- * @see yourls_x()
  * @since 1.6
- *
- * @param string   $single
- * @param string   $context
- * @param string   $domain Optional. Domain to retrieve the translated text
- * @internal param string $text Text to translate
- * @return string
+ * @param string $single  The string to translate.
+ * @param string $context The context of the string.
+ * @param string $domain  Optional. The text domain. Default 'default'.
+ * @return string The translated and escaped string.
  */
 function yourls_esc_html_x( $single, $context, $domain = 'default' ) {
     return yourls_esc_html( yourls_translate_with_context( $single, $context, $domain ) );
 }
 
 /**
- * Retrieve the plural or single form based on the amount.
- *
- * If the domain is not set in the $yourls_l10n list, then a comparison will be made
- * and either $plural or $single parameters returned.
- *
- * If the domain does exist, then the parameters $single, $plural, and $number
- * will first be passed to the domain's ngettext method. Then it will be passed
- * to the 'translate_n' filter hook along with the same parameters. The expected
- * type will be a string.
+ * Retrieves the plural or single form of a string based on the number.
  *
  * @since 1.6
- * @uses $yourls_l10n Gets list of domain translated string (gettext_reader) objects
- * @uses yourls_apply_filter() Calls 'translate_n' hook on domains text returned,
- *        along with $single, $plural, and $number parameters. Expected to return string.
- *
- * @param string $single The text that will be used if $number is 1
- * @param string $plural The text that will be used if $number is not 1
- * @param int $number The number to compare against to use either $single or $plural
- * @param string $domain Optional. The domain identifier the text should be retrieved in
- * @return string Either $single or $plural translated text
+ * @param string $single The text that will be used if $number is 1.
+ * @param string $plural The text that will be used if $number is not 1.
+ * @param int    $number The number to compare against to use either $single or $plural.
+ * @param string $domain Optional. The text domain. Default 'default'.
+ * @return string The translated plural or single form of the string.
  */
 function yourls_n( $single, $plural, $number, $domain = 'default' ) {
     $translations = yourls_get_translations_for_domain( $domain );
@@ -342,18 +265,15 @@ function yourls_n( $single, $plural, $number, $domain = 'default' ) {
 }
 
 /**
- * A hybrid of yourls_n() and yourls_x(). It supports contexts and plurals.
+ * Retrieves the plural or single form of a string with a given context.
  *
  * @since 1.6
- * @see yourls_n()
- * @see yourls_x()
- *
- * @param string $single   The text that will be used if $number is 1
- * @param string $plural   The text that will be used if $number is not 1
- * @param int $number      The number to compare against to use either $single or $plural
- * @param string $context  Context information for the translators
- * @param string $domain   Optional. The domain identifier the text should be retrieved in
- * @return string          Either $single or $plural translated text
+ * @param string $single  The text that will be used if $number is 1.
+ * @param string $plural  The text that will be used if $number is not 1.
+ * @param int    $number  The number to compare against to use either $single or $plural.
+ * @param string $context The context of the string.
+ * @param string $domain  Optional. The text domain. Default 'default'.
+ * @return string The translated plural or single form of the string.
  */
 function yourls_nx($single, $plural, $number, $context, $domain = 'default') {
     $translations = yourls_get_translations_for_domain( $domain );
@@ -362,25 +282,17 @@ function yourls_nx($single, $plural, $number, $context, $domain = 'default') {
 }
 
 /**
- * Register plural strings in POT file, but don't translate them.
+ * Registers plural strings for translation, but does not translate them.
  *
- * Used when you want to keep structures with translatable plural strings and
- * use them later.
- *
- * Example:
- *  $messages = array(
- *      'post' => yourls_n_noop('%s post', '%s posts'),
- *      'page' => yourls_n_noop('%s pages', '%s pages')
- *  );
- *  ...
- *  $message = $messages[$type];
- *  $usable_text = sprintf( yourls_translate_nooped_plural( $message, $count ), $count );
+ * This function is used to register plural strings for translation, but it does
+ * not actually translate them. This is useful when you want to register a
+ * string for translation, but you don't want to translate it until later.
  *
  * @since 1.6
- * @param string $singular Single form to be i18ned
- * @param string $plural Plural form to be i18ned
- * @param string $domain Optional. The domain identifier the text will be retrieved in
- * @return array array($singular, $plural)
+ * @param string      $singular The single form of the string.
+ * @param string      $plural   The plural form of the string.
+ * @param string|null $domain   Optional. The text domain. Default null.
+ * @return array An array containing the single and plural forms of the string.
  */
 function yourls_n_noop( $singular, $plural, $domain = null ) {
     return array(
@@ -394,16 +306,14 @@ function yourls_n_noop( $singular, $plural, $domain = null ) {
 }
 
 /**
- * Register plural strings with context in POT file, but don't translate them.
+ * Registers plural strings with context for translation, but does not translate them.
  *
  * @since 1.6
- * @see yourls_n_noop()
- *
- * @param string $singular Single form to be i18ned
- * @param string $plural   Plural form to be i18ned
- * @param string $context  Context information for the translators
- * @param string $domain   Optional. The domain identifier the text will be retrieved in
- * @return array           array($singular, $plural)
+ * @param string      $singular The single form of the string.
+ * @param string      $plural   The plural form of the string.
+ * @param string      $context  The context of the string.
+ * @param string|null $domain   Optional. The text domain. Default null.
+ * @return array An array containing the single and plural forms of the string.
  */
 function yourls_nx_noop( $singular, $plural, $context, $domain = null ) {
     return array(
@@ -418,14 +328,13 @@ function yourls_nx_noop( $singular, $plural, $context, $domain = null ) {
 }
 
 /**
- * Translate the result of yourls_n_noop() or yourls_nx_noop()
+ * Translates the result of yourls_n_noop() or yourls_nx_noop().
  *
  * @since 1.6
- * @param array $nooped_plural Array with singular, plural and context keys, usually the result of yourls_n_noop() or yourls_nx_noop()
- * @param int $count Number of objects
- * @param string $domain Optional. The domain identifier the text should be retrieved in. If $nooped_plural contains
- *     a domain passed to yourls_n_noop() or yourls_nx_noop(), it will override this value.
- * @return string
+ * @param array  $nooped_plural The result of yourls_n_noop() or yourls_nx_noop().
+ * @param int    $count         The number of items.
+ * @param string $domain        Optional. The text domain. Default 'default'.
+ * @return string The translated string.
  */
 function yourls_translate_nooped_plural( $nooped_plural, $count, $domain = 'default' ) {
     if ( $nooped_plural['domain'] )
@@ -438,20 +347,12 @@ function yourls_translate_nooped_plural( $nooped_plural, $count, $domain = 'defa
 }
 
 /**
- * Loads a MO file into the domain $domain.
- *
- * If the domain already exists, the translations will be merged. If both
- * sets have the same string, the translation from the original value will be taken.
- *
- * On success, the .mo file will be placed in the $yourls_l10n global by $domain
- * and will be a MO object.
+ * Loads a MO file into a text domain.
  *
  * @since 1.6
- * @uses $yourls_l10n Gets list of domain translated string objects
- *
- * @param string $domain Unique identifier for retrieving translated strings
- * @param string $mofile Path to the .mo file
- * @return bool True on success, false on failure
+ * @param string $domain The text domain.
+ * @param string $mofile The path to the MO file.
+ * @return bool True on success, false on failure.
  */
 function yourls_load_textdomain( $domain, $mofile ) {
     global $yourls_l10n;
@@ -485,11 +386,11 @@ function yourls_load_textdomain( $domain, $mofile ) {
 }
 
 /**
- * Unloads translations for a domain
+ * Unloads a text domain.
  *
  * @since 1.6
- * @param string $domain Textdomain to be unloaded
- * @return bool Whether textdomain was unloaded
+ * @param string $domain The text domain to unload.
+ * @return bool True on success, false on failure.
  */
 function yourls_unload_textdomain( $domain ) {
     global $yourls_l10n;
@@ -510,13 +411,12 @@ function yourls_unload_textdomain( $domain ) {
 }
 
 /**
- * Loads default translated strings based on locale.
+ * Loads the default text domain.
  *
- * Loads the .mo file in YOURLS_LANG_DIR constant path from YOURLS root. The
- * translated (.mo) file is named based on the locale.
+ * Loads the MO file for the current locale.
  *
  * @since 1.6
- * @return bool True on success, false on failure
+ * @return bool True on success, false on failure.
  */
 function yourls_load_default_textdomain() {
     $yourls_locale = yourls_get_locale();
@@ -528,11 +428,13 @@ function yourls_load_default_textdomain() {
 }
 
 /**
- * Returns the Translations instance for a domain. If there isn't one,
- * returns empty Translations instance.
+ * Returns the translations for a text domain.
  *
- * @param string $domain
- * @return NOOPTranslations An NOOPTranslations translation instance
+ * If the text domain is not loaded, a new NOOPTranslations instance is returned.
+ *
+ * @since 1.6
+ * @param string $domain The text domain.
+ * @return NOOPTranslations A translations instance.
  */
 function yourls_get_translations_for_domain( $domain ) {
     global $yourls_l10n;
@@ -543,11 +445,11 @@ function yourls_get_translations_for_domain( $domain ) {
 }
 
 /**
- * Whether there are translations for the domain
+ * Checks if a text domain is loaded.
  *
  * @since 1.6
- * @param string $domain
- * @return bool Whether there are translations
+ * @param string $domain The text domain.
+ * @return bool True if the text domain is loaded, false otherwise.
  */
 function yourls_is_textdomain_loaded( $domain ) {
     global $yourls_l10n;
@@ -555,28 +457,23 @@ function yourls_is_textdomain_loaded( $domain ) {
 }
 
 /**
- * Translates role name. Unused.
- *
- * Unused function for the moment, we'll see when there are roles.
- * From the WP source: Since the role names are in the database and
- * not in the source there are dummy gettext calls to get them into the POT
- * file and this function properly translates them back.
+ * Translates a user role name.
  *
  * @since 1.6
- * @param string $name The role name
- * @return string Translated role name
+ * @param string $name The user role name.
+ * @return string The translated user role name.
  */
 function yourls_translate_user_role( $name ) {
     return yourls_translate_with_context( $name, 'User role' );
 }
 
 /**
- * Get all available languages (*.mo files) in a given directory. The default directory is YOURLS_LANG_DIR.
+ * Gets a list of available languages.
  *
  * @since 1.6
- *
- * @param string $dir A directory in which to search for language files. The default directory is YOURLS_LANG_DIR.
- * @return array Array of language codes or an empty array if no languages are present. Language codes are formed by stripping the .mo extension from the language file names.
+ * @param string|null $dir Optional. A directory in which to search for language files.
+ *                         Default YOURLS_LANG_DIR.
+ * @return array An array of language codes.
  */
 function yourls_get_available_languages( $dir = null ) {
     $languages = array();
@@ -591,13 +488,12 @@ function yourls_get_available_languages( $dir = null ) {
 }
 
 /**
- * Return integer number to format based on the locale.
+ * Formats a number with localized thousands separator.
  *
  * @since 1.6
- *
- * @param int $number The number to convert based on locale.
- * @param int $decimals Precision of the number of decimal places.
- * @return string Converted number in string format.
+ * @param int $number   The number to format.
+ * @param int $decimals Optional. The number of decimal places. Default 0.
+ * @return string The formatted number.
  */
 function yourls_number_format_i18n( $number, $decimals = 0 ) {
     global $yourls_locale_formats;
@@ -609,17 +505,12 @@ function yourls_number_format_i18n( $number, $decimals = 0 ) {
 }
 
 /**
- * Return the date in localized format, based on timestamp.
- *
- * If the locale specifies the locale month and weekday, then the locale will
- * take over the format for the date. If it isn't, then the date format string
- * will be used instead.
+ * Formats a date for the current locale.
  *
  * @since 1.6
- *
- * @param  string   $dateformatstring   Format to display the date.
- * @param  bool|int $timestamp          Optional, Unix timestamp, default to current timestamp (with offset if applicable)
- * @return string                       The date, translated if locale specifies it.
+ * @param string   $dateformatstring The format string for the date.
+ * @param int|bool $timestamp        Optional. A Unix timestamp. Default false (current time).
+ * @return string The formatted date.
  */
 function yourls_date_i18n( $dateformatstring, $timestamp = false ) {
     /**
@@ -1002,16 +893,14 @@ class YOURLS_Locale_Formats {
 }
 
 /**
- * Loads a custom translation file (for a plugin, a theme, a public interface...) if locale is defined
+ * Loads a custom translation file.
  *
- * The .mo file should be named based on the domain with a dash, and then the locale exactly,
- * eg 'myplugin-pt_BR.mo'
+ * This function is used to load a translation file for a plugin or theme.
  *
  * @since 1.6
- *
- * @param string $domain Unique identifier (the "domain") for retrieving translated strings
- * @param string $path Full path to directory containing MO files.
- * @return mixed Returns nothing if locale undefined, otherwise return bool: true on success, false on failure
+ * @param string $domain The text domain.
+ * @param string $path   The full path to the directory containing the MO files.
+ * @return bool|void True on success, false on failure, or void if the locale is not set.
  */
 function yourls_load_custom_textdomain( $domain, $path ) {
     $locale = yourls_apply_filter( 'load_custom_textdomain', yourls_get_locale(), $domain );
@@ -1022,10 +911,10 @@ function yourls_load_custom_textdomain( $domain, $path ) {
 }
 
 /**
- * Checks if current locale is RTL. Stolen from WP.
+ * Checks if the current locale is right-to-left (RTL).
  *
  * @since 1.6
- * @return bool Whether locale is RTL.
+ * @return bool True if the locale is RTL, false otherwise.
  */
 function yourls_is_rtl() {
     global $yourls_locale_formats;
@@ -1036,14 +925,12 @@ function yourls_is_rtl() {
 }
 
 /**
- * Return translated weekday abbreviation (3 letters, eg 'Fri' for 'Friday')
- *
- * The $weekday var can be a textual string ('Friday'), a integer (0 to 6) or an empty string
- * If $weekday is an empty string, the function returns an array of all translated weekday abbrev
+ * Returns the translated weekday abbreviation.
  *
  * @since 1.6
- * @param mixed $weekday A full textual weekday, eg "Friday", or an integer (0 = Sunday, 1 = Monday, .. 6 = Saturday)
- * @return mixed Translated weekday abbreviation, eg "Ven" (abbrev of "Vendredi") for "Friday" or 5, or array of all weekday abbrev
+ * @param string|int $weekday Optional. A full textual weekday (e.g., "Friday"), or an integer (0 = Sunday, 6 = Saturday).
+ *                            Default ''.
+ * @return string|array The translated weekday abbreviation, or an array of all translated weekday abbreviations if $weekday is empty.
  */
 function yourls_l10n_weekday_abbrev( $weekday = '' ){
     global $yourls_locale_formats;
@@ -1062,14 +949,12 @@ function yourls_l10n_weekday_abbrev( $weekday = '' ){
 }
 
 /**
- * Return translated weekday initial (1 letter, eg 'F' for 'Friday')
- *
- * The $weekday var can be a textual string ('Friday'), a integer (0 to 6) or an empty string
- * If $weekday is an empty string, the function returns an array of all translated weekday initials
+ * Returns the translated weekday initial.
  *
  * @since 1.6
- * @param mixed $weekday A full textual weekday, eg "Friday", an integer (0 = Sunday, 1 = Monday, .. 6 = Saturday) or empty string
- * @return mixed Translated weekday initial, eg "V" (initial of "Vendredi") for "Friday" or 5, or array of all weekday initials
+ * @param string|int $weekday Optional. A full textual weekday (e.g., "Friday"), or an integer (0 = Sunday, 6 = Saturday).
+ *                            Default ''.
+ * @return string|array The translated weekday initial, or an array of all translated weekday initials if $weekday is empty.
  */
 function yourls_l10n_weekday_initial( $weekday = '' ){
     global $yourls_locale_formats;
@@ -1088,14 +973,11 @@ function yourls_l10n_weekday_initial( $weekday = '' ){
 }
 
 /**
- * Return translated month abbrevation (3 letters, eg 'Nov' for 'November')
- *
- * The $month var can be a textual string ('November'), a integer (1 to 12), a two digits strings ('01' to '12), or an empty string
- * If $month is an empty string, the function returns an array of all translated abbrev months ('January' => 'Jan', ...)
+ * Returns the translated month abbreviation.
  *
  * @since 1.6
- * @param mixed $month Empty string, a full textual weekday, eg "November", or an integer (1 = January, .., 12 = December)
- * @return mixed Translated month abbrev (eg "Nov"), or array of all translated abbrev months
+ * @param string|int $month Optional. A full textual month (e.g., "November"), or an integer (1-12). Default ''.
+ * @return string|array The translated month abbreviation, or an array of all translated month abbreviations if $month is empty.
  */
 function yourls_l10n_month_abbrev( $month = '' ){
     global $yourls_locale_formats;
@@ -1115,10 +997,10 @@ function yourls_l10n_month_abbrev( $month = '' ){
 }
 
 /**
- * Return array of all translated months
+ * Returns an array of translated month names.
  *
  * @since 1.6
- * @return array Array of all translated months
+ * @return array An array of translated month names.
  */
 function yourls_l10n_months(){
     global $yourls_locale_formats;
