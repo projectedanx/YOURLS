@@ -1,18 +1,21 @@
 <?php
-/*
- * YOURLS
- * Functions for the API
+/**
+ * YOURLS API Functions
  *
- * Note about translation : this file should NOT be translation ready
- * API messages and returns are supposed to be programmatically tested, so default English is expected
+ * This file contains the functions that power the YOURLS API. It is responsible
+ * for handling API requests, processing data, and returning the results in
+
+ * various formats such as JSON, XML, and plain text.
  *
+ * @package YOURLS
+ * @since 1.6
  */
 
 /**
- * API function wrapper: Shorten a URL
+ * Shortens a URL.
  *
  * @since 1.6
- * @return array Result of API call
+ * @return array An array containing the result of the API call.
  */
 function yourls_api_action_shorturl() {
     $url = ( isset( $_REQUEST['url'] ) ? $_REQUEST['url'] : '' );
@@ -25,10 +28,10 @@ function yourls_api_action_shorturl() {
 }
 
 /**
- * API function wrapper: Stats about links (XX top, bottom, last, rand)
+ * Gets statistics for a range of links.
  *
  * @since 1.6
- * @return array Result of API call
+ * @return array An array containing the result of the API call.
  */
 function yourls_api_action_stats() {
     $filter = ( isset( $_REQUEST['filter'] ) ? $_REQUEST['filter'] : '' );
@@ -38,20 +41,20 @@ function yourls_api_action_stats() {
 }
 
 /**
- * API function wrapper: Just the global counts of shorturls and clicks
+ * Gets the total number of links and clicks.
  *
  * @since 1.6
- * @return array Result of API call
+ * @return array An array containing the result of the API call.
  */
 function yourls_api_action_db_stats() {
     return yourls_apply_filter( 'api_result_db_stats', yourls_api_db_stats() );
 }
 
 /**
- * API function wrapper: Stats for a shorturl
+ * Gets statistics for a short URL.
  *
  * @since 1.6
- * @return array Result of API call
+ * @return array An array containing the result of the API call.
  */
 function yourls_api_action_url_stats() {
     $shorturl = ( isset( $_REQUEST['shorturl'] ) ? $_REQUEST['shorturl'] : '' );
@@ -59,10 +62,10 @@ function yourls_api_action_url_stats() {
 }
 
 /**
- * API function wrapper: Expand a short link
+ * Expands a short URL.
  *
  * @since 1.6
- * @return array Result of API call
+ * @return array An array containing the result of the API call.
  */
 function yourls_api_action_expand() {
     $shorturl = ( isset( $_REQUEST['shorturl'] ) ? $_REQUEST['shorturl'] : '' );
@@ -70,10 +73,10 @@ function yourls_api_action_expand() {
 }
 
 /**
- * API function wrapper: return version numbers
+ * Gets the YOURLS version number.
  *
  * @since 1.6
- * @return array Result of API call
+ * @return array An array containing the result of the API call.
  */
 function yourls_api_action_version() {
     $return['version'] = $return['simple'] = YOURLS_VERSION;
@@ -83,20 +86,14 @@ function yourls_api_action_version() {
 }
 
 /**
- * Output and return API result
- *
- * This function will echo (or only return if asked) an array as JSON, JSONP or XML. If the array has a
- * 'simple' key, it can also output that key as unformatted text if expected output mode is 'simple'
- *
- * Most likely, script should not do anything after outputting this
+ * Outputs the API result in the specified format.
  *
  * @since 1.6
- *
- * @param  string $mode          Expected output mode ('json', 'jsonp', 'xml', 'simple')
- * @param  array  $output        Array of things to output
- * @param  bool   $send_headers  Optional, default true: Whether a headers (status, content type) should be sent or not
- * @param  bool   $echo          Optional, default true: Whether the output should be outputted or just returned
- * @return string                API output, as an XML / JSON / JSONP / raw text string
+ * @param string $mode         The output format. Can be 'json', 'jsonp', 'xml', or 'simple'.
+ * @param array  $output       The data to output.
+ * @param bool   $send_headers Whether to send HTTP headers.
+ * @param bool   $echo         Whether to echo the output.
+ * @return string The formatted output.
  */
 function yourls_api_output( $mode, $output, $send_headers = true, $echo = true ) {
     if( isset( $output['simple'] ) ) {
@@ -161,12 +158,14 @@ function yourls_api_output( $mode, $output, $send_headers = true, $echo = true )
 }
 
 /**
- * Return array for API stat requests
+ * Gets statistics for a range of links.
  *
- * @param string $filter  either "top", "bottom" , "rand" or "last"
- * @param int    $limit   maximum number of links to return
- * @param int    $start   offset
- * @return array
+ * @since 1.6
+ * @param string $filter The filter to apply to the links. Can be 'top',
+ *                       'bottom', 'rand', or 'last'.
+ * @param int    $limit  The maximum number of links to return.
+ * @param int    $start  The starting offset.
+ * @return array An array of link statistics.
  */
 function yourls_api_stats($filter = 'top', $limit = 10, $start = 0 ) {
     $return = yourls_get_stats( $filter, $limit, $start );
@@ -176,9 +175,10 @@ function yourls_api_stats($filter = 'top', $limit = 10, $start = 0 ) {
 }
 
 /**
- * Return array for counts of shorturls and clicks
+ * Gets the total number of links and clicks.
  *
- * @return array
+ * @since 1.6
+ * @return array An array containing the total number of links and clicks.
  */
 function yourls_api_db_stats() {
     $return = array(
@@ -192,10 +192,11 @@ function yourls_api_db_stats() {
 }
 
 /**
- * Return array for API stat requests
+ * Gets statistics for a short URL.
  *
- * @param string $shorturl  Short URL to check
- * @return array
+ * @since 1.6
+ * @param string $shorturl The short URL to get statistics for.
+ * @return array An array of statistics for the short URL.
  */
 function yourls_api_url_stats( $shorturl ) {
     $keyword = str_replace( yourls_get_yourls_site() . '/' , '', $shorturl ); // accept either 'http://ozh.in/abc' or 'abc'
@@ -207,10 +208,11 @@ function yourls_api_url_stats( $shorturl ) {
 }
 
 /**
- * Expand short url to long url
+ * Expands a short URL.
  *
- * @param string $shorturl  Short URL to expand
- * @return array
+ * @since 1.6
+ * @param string $shorturl The short URL to expand.
+ * @return array An array containing the long URL.
  */
 function yourls_api_expand( $shorturl ) {
     $keyword = str_replace( yourls_get_yourls_site() . '/' , '', $shorturl ); // accept either 'http://ozh.in/abc' or 'abc'

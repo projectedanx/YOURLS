@@ -1,4 +1,15 @@
 <?php
+/**
+ * YOURLS Redirection
+ *
+ * This file handles the redirection of short URLs. It is the entry point for
+ * all short URLs and is responsible for redirecting them to the corresponding
+ * long URL.
+ *
+ * @package YOURLS
+ * @since 1.0
+ */
+
 define( 'YOURLS_GO', true );
 require_once( dirname( __FILE__ ) . '/includes/load-yourls.php' );
 

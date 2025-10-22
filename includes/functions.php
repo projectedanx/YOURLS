@@ -1,14 +1,21 @@
 <?php
-/*
- * YOURLS general functions
+/**
+ * YOURLS General Functions
  *
+ * This file contains the core functions that power YOURLS. These functions are
+ * used throughout the application for various tasks such as database
+ * operations, URL handling, and user authentication.
+ *
+ * @package YOURLS
+ * @since 1.0
  */
 
 /**
- * Make an optimized regexp pattern from a string of characters
+ * Make an optimized regexp pattern from a string of characters.
  *
- * @param string $string
- * @return string
+ * @since 1.0
+ * @param string $string The string of characters to be escaped.
+ * @return string The escaped string, suitable for use in a regular expression.
  */
 function yourls_make_regexp_pattern( $string ) {
     // Simple benchmarks show that regexp with smarter sequences (0-9, a-z, A-Z...) are not faster or slower than 0123456789 etc...
@@ -17,9 +24,10 @@ function yourls_make_regexp_pattern( $string ) {
 }
 
 /**
- * Get client IP Address. Returns a DB safe string.
+ * Gets the IP address of the client.
  *
- * @return string
+ * @since 1.0
+ * @return string The IP address of the client.
  */
 function yourls_get_IP() {
     $ip = '';
@@ -41,27 +49,21 @@ function yourls_get_IP() {
 }
 
 /**
- * Get next id a new link will have if no custom keyword provided
+ * Gets the next decimal value to be used for a new short URL.
  *
  * @since 1.0
- * @return int            id of next link
+ * @return int The next decimal value.
  */
 function yourls_get_next_decimal() {
     return (int)yourls_apply_filter( 'get_next_decimal', (int)yourls_get_option( 'next_id' ) );
 }
 
 /**
- * Update id for next link with no custom keyword
- *
- * Note: this function relies upon yourls_update_option(), which will return either true or false
- * depending upon if there has been an actual MySQL query updating the DB.
- * In other words, this function may return false yet this would not mean it has functionally failed
- * In other words I'm not sure if we really need this function to return something :face_with_eyes_looking_up:
- * See issue 2621 for more on this.
+ * Updates the next decimal value to be used for a new short URL.
  *
  * @since 1.0
- * @param integer $int id for next link
- * @return bool        true or false depending on if there has been an actual MySQL query. See note above.
+ * @param int $int The new decimal value.
+ * @return bool True if the value was updated, false otherwise.
  */
 function yourls_update_next_decimal( $int = 0 ) {
     $int = ( $int == 0 ) ? yourls_get_next_decimal() + 1 : (int)$int ;
@@ -71,21 +73,27 @@ function yourls_update_next_decimal( $int = 0 ) {
 }
 
 /**
- * Return XML output.
+ * Encodes an array into an XML string.
  *
- * @param array $array
- * @return string
+ * This function takes an associative array and converts it into a well-formed
+ * XML string. It is useful for generating XML output for API responses or
+ * other XML-based data exchange.
+ *
+ * @since 1.0
+ * @param array $array The array to be encoded.
+ * @return string The XML-encoded string.
  */
 function yourls_xml_encode( $array ) {
     return (\Spatie\ArrayToXml\ArrayToXml::convert($array, '', true, 'UTF-8'));
 }
 
 /**
- * Update click count on a short URL. Return 0/1 for error/success.
+ * Updates the click count for a short URL.
  *
- * @param string $keyword
- * @param false|int $clicks
- * @return int 0 or 1 for error/success
+ * @since 1.0
+ * @param string $keyword The short URL keyword.
+ * @param int|false $clicks The new click count, or false to increment by 1.
+ * @return int The number of affected rows.
  */
 function yourls_update_clicks( $keyword, $clicks = false ) {
     // Allow plugins to short-circuit the whole function
@@ -118,12 +126,14 @@ function yourls_update_clicks( $keyword, $clicks = false ) {
 
 
 /**
- * Return array of stats. (string)$filter is 'bottom', 'last', 'rand' or 'top'. (int)$limit is the number of links to return
+ * Gets statistics for a range of links.
  *
- * @param string $filter  'bottom', 'last', 'rand' or 'top'
- * @param int $limit      Number of links to return
- * @param int $start      Offset to start from
- * @return array          Array of links
+ * @since 1.0
+ * @param string $filter The filter to apply to the links. Can be 'top',
+ *                       'bottom', 'rand', or 'last'.
+ * @param int    $limit  The maximum number of links to return.
+ * @param int    $start  The starting offset.
+ * @return array An array of link statistics.
  */
 function yourls_get_stats($filter = 'top', $limit = 10, $start = 0) {
     switch( $filter ) {
@@ -178,14 +188,11 @@ function yourls_get_stats($filter = 'top', $limit = 10, $start = 0) {
 }
 
 /**
- * Get total number of URLs and sum of clicks. Input: optional "AND WHERE" clause. Returns array
+ * Gets the total number of links and clicks.
  *
- * The $where parameter will contain additional SQL arguments:
- *   $where['sql'] will concatenate SQL clauses: $where['sql'] = ' AND something = :value AND otherthing < :othervalue';
- *   $where['binds'] will hold the (name => value) placeholder pairs: $where['binds'] = array('value' => $value, 'othervalue' => $value2)
- *
- * @param  array $where See comment above
- * @return array
+ * @since 1.0
+ * @param array $where An array of WHERE clauses to apply to the query.
+ * @return array An array containing the total number of links and clicks.
  */
 function yourls_get_db_stats( $where = [ 'sql' => '', 'binds' => [] ] ) {
     $table_url = YOURLS_DB_TABLE_URL;
@@ -197,9 +204,10 @@ function yourls_get_db_stats( $where = [ 'sql' => '', 'binds' => [] ] ) {
 }
 
 /**
- * Returns a sanitized a user agent string. Given what I found on http://www.user-agents.org/ it should be OK.
+ * Gets the user agent string of the client.
  *
- * @return string
+ * @since 1.0
+ * @return string The user agent string.
  */
 function yourls_get_user_agent() {
     $ua = '-';
@@ -213,9 +221,10 @@ function yourls_get_user_agent() {
 }
 
 /**
- * Returns the sanitized referrer submitted by the browser.
+ * Gets the referrer string of the client.
  *
- * @return string               HTTP Referrer or 'direct' if no referrer was provided
+ * @since 1.0
+ * @return string The referrer string.
  */
 function yourls_get_referrer() {
     $referrer = isset( $_SERVER['HTTP_REFERER'] ) ? yourls_sanitize_url_safe( $_SERVER['HTTP_REFERER'] ) : 'direct';
@@ -224,19 +233,12 @@ function yourls_get_referrer() {
 }
 
 /**
- * Redirect to another page
- *
- * YOURLS redirection, either to internal or external URLs. If headers have not been sent, redirection
- * is achieved with PHP's header(). If headers have been sent already and we're not in a command line
- * client, redirection occurs with Javascript.
- *
- * Note: yourls_redirect() does not exit automatically, and should almost always be followed by a call to exit()
- * to prevent the script from continuing.
+ * Redirects to another page.
  *
  * @since 1.4
- * @param string $location      URL to redirect to
- * @param int    $code          HTTP status code to send
- * @return int                  1 for header redirection, 2 for js redirection, 3 otherwise (CLI)
+ * @param string $location The URL to redirect to.
+ * @param int    $code     The HTTP status code to use for the redirection.
+ * @return int 1 for header redirection, 2 for JavaScript redirection, or 3 for CLI.
  */
 function yourls_redirect( $location, $code = 301 ) {
     yourls_do_action( 'pre_redirect', $location, $code );
@@ -261,14 +263,11 @@ function yourls_redirect( $location, $code = 301 ) {
 }
 
 /**
- * Redirect to an existing short URL
+ * Redirects to a short URL.
  *
- * Redirect client to an existing short URL (no check performed) and execute misc tasks: update
- * clicks for short URL, update logs, and send an X-Robots-Tag header to control indexing of a page.
- *
- * @since  1.7.3
- * @param  string $url
- * @param  string $keyword
+ * @since 1.7.3
+ * @param string $url The long URL to redirect to.
+ * @param string $keyword The short URL keyword.
  * @return void
  */
 function yourls_redirect_shorturl($url, $keyword) {
@@ -287,7 +286,7 @@ function yourls_redirect_shorturl($url, $keyword) {
 }
 
 /**
- * Send an X-Robots-Tag header. See #3486
+ * Sends an X-Robots-Tag header.
  *
  * @since 1.9.2
  * @return void
@@ -309,7 +308,7 @@ function yourls_robots_tag_header() {
 
 
 /**
- * Send headers to explicitly tell browser not to cache content or redirection
+ * Sends headers to prevent caching.
  *
  * @since 1.7.10
  * @return void
@@ -324,15 +323,10 @@ function yourls_no_cache_headers() {
 }
 
 /**
- * Send header to prevent display within a frame from another site (avoid clickjacking)
- *
- * This header makes it impossible for an external site to display YOURLS admin within a frame,
- * which allows for clickjacking.
- * See https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/X-Frame-Options
- * This said, the whole function is shuntable : legit uses of iframes should be still possible.
+ * Sends an X-Frame-Options header to prevent clickjacking.
  *
  * @since 1.8.1
- * @return void|mixed
+ * @return void
  */
 function yourls_no_frame_header() {
     // Allow plugins to short-circuit the whole function
@@ -347,11 +341,11 @@ function yourls_no_frame_header() {
 }
 
 /**
- * Send a filterable content type header
+ * Sends a Content-Type header.
  *
  * @since 1.7
- * @param string $type content type ('text/html', 'application/json', ...)
- * @return bool whether header was sent
+ * @param string $type The content type to send.
+ * @return bool True if the header was sent, false otherwise.
  */
 function yourls_content_type_header( $type ) {
     yourls_do_action( 'content_type_header', $type );
@@ -364,11 +358,11 @@ function yourls_content_type_header( $type ) {
 }
 
 /**
- * Set HTTP status header
+ * Sends an HTTP status header.
  *
  * @since 1.4
- * @param int $code  status header code
- * @return bool      whether header was sent
+ * @param int $code The HTTP status code to send.
+ * @return bool True if the header was sent, false otherwise.
  */
 function yourls_status_header( $code = 200 ) {
     yourls_do_action( 'status_header', $code );
@@ -389,11 +383,12 @@ function yourls_status_header( $code = 200 ) {
 }
 
 /**
- * Redirect to another page using Javascript.
- * Set optional (bool)$dontwait to false to force manual redirection (make sure a message has been read by user)
+ * Redirects to another page using JavaScript.
  *
- * @param string $location
- * @param bool   $dontwait
+ * @since 1.0
+ * @param string $location The URL to redirect to.
+ * @param bool   $dontwait If true, the redirection will be immediate.
+ *                         If false, the user will be prompted to click a link.
  * @return void
  */
 function yourls_redirect_javascript( $location, $dontwait = true ) {
@@ -415,10 +410,11 @@ REDIR;
 }
 
 /**
- * Return an HTTP status code
+ * Gets the description for an HTTP status code.
  *
- * @param int $code
- * @return string
+ * @since 1.0
+ * @param int $code The HTTP status code.
+ * @return string The description of the HTTP status code.
  */
 function yourls_get_HTTP_status( $code ) {
     $code = intval( $code );
@@ -484,14 +480,11 @@ function yourls_get_HTTP_status( $code ) {
 }
 
 /**
- * Log a redirect (for stats)
- *
- * This function does not check for the existence of a valid keyword, in order to save a query. Make sure the keyword
- * exists before calling it.
+ * Logs a redirection.
  *
  * @since 1.4
- * @param string $keyword short URL keyword
- * @return mixed Result of the INSERT query (1 on success)
+ * @param string $keyword The short URL keyword.
+ * @return int The number of affected rows.
  */
 function yourls_log_redirect( $keyword ) {
     // Allow plugins to short-circuit the whole function
@@ -526,18 +519,20 @@ function yourls_log_redirect( $keyword ) {
 }
 
 /**
- * Check if we want to not log redirects (for stats)
+ * Checks if redirection logging is enabled.
  *
- * @return bool
+ * @since 1.0
+ * @return bool True if redirection logging is enabled, false otherwise.
  */
 function yourls_do_log_redirect() {
     return ( !defined( 'YOURLS_NOSTATS' ) || YOURLS_NOSTATS != true );
 }
 
 /**
- * Check if an upgrade is needed
+ * Checks if an upgrade is needed.
  *
- * @return bool
+ * @since 1.0
+ * @return bool True if an upgrade is needed, false otherwise.
  */
 function yourls_upgrade_is_needed() {
     // check YOURLS_DB_VERSION exist && match values stored in YOURLS_DB_TABLE_OPTIONS
@@ -555,9 +550,10 @@ function yourls_upgrade_is_needed() {
 }
 
 /**
- * Get current version & db version as stored in the options DB. Prior to 1.4 there's no option table.
+ * Gets the current YOURLS version from the database.
  *
- * @return array
+ * @since 1.4
+ * @return array An array containing the current version and database version.
  */
 function yourls_get_current_version_from_sql() {
     $currentver = yourls_get_option( 'version' );
@@ -575,9 +571,10 @@ function yourls_get_current_version_from_sql() {
 }
 
 /**
- * Determine if the current page is private
+ * Checks if the current installation is private.
  *
- * @return bool
+ * @since 1.0
+ * @return bool True if the installation is private, false otherwise.
  */
 function yourls_is_private() {
     $private = defined( 'YOURLS_PRIVATE' ) && YOURLS_PRIVATE;
@@ -601,9 +598,10 @@ function yourls_is_private() {
 }
 
 /**
- * Allow several short URLs for the same long URL ?
+ * Checks if duplicate long URLs are allowed.
  *
- * @return bool
+ * @since 1.0
+ * @return bool True if duplicate long URLs are allowed, false otherwise.
  */
 function yourls_allow_duplicate_longurls() {
     // special treatment if API to check for WordPress plugin requests
@@ -615,10 +613,11 @@ function yourls_allow_duplicate_longurls() {
 }
 
 /**
- * Check if an IP shortens URL too fast to prevent DB flood. Return true, or die.
+ * Checks if an IP address is flooding the database.
  *
- * @param string $ip
- * @return bool|mixed|string
+ * @since 1.0
+ * @param string $ip The IP address to check.
+ * @return bool True if the IP address is not flooding, otherwise the function will die.
  */
 function yourls_check_IP_flood( $ip = '' ) {
 
@@ -673,43 +672,40 @@ function yourls_check_IP_flood( $ip = '' ) {
 }
 
 /**
- * Check if YOURLS is installing
+ * Checks if YOURLS is currently being installed.
  *
  * @since 1.6
- * @return bool
+ * @return bool True if YOURLS is being installed, false otherwise.
  */
 function yourls_is_installing() {
     return (bool)yourls_apply_filter( 'is_installing', defined( 'YOURLS_INSTALLING' ) && YOURLS_INSTALLING );
 }
 
 /**
- * Check if YOURLS is upgrading
+ * Checks if YOURLS is currently being upgraded.
  *
  * @since 1.6
- * @return bool
+ * @return bool True if YOURLS is being upgraded, false otherwise.
  */
 function yourls_is_upgrading() {
     return (bool)yourls_apply_filter( 'is_upgrading', defined( 'YOURLS_UPGRADING' ) && YOURLS_UPGRADING );
 }
 
 /**
- * Check if YOURLS is installed
+ * Checks if YOURLS is installed.
  *
- * Checks property $ydb->installed that is created by yourls_get_all_options()
- *
- * See inline comment for updating from 1.3 or prior.
- *
- * @return bool
+ * @since 1.0
+ * @return bool True if YOURLS is installed, false otherwise.
  */
 function yourls_is_installed() {
     return (bool)yourls_apply_filter( 'is_installed', yourls_get_db()->is_installed() );
 }
 
 /**
- * Set installed state
+ * Sets the installed state of YOURLS.
  *
- * @since  1.7.3
- * @param bool $bool whether YOURLS is installed or not
+ * @since 1.7.3
+ * @param bool $bool True if YOURLS is installed, false otherwise.
  * @return void
  */
 function yourls_set_installed( $bool ) {
@@ -717,12 +713,13 @@ function yourls_set_installed( $bool ) {
 }
 
 /**
- * Generate random string of (int)$length length and type $type (see function for details)
+ * Generates a random string of a given length and type.
  *
- * @param int    $length
- * @param int    $type
- * @param string $charlist
- * @return mixed|string
+ * @since 1.0
+ * @param int    $length   The length of the random string.
+ * @param int    $type     The type of characters to use.
+ * @param string $charlist A custom character list to use.
+ * @return string The random string.
  */
 function yourls_rnd_string ( $length = 5, $type = 0, $charlist = '' ) {
     $length = intval( $length );
@@ -772,72 +769,80 @@ function yourls_rnd_string ( $length = 5, $type = 0, $charlist = '' ) {
 }
 
 /**
- * Check if we're in API mode.
+ * Checks if the current request is an API request.
  *
- * @return bool
+ * @since 1.0
+ * @return bool True if the current request is an API request, false otherwise.
  */
 function yourls_is_API() {
     return (bool)yourls_apply_filter( 'is_API', defined( 'YOURLS_API' ) && YOURLS_API );
 }
 
 /**
- * Check if we're in Ajax mode.
+ * Checks if the current request is an AJAX request.
  *
- * @return bool
+ * @since 1.0
+ * @return bool True if the current request is an AJAX request, false otherwise.
  */
 function yourls_is_Ajax() {
     return (bool)yourls_apply_filter( 'is_Ajax', defined( 'YOURLS_AJAX' ) && YOURLS_AJAX );
 }
 
 /**
- * Check if we're in GO mode (yourls-go.php).
+ * Checks if the current request is a redirection.
  *
- * @return bool
+ * @since 1.0
+ * @return bool True if the current request is a redirection, false otherwise.
  */
 function yourls_is_GO() {
     return (bool)yourls_apply_filter( 'is_GO', defined( 'YOURLS_GO' ) && YOURLS_GO );
 }
 
 /**
- * Check if we're displaying stats infos (yourls-infos.php). Returns bool
+ * Checks if the current request is for stats.
  *
- * @return bool
+ * @since 1.0
+ * @return bool True if the current request is for stats, false otherwise.
  */
 function yourls_is_infos() {
     return (bool)yourls_apply_filter( 'is_infos', defined( 'YOURLS_INFOS' ) && YOURLS_INFOS );
 }
 
 /**
- * Check if we're in the admin area. Returns bool. Does not relate with user rights.
+ * Checks if the current request is for the admin area.
  *
- * @return bool
+ * @since 1.0
+ * @return bool True if the current request is for the admin area, false otherwise.
  */
 function yourls_is_admin() {
     return (bool)yourls_apply_filter( 'is_admin', defined( 'YOURLS_ADMIN' ) && YOURLS_ADMIN );
 }
 
 /**
- * Check if the server seems to be running on Windows. Not exactly sure how reliable this is.
+ * Checks if the server is running on Windows.
  *
- * @return bool
+ * @since 1.0
+ * @return bool True if the server is running on Windows, false otherwise.
  */
 function yourls_is_windows() {
     return defined( 'DIRECTORY_SEPARATOR' ) && DIRECTORY_SEPARATOR == '\\';
 }
 
 /**
- * Check if SSL is required.
+ * Checks if SSL is required for the admin area.
  *
- * @return bool
+ * @since 1.0
+ * @return bool True if SSL is required, false otherwise.
  */
 function yourls_needs_ssl() {
     return (bool)yourls_apply_filter( 'needs_ssl', defined( 'YOURLS_ADMIN_SSL' ) && YOURLS_ADMIN_SSL );
 }
 
 /**
- * Check if SSL is used. Stolen from WP.
+ * Checks if the current request is over SSL.
  *
- * @return bool
+ * @since 1.0
+ * @return bool True if the current request is over SSL, false otherwise.
  */
 function yourls_is_ssl() {
     $is_ssl = false;
@@ -861,14 +866,11 @@ function yourls_is_ssl() {
 }
 
 /**
- * Get a remote page title
+ * Gets the title of a remote page.
  *
- * This function returns a string: either the page title as defined in HTML, or the URL if not found
- * The function tries to convert funky characters found in titles to UTF8, from the detected charset.
- * Charset in use is guessed from HTML meta tag, or if not found, from server's 'content-type' response.
- *
- * @param string $url URL
- * @return string Title (sanitized) or the URL if no title found
+ * @since 1.0
+ * @param string $url The URL of the remote page.
+ * @return string The title of the remote page, or the URL if the title cannot be found.
  */
 function yourls_get_remote_title( $url ) {
     // Allow plugins to short-circuit the whole function
@@ -947,9 +949,10 @@ function yourls_get_remote_title( $url ) {
 }
 
 /**
- * Quick UA check for mobile devices.
+ * Checks if the client is a mobile device.
  *
- * @return bool
+ * @since 1.0
+ * @return bool True if the client is a mobile device, false otherwise.
  */
 function yourls_is_mobile_device() {
     // Strings searched
@@ -971,16 +974,12 @@ function yourls_is_mobile_device() {
 }
 
 /**
- * Get request in YOURLS base (eg in 'http://sho.rt/yourls/abcd' get 'abdc')
- *
- * With no parameter passed, this function will guess current page and consider
- * it is the requested page.
- * For testing purposes, parameters can be passed.
+ * Gets the request URI relative to the YOURLS installation.
  *
  * @since 1.5
- * @param string $yourls_site   Optional, YOURLS installation URL (default to constant YOURLS_SITE)
- * @param string $uri           Optional, page requested (default to $_SERVER['REQUEST_URI'] eg '/yourls/abcd' )
- * @return string               request relative to YOURLS base (eg 'abdc')
+ * @param string $yourls_site The YOURLS installation URL.
+ * @param string $uri         The request URI.
+ * @return string The request URI relative to the YOURLS installation.
  */
 function yourls_get_request($yourls_site = '', $uri = '') {
     // Allow plugins to short-circuit the whole function
@@ -1031,10 +1030,7 @@ function yourls_get_request($yourls_site = '', $uri = '') {
 }
 
 /**
- * Fix $_SERVER['REQUEST_URI'] variable for various setups. Stolen from WP.
- *
- * We also strip $_COOKIE from $_REQUEST to allow our lazy using $_REQUEST without 3rd party cookie interfering.
- * See #3383 for explanation.
+ * Fixes the `$_SERVER['REQUEST_URI']` variable for various server configurations.
  *
  * @since 1.5.1
  * @return void
@@ -1086,8 +1082,9 @@ function yourls_fix_request_uri() {
 }
 
 /**
- * Check for maintenance mode. If yes, die. See yourls_maintenance_mode(). Stolen from WP.
+ * Checks if the site is in maintenance mode.
  *
+ * @since 1.0
  * @return void
  */
 function yourls_check_maintenance_mode() {
@@ -1120,18 +1117,12 @@ function yourls_check_maintenance_mode() {
 }
 
 /**
- * Check if a URL protocol is allowed
- *
- * Checks a URL against a list of whitelisted protocols. Protocols must be defined with
- * their complete scheme name, ie 'stuff:' or 'stuff://' (for instance, 'mailto:' is a valid
- * protocol, 'mailto://' isn't, and 'http:' with no double slashed isn't either
+ * Checks if a URL protocol is allowed.
  *
  * @since 1.6
- * @see yourls_get_protocol()
- *
- * @param string $url URL to be check
- * @param array $protocols Optional. Array of protocols, defaults to global $yourls_allowedprotocols
- * @return bool true if protocol allowed, false otherwise
+ * @param string $url       The URL to check.
+ * @param array  $protocols An array of allowed protocols.
+ * @return bool True if the protocol is allowed, false otherwise.
  */
 function yourls_is_allowed_protocol( $url, $protocols = [] ) {
     if ( empty( $protocols ) ) {
@@ -1143,19 +1134,11 @@ function yourls_is_allowed_protocol( $url, $protocols = [] ) {
 }
 
 /**
- * Get protocol from a URL (eg mailto:, http:// ...)
- *
- * What we liberally call a "protocol" in YOURLS is the scheme name + colon + double slashes if present of a URI. Examples:
- * "something://blah" -> "something://"
- * "something:blah"   -> "something:"
- * "something:/blah"  -> "something:"
- *
- * Unit Tests for this function are located in tests/format/urls.php
+ * Gets the protocol of a URL.
  *
  * @since 1.6
- *
- * @param string $url URL to be check
- * @return string Protocol, with slash slash if applicable. Empty string if no protocol
+ * @param string $url The URL to check.
+ * @return string The protocol of the URL.
  */
 function yourls_get_protocol( $url ) {
     /*
@@ -1170,15 +1153,12 @@ function yourls_get_protocol( $url ) {
 }
 
 /**
- * Get relative URL (eg 'abc' from 'http://sho.rt/abc')
- *
- * Treat indifferently http & https. If a URL isn't relative to the YOURLS install, return it as is
- * or return empty string if $strict is true
+ * Gets the relative URL of a URL.
  *
  * @since 1.6
- * @param string $url URL to relativize
- * @param bool $strict if true and if URL isn't relative to YOURLS install, return empty string
- * @return string URL
+ * @param string $url    The URL to get the relative URL from.
+ * @param bool   $strict If true, an empty string will be returned if the URL is not relative.
+ * @return string The relative URL.
  */
 function yourls_get_relative_url( $url, $strict = true ) {
     $url = yourls_sanitize_url( $url );
@@ -1196,25 +1176,12 @@ function yourls_get_relative_url( $url, $strict = true ) {
 }
 
 /**
- * Marks a function as deprecated and informs that it has been used. Stolen from WP.
- *
- * There is a hook deprecated_function that will be called that can be used
- * to get the backtrace up to what file and function called the deprecated
- * function.
- *
- * The current behavior is to trigger a user error if YOURLS_DEBUG is true.
- *
- * This function is to be used in every function that is deprecated.
+ * Marks a function as deprecated.
  *
  * @since 1.6
- * @uses yourls_do_action() Calls 'deprecated_function' and passes the function name, what to use instead,
- *   and the version the function was deprecated in.
- * @uses yourls_apply_filter() Calls 'deprecated_function_trigger_error' and expects boolean value of true to do
- *   trigger or false to not trigger error.
- *
- * @param string $function The function that was called
- * @param string $version The version of WordPress that deprecated the function
- * @param string $replacement Optional. The function that should have been called
+ * @param string $function    The function that was called.
+ * @param string $version     The version of YOURLS that deprecated the function.
+ * @param string $replacement The function that should have been called instead.
  * @return void
  */
 function yourls_deprecated_function( $function, $version, $replacement = null ) {
@@ -1231,27 +1198,12 @@ function yourls_deprecated_function( $function, $version, $replacement = null ) 
 }
 
 /**
- * Explode a URL in an array of ( 'protocol' , 'slashes if any', 'rest of the URL' )
- *
- * Some hosts trip up when a query string contains 'http://' - see http://git.io/j1FlJg
- * The idea is that instead of passing the whole URL to a bookmarklet, eg index.php?u=http://blah.com,
- * we pass it by pieces to fool the server, eg index.php?proto=http:&slashes=//&rest=blah.com
- *
- * Known limitation: this won't work if the rest of the URL itself contains 'http://', for example
- * if rest = blah.com/file.php?url=http://foo.com
- *
- * Sample returns:
- *
- *   with 'mailto:jsmith@example.com?subject=hey' :
- *   array( 'protocol' => 'mailto:', 'slashes' => '', 'rest' => 'jsmith@example.com?subject=hey' )
- *
- *   with 'http://example.com/blah.html' :
- *   array( 'protocol' => 'http:', 'slashes' => '//', 'rest' => 'example.com/blah.html' )
+ * Splits a URL into its protocol, slashes, and the rest.
  *
  * @since 1.7
- * @param string $url URL to be parsed
- * @param array $array Optional, array of key names to be used in returned array
- * @return array|false false if no protocol found, array of ('protocol' , 'slashes', 'rest') otherwise
+ * @param string $url   The URL to split.
+ * @param array  $array An array of keys to use for the returned array.
+ * @return array|false An array containing the protocol, slashes, and the rest of the URL, or false if the URL is invalid.
  */
 function yourls_get_protocol_slashes_and_rest( $url, $array = [ 'protocol', 'slashes', 'rest' ] ) {
     $proto = yourls_get_protocol( $url );
@@ -1272,12 +1224,12 @@ function yourls_get_protocol_slashes_and_rest( $url, $array = [ 'protocol', 'sla
 }
 
 /**
- * Set URL scheme (HTTP or HTTPS) to a URL
+ * Sets the scheme of a URL.
  *
  * @since 1.7.1
- * @param string $url    URL
- * @param string $scheme scheme, either 'http' or 'https'
- * @return string URL with chosen scheme
+ * @param string $url    The URL to modify.
+ * @param string $scheme The new scheme.
+ * @return string The modified URL.
  */
 function yourls_set_url_scheme( $url, $scheme = '' ) {
     if ( in_array( $scheme, [ 'http', 'https' ] ) ) {
@@ -1287,10 +1239,7 @@ function yourls_set_url_scheme( $url, $scheme = '' ) {
 }
 
 /**
- * Tell if there is a new YOURLS version
- *
- * This function checks, if needed, if there's a new version of YOURLS and, if applicable, displays
- * an update notice.
+ * Checks for a new version of YOURLS and displays a notice if one is available.
  *
  * @since 1.7.3
  * @return void
@@ -1301,14 +1250,11 @@ function yourls_tell_if_new_version() {
 }
 
 /**
- * File include sandbox
- *
- * Attempt to include a PHP file, fail with an error message if the file isn't valid PHP code.
- * This function does not check first if the file exists : depending on use case, you may check first.
+ * Includes a file in a sandboxed environment.
  *
  * @since 1.9.2
- * @param string $file filename (full path)
- * @return string|bool  string if error, true if success
+ * @param string $file The file to include.
+ * @return bool|string True on success, an error message on failure.
  */
 function yourls_include_file_sandbox($file) {
     try {

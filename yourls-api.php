@@ -1,10 +1,12 @@
 <?php
-/*
+/**
  * YOURLS API
  *
- * Note about translation : this file should NOT be translation ready
- * API messages and returns are supposed to be programmatically tested, so default English is expected
+ * This file is the entry point for the YOURLS API. It handles all API requests
+ * and returns the results in the requested format.
  *
+ * @package YOURLS
+ * @since 1.0
  */
 
 define( 'YOURLS_API', true );

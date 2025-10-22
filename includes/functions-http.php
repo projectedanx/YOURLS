@@ -1,5 +1,14 @@
 <?php
-
+/**
+ * YOURLS HTTP Functions
+ *
+ * This file contains functions that are used for making HTTP requests. These
+ * functions are used to communicate with external services and to perform
+ * other tasks that require HTTP requests.
+ *
+ * @package YOURLS
+ * @since 1.7
+ */
 /**
  * Functions that relate to HTTP requests
  *
@@ -18,32 +27,33 @@
 use WpOrg\Requests\Requests;
 
 /**
- * Perform a GET request, return response object or error string message
+ * Performs a GET request.
  *
- * Notable object properties: body, headers, status_code
+ * This function performs a GET request and returns the response object, or an
+ * error string if the request fails.
  *
  * @since 1.7
- * @see yourls_http_request
- * @param string $url     URL to request
- * @param array $headers  HTTP headers to send
- * @param array $data     GET data
- * @param array $options  Options to pass to Requests
- * @return mixed Response object, or error string
+ * @see yourls_http_request()
+ * @param string $url     The URL to request.
+ * @param array  $headers Optional. An array of HTTP headers to send. Default empty array.
+ * @param array  $data    Optional. An array of GET data. Default empty array.
+ * @param array  $options Optional. An array of options to pass to the request. Default empty array.
+ * @return object|\WpOrg\Requests\Response|string A response object, or an error string.
  */
 function yourls_http_get( $url, $headers = array(), $data = array(), $options = array() ) {
     return yourls_http_request( 'GET', $url, $headers, $data, $options );
 }
 
 /**
- * Perform a GET request, return body or null if there was an error
+ * Performs a GET request and returns the response body.
  *
  * @since 1.7
- * @see yourls_http_request
- * @param string $url     URL to request
- * @param array $headers  HTTP headers to send
- * @param array $data     GET data
- * @param array $options  Options to pass to Requests
- * @return mixed String (page body) or null if error
+ * @see yourls_http_request()
+ * @param string $url     The URL to request.
+ * @param array  $headers Optional. An array of HTTP headers to send. Default empty array.
+ * @param array  $data    Optional. An array of GET data. Default empty array.
+ * @param array  $options Optional. An array of options to pass to the request. Default empty array.
+ * @return string|null The response body, or null if there was an error.
  */
 function yourls_http_get_body( $url, $headers = array(), $data = array(), $options = array() ) {
     $return = yourls_http_get( $url, $headers, $data, $options );
@@ -51,34 +61,33 @@ function yourls_http_get_body( $url, $headers = array(), $data = array(), $optio
 }
 
 /**
- * Perform a POST request, return response object
+ * Performs a POST request.
  *
- * Notable object properties: body, headers, status_code
+ * This function performs a POST request and returns the response object, or an
+ * error string if the request fails.
  *
  * @since 1.7
- * @see yourls_http_request
- * @param string $url     URL to request
- * @param array $headers  HTTP headers to send
- * @param array $data     POST data
- * @param array $options  Options to pass to Requests
- * @return mixed Response object, or error string
+ * @see yourls_http_request()
+ * @param string $url     The URL to request.
+ * @param array  $headers Optional. An array of HTTP headers to send. Default empty array.
+ * @param array  $data    Optional. An array of POST data. Default empty array.
+ * @param array  $options Optional. An array of options to pass to the request. Default empty array.
+ * @return object|\WpOrg\Requests\Response|string A response object, or an error string.
  */
 function yourls_http_post( $url, $headers = array(), $data = array(), $options = array() ) {
     return yourls_http_request( 'POST', $url, $headers, $data, $options );
 }
 
 /**
- * Perform a POST request, return body
- *
- * Wrapper for yourls_http_request()
+ * Performs a POST request and returns the response body.
  *
  * @since 1.7
- * @see yourls_http_request
- * @param string $url     URL to request
- * @param array $headers  HTTP headers to send
- * @param array $data     POST data
- * @param array $options  Options to pass to Requests
- * @return mixed String (page body) or null if error
+ * @see yourls_http_request()
+ * @param string $url     The URL to request.
+ * @param array  $headers Optional. An array of HTTP headers to send. Default empty array.
+ * @param array  $data    Optional. An array of POST data. Default empty array.
+ * @param array  $options Optional. An array of options to pass to the request. Default empty array.
+ * @return string|null The response body, or null if there was an error.
  */
 function yourls_http_post_body( $url, $headers = array(), $data = array(), $options = array() ) {
     $return = yourls_http_post( $url, $headers, $data, $options );
@@ -86,11 +95,13 @@ function yourls_http_post_body( $url, $headers = array(), $data = array(), $opti
 }
 
 /**
- * Get proxy information
+ * Gets proxy information.
  *
- * @uses YOURLS_PROXY YOURLS_PROXY_USERNAME YOURLS_PROXY_PASSWORD
  * @since 1.7.1
- * @return mixed false if no proxy is defined, or string like '10.0.0.201:3128' or array like ('10.0.0.201:3128', 'username', 'password')
+ * @uses YOURLS_PROXY
+ * @uses YOURLS_PROXY_USERNAME
+ * @uses YOURLS_PROXY_PASSWORD
+ * @return false|string|array Returns false if no proxy is defined, a string like '10.0.0.201:3128', or an array like ('10.0.0.201:3128', 'username', 'password').
  */
 function yourls_http_get_proxy() {
     $proxy = false;
@@ -106,11 +117,11 @@ function yourls_http_get_proxy() {
 }
 
 /**
- * Get list of hosts that should bypass the proxy
+ * Gets a list of hosts that should bypass the proxy.
  *
- * @uses YOURLS_PROXY_BYPASS_HOSTS
  * @since 1.7.1
- * @return mixed false if no host defined, or string like "example.com, *.mycorp.com"
+ * @uses YOURLS_PROXY_BYPASS_HOSTS
+ * @return false|string Returns false if no hosts are defined, or a string like "example.com, *.mycorp.com".
  */
 function yourls_http_get_proxy_bypass_host() {
     $hosts = defined( 'YOURLS_PROXY_BYPASS_HOSTS' ) ? YOURLS_PROXY_BYPASS_HOSTS : false;
@@ -119,12 +130,12 @@ function yourls_http_get_proxy_bypass_host() {
 }
 
 /**
- * Default HTTP requests options for YOURLS
+ * Returns the default HTTP request options for YOURLS.
  *
- * For a list of all available options, see function request() in /includes/Requests/Requests.php
+ * For a list of all available options, see the documentation for the Requests library.
  *
  * @since 1.7
- * @return array Options
+ * @return array An array of default options.
  */
 function yourls_http_default_options() {
     $options = array(
@@ -142,16 +153,16 @@ function yourls_http_default_options() {
 }
 
 /**
- * Whether URL should be sent through the proxy server.
+ * Determines whether a URL should be sent through the proxy server.
  *
- * Concept stolen from WordPress. The idea is to allow some URLs, including localhost and the YOURLS install itself,
- * to be requested directly and bypassing any defined proxy.
+ * This function allows some URLs (e.g., localhost and the YOURLS installation itself)
+ * to be requested directly, bypassing any defined proxy.
  *
+ * @since 1.7
  * @uses YOURLS_PROXY
  * @uses YOURLS_PROXY_BYPASS_HOSTS
- * @since 1.7
- * @param string $url URL to check
- * @return bool true to request through proxy, false to request directly
+ * @param string $url The URL to check.
+ * @return bool True to request through the proxy, false to request directly.
  */
 function yourls_send_through_proxy( $url ) {
 
@@ -208,15 +219,17 @@ function yourls_send_through_proxy( $url ) {
 }
 
 /**
- * Perform a HTTP request, return response object
+ * Performs an HTTP request.
+ *
+ * This function is a wrapper for the Requests library and handles all HTTP requests.
  *
  * @since 1.7
- * @param string $type HTTP request type (GET, POST)
- * @param string $url URL to request
- * @param array $headers Extra headers to send with the request
- * @param array $data Data to send either as a query string for GET requests, or in the body for POST requests
- * @param array $options Options for the request (see /includes/Requests/Requests.php:request())
- * @return object WpOrg\Requests\Response object
+ * @param string $type    The HTTP request type (e.g., 'GET', 'POST').
+ * @param string $url     The URL to request.
+ * @param array  $headers Extra headers to send with the request.
+ * @param array  $data    Data to send, either as a query string for GET requests or in the body for POST requests.
+ * @param array  $options Options for the request (see the Requests library documentation).
+ * @return object|\WpOrg\Requests\Response A response object.
  */
 function yourls_http_request( $type, $url, $headers, $data, $options ) {
 
@@ -248,29 +261,23 @@ function yourls_http_request( $type, $url, $headers, $data, $options ) {
 }
 
 /**
- * Return funky user agent string
+ * Returns the YOURLS user agent string.
  *
  * @since 1.5
- * @return string UA string
+ * @return string The user agent string.
  */
 function yourls_http_user_agent() {
     return yourls_apply_filter( 'http_user_agent', 'YOURLS v'.YOURLS_VERSION.' +http://yourls.org/ (running on '.yourls_get_yourls_site().')' );
 }
 
 /**
- * Check api.yourls.org if there's a newer version of YOURLS
+ * Checks for a new version of YOURLS.
  *
- * This function collects various stats to help us improve YOURLS. See the blog post about it:
- * http://blog.yourls.org/2014/01/on-yourls-1-7-and-api-yourls-org/
- * Results of requests sent to api.yourls.org are stored in option 'core_version_checks' and is an object
- * with the following properties:
- *    - failed_attempts : number of consecutive failed attempts
- *    - last_attempt    : time() of last attempt
- *    - last_result     : content retrieved from api.yourls.org during previous check
- *    - version_checked : installed YOURLS version that was last checked
+ * This function sends a request to the YOURLS API to check for a new version.
+ * It also collects anonymous usage statistics to help improve YOURLS.
  *
  * @since 1.7
- * @return mixed JSON data if api.yourls.org successfully requested, false otherwise
+ * @return object|false The JSON response from the API, or false on failure.
  */
 function yourls_check_core_version() {
 
@@ -367,17 +374,14 @@ function yourls_check_core_version() {
 }
 
 /**
- *  Make sure response from api.yourls.org is valid
+ * Validates the response from the YOURLS version check API.
  *
- *  1) we should get a json object with two following properties:
- *    'latest' => a string representing a YOURLS version number, eg '1.2.3'
- *    'zipurl' => a string for a zip package URL, from github, eg 'https://api.github.com/repos/YOURLS/YOURLS/zipball/1.2.3'
- *  2) 'latest' and version extracted from 'zipurl' should match
- *  3) the object should not contain any other key
+ * This function ensures that the response from the API is a valid JSON object
+ * with the expected properties and values.
  *
- *  @since 1.7.7
- *  @param object $json  JSON object to check
- *  @return bool   true if seems legit, false otherwise
+ * @since 1.7.7
+ * @param object $json The JSON object to validate.
+ * @return bool True if the response is valid, false otherwise.
  */
 function yourls_validate_core_version_response($json) {
     return (
@@ -390,11 +394,11 @@ function yourls_validate_core_version_response($json) {
 }
 
 /**
- * Get version number from Github zipball URL (last part of URL, really)
+ * Gets the version number from a Github zipball URL.
  *
  * @since 1.8.3
- * @param string $zipurl eg 'https://api.github.com/repos/YOURLS/YOURLS/zipball/1.2.3'
- * @return string
+ * @param string $zipurl The Github zipball URL (e.g., 'https://api.github.com/repos/YOURLS/YOURLS/zipball/1.2.3').
+ * @return string The version number.
  */
 function yourls_get_version_from_zipball_url($zipurl) {
     $version = '';
@@ -407,11 +411,11 @@ function yourls_get_version_from_zipball_url($zipurl) {
 }
 
 /**
- * Check if URL is from YOURLS/YOURLS repo on github
+ * Checks if a URL is from the YOURLS/YOURLS repo on GitHub.
  *
  * @since 1.8.3
- * @param string $url  URL to check
- * @return bool
+ * @param string $url The URL to check.
+ * @return bool True if the URL is a valid YOURLS GitHub repo URL, false otherwise.
  */
 function yourls_is_valid_github_repo_url($url) {
     $url = yourls_sanitize_url($url);
@@ -426,11 +430,14 @@ function yourls_is_valid_github_repo_url($url) {
 }
 
 /**
- * Check if object has only expected keys 'latest' and 'zipurl' containing strings
+ * Checks if a JSON object has the expected keys for a version check response.
+ *
+ * This function checks if the JSON object has the keys 'latest' and 'zipurl',
+ * and that their values are strings.
  *
  * @since 1.8.3
- * @param object $json
- * @return bool
+ * @param object $json The JSON object to check.
+ * @return bool True if the object has the expected keys, false otherwise.
  */
 function yourls_validate_core_version_response_keys($json) {
     $keys = array('latest', 'zipurl');
@@ -444,13 +451,14 @@ function yourls_validate_core_version_response_keys($json) {
 }
 
 /**
- * Determine if we want to check for a newer YOURLS version (and check if applicable)
+ * Determines if a check for a newer YOURLS version is needed.
  *
- * Currently checks are performed every 24h and only when someone is visiting an admin page.
- * In the future (1.8?) maybe check with cronjob emulation instead.
+ * This function checks if a new version check is needed based on the last
+ * check time and the current version. Checks are performed every 24 hours
+ * when an admin page is visited.
  *
  * @since 1.7
- * @return bool true if a check was needed and successfully performed, false otherwise
+ * @return bool True if a check was needed and successfully performed, false otherwise.
  */
 function yourls_maybe_check_core_version() {
     // Allow plugins to short-circuit the whole function
@@ -497,20 +505,20 @@ function yourls_maybe_check_core_version() {
 }
 
 /**
- * Check if user setting for skipping version check is set
+ * Checks if the user has opted to skip the version check.
  *
  * @since 1.8.2
- * @return bool
+ * @return bool True to skip the version check, false otherwise.
  */
 function yourls_skip_version_check() {
     return yourls_apply_filter('skip_version_check', defined('YOURLS_NO_VERSION_CHECK') && YOURLS_NO_VERSION_CHECK);
 }
 
 /**
- * Check if server can perform HTTPS requests, return bool
+ * Checks if the server can perform HTTPS requests.
  *
  * @since 1.7.1
- * @return bool whether the server can perform HTTP requests over SSL
+ * @return bool True if the server can perform HTTPS requests, false otherwise.
  */
 function yourls_can_http_over_ssl() {
     $ssl_curl = $ssl_socket = false;

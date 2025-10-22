@@ -18,12 +18,12 @@
 // @codeCoverageIgnoreStart
 
 /**
- * Plugin activation sandbox
+ * Activates a plugin in a sandboxed environment.
  *
  * @since 1.8.3
  * @deprecated 1.9.2
- * @param string $pluginfile Plugin filename (full path)
- * @return string|true  string if error or true if success
+ * @param string $pluginfile The path to the plugin file.
+ * @return bool|string True on success, an error message on failure.
  */
 function yourls_activate_plugin_sandbox( $pluginfile ) {
     yourls_deprecated_function( __FUNCTION__, '1.9.1', 'yourls_include_file_sandbox');
@@ -31,11 +31,11 @@ function yourls_activate_plugin_sandbox( $pluginfile ) {
 }
 
 /**
- * Return current admin page, or null if not an admin page. Was not used anywhere.
+ * Gets the current admin page.
  *
- * @return mixed string if admin page, null if not an admin page
  * @since 1.6
  * @deprecated 1.9.1
+ * @return string|null The current admin page, or null if not on an admin page.
  */
 function yourls_current_admin_page() {
     yourls_deprecated_function( __FUNCTION__, '1.9.1' );
@@ -50,12 +50,12 @@ function yourls_current_admin_page() {
 }
 
 /**
- * PHP emulation of JS's encodeURI
+ * Encodes a URI.
  *
- * @link https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/encodeURI
+ * @since 1.0
  * @deprecated 1.9.1
- * @param string $url
- * @return string
+ * @param string $url The URI to encode.
+ * @return string The encoded URI.
  */
 function yourls_encodeURI($url) {
     yourls_deprecated_function( __FUNCTION__, '1.9.1', '' );
@@ -74,9 +74,12 @@ function yourls_encodeURI($url) {
 }
 
 /**
- * Check if a file is a plugin file
+ * Checks if a file is a plugin file.
  *
+ * @since 1.5
  * @deprecated 1.8.3
+ * @param string $file The path to the file.
+ * @return bool True if the file is a plugin file, false otherwise.
  */
 function yourls_validate_plugin_file( $file ) {
     yourls_deprecated_function( __FUNCTION__, '1.8.3', 'yourls_is_a_plugin_file' );
@@ -84,9 +87,12 @@ function yourls_validate_plugin_file( $file ) {
 }
 
 /**
- * Return a unique(ish) hash for a string to be used as a valid HTML id
+ * Converts a string to a valid HTML ID.
  *
+ * @since 1.0
  * @deprecated 1.8.3
+ * @param string $string The string to convert.
+ * @return string The HTML ID.
  */
 function yourls_string2htmlid( $string ) {
     yourls_deprecated_function( __FUNCTION__, '1.8.3', 'yourls_unique_element_id' );
@@ -94,16 +100,11 @@ function yourls_string2htmlid( $string ) {
 }
 
 /**
- * Get search text from query string variables search_protocol, search_slashes and search
- *
- * Some servers don't like query strings containing "(ht|f)tp(s)://". A javascript bit
- * explodes the search text into protocol, slashes and the rest (see JS function
- * split_search_text_before_search()) and this function glues pieces back together
- * See issue https://github.com/YOURLS/YOURLS/issues/1576
+ * Gets the search text from the query string.
  *
  * @since 1.7
  * @deprecated 1.8.2
- * @return string Search string
+ * @return string The search text.
  */
 function yourls_get_search_text() {
     yourls_deprecated_function( __FUNCTION__, '1.8.2', 'YOURLS\Views\AdminParams::get_search' );
@@ -112,20 +113,13 @@ function yourls_get_search_text() {
 }
 
 /**
- * Retrieve the current time based on specified type. Stolen from WP.
- *
- * The 'mysql' type will return the time in the format for MySQL DATETIME field.
- * The 'timestamp' type will return the current timestamp.
- *
- * If $gmt is set to either '1' or 'true', then both types will use GMT time.
- * if $gmt is false, the output is adjusted with the GMT offset in the WordPress option.
+ * Gets the current time.
  *
  * @since 1.6
  * @deprecated 1.7.10
- *
- * @param string $type Either 'mysql' or 'timestamp'.
- * @param int|bool $gmt Optional. Whether to use GMT timezone. Default is false.
- * @return int|string String if $type is 'gmt', int if $type is 'timestamp'.
+ * @param string   $type The type of time to retrieve. Can be 'mysql' or 'timestamp'.
+ * @param int|bool $gmt  Whether to use GMT timezone.
+ * @return string The current time.
  */
 function yourls_current_time( $type, $gmt = 0 ) {
     yourls_deprecated_function( __FUNCTION__, '1.7.10', 'yourls_get_timestamp' );
@@ -138,13 +132,12 @@ function yourls_current_time( $type, $gmt = 0 ) {
 }
 
 /**
- * Lowercase scheme and domain of an URI - see issues 591, 1630, 1889
+ * Lowercases the scheme and domain of a URI.
  *
- * Renamed to yourls_normalize_uri() in 1.7.10 because the function now does more than just
- * lowercasing the scheme and domain.
- *
+ * @since 1.0
  * @deprecated 1.7.10
- *
+ * @param string $url The URL to modify.
+ * @return string The modified URL.
  */
 function yourls_lowercase_scheme_domain( $url ) {
     yourls_deprecated_function( __FUNCTION__, '1.7.10', 'yourls_normalize_uri' );
@@ -152,10 +145,13 @@ function yourls_lowercase_scheme_domain( $url ) {
 }
 
 /**
- * The original string sanitize function
+ * Sanitizes a string.
  *
+ * @since 1.0
  * @deprecated 1.7.10
- *
+ * @param string $string The string to sanitize.
+ * @param bool   $restrict_to_shorturl_charset Whether to restrict the string to the short URL character set.
+ * @return string The sanitized string.
  */
 function yourls_sanitize_string( $string, $restrict_to_shorturl_charset = false ) {
     yourls_deprecated_function( __FUNCTION__, '1.7.10', 'yourls_sanitize_keyword' );
@@ -163,10 +159,12 @@ function yourls_sanitize_string( $string, $restrict_to_shorturl_charset = false 
 }
 
 /**
- * Return favicon URL (either default or custom)
+ * Gets the favicon URL.
  *
+ * @since 1.0
  * @deprecated 1.7.10
- *
+ * @param bool $echo Whether to echo the URL.
+ * @return string The favicon URL.
  */
 function yourls_favicon( $echo = true ) {
     yourls_deprecated_function( __FUNCTION__, '1.7.10', 'yourls_get_yourls_favicon_url' );
@@ -174,10 +172,12 @@ function yourls_favicon( $echo = true ) {
 }
 
 /**
- * Return array of stats for a given keyword
+ * Gets the stats for a link.
  *
+ * @since 1.0
  * @deprecated 1.7.10
- *
+ * @param string $url The short URL keyword.
+ * @return array An array of stats.
  */
 function yourls_get_link_stats( $url ) {
     yourls_deprecated_function( __FUNCTION__, '1.7.10', 'yourls_get_keyword_stats' );
@@ -185,11 +185,12 @@ function yourls_get_link_stats( $url ) {
 }
 
 /**
- * Check if a long URL already exists in the DB. Return NULL (doesn't exist) or an object with URL informations.
+ * Checks if a long URL exists in the database.
  *
  * @since 1.5.1
  * @deprecated 1.7.10
- *
+ * @param string $url The long URL to check.
+ * @return object|null An object with URL information if it exists, null otherwise.
  */
 function yourls_url_exists( $url ) {
     yourls_deprecated_function( __FUNCTION__, '1.7.10', 'yourls_long_url_exists' );
@@ -197,8 +198,13 @@ function yourls_url_exists( $url ) {
 }
 
 /**
- * Return word or words if more than one
+ * Returns the singular or plural form of a word.
  *
+ * @since 1.0
+ * @deprecated 1.6
+ * @param string $word  The word to pluralize.
+ * @param int    $count The number of items.
+ * @return string The pluralized word.
  */
 function yourls_plural( $word, $count=1 ) {
     yourls_deprecated_function( __FUNCTION__, '1.6', 'yourls_n' );
@@ -206,8 +212,12 @@ function yourls_plural( $word, $count=1 ) {
 }
 
 /**
- * Return list of all shorturls associated to the same long URL. Returns NULL or array of keywords.
+ * Gets all short URLs associated with a long URL.
  *
+ * @since 1.0
+ * @deprecated 1.7
+ * @param string $longurl The long URL.
+ * @return array|null An array of short URL keywords, or null if duplicates are not allowed.
  */
 function yourls_get_duplicate_keywords( $longurl ) {
     yourls_deprecated_function( __FUNCTION__, '1.7', 'yourls_get_longurl_keywords' );
@@ -217,10 +227,12 @@ function yourls_get_duplicate_keywords( $longurl ) {
 }
 
 /**
- * Make sure a integer is safe
+ * Sanitizes an integer.
  *
- * Note: this function is dumb and dumbly named since it does not intval(). DO NOT USE.
- *
+ * @since 1.0
+ * @deprecated 1.7
+ * @param int $int The integer to sanitize.
+ * @return int The sanitized integer.
  */
 function yourls_intval( $int ) {
     yourls_deprecated_function( __FUNCTION__, '1.7', 'yourls_sanitize_int' );
@@ -228,8 +240,14 @@ function yourls_intval( $int ) {
 }
 
 /**
- * Get remote content via a GET request using best transport available
+ * Gets the content of a remote URL.
  *
+ * @since 1.0
+ * @deprecated 1.7
+ * @param string $url     The URL to get the content from.
+ * @param int    $maxlen  The maximum length of the content to get.
+ * @param int    $timeout The timeout for the request.
+ * @return string The content of the remote URL.
  */
 function yourls_get_remote_content( $url,  $maxlen = 4096, $timeout = 5 ) {
     yourls_deprecated_function( __FUNCTION__, '1.7', 'yourls_http_get_body' );
@@ -237,17 +255,13 @@ function yourls_get_remote_content( $url,  $maxlen = 4096, $timeout = 5 ) {
 }
 
 /**
- * Alias for yourls_apply_filter because I never remember if it's _filter or _filters
- *
- * At first I thought it made semantically more sense but thinking about it, I was wrong. It's one filter.
- * There may be several function hooked into it, but it still the same one filter.
+ * Applies a filter to a value.
  *
  * @since 1.6
  * @deprecated 1.7.1
- *
- * @param string $hook the name of the YOURLS element or action
- * @param mixed $value the value of the element before filtering
- * @return mixed
+ * @param string $hook  The name of the filter to apply.
+ * @param mixed  $value The value to filter.
+ * @return mixed The filtered value.
  */
 function yourls_apply_filters( $hook, $value = '' ) {
     yourls_deprecated_function( __FUNCTION__, '1.7.1', 'yourls_apply_filter' );
@@ -255,8 +269,11 @@ function yourls_apply_filters( $hook, $value = '' ) {
 }
 
 /**
- * Check if we'll need interface display function (ie not API or redirection)
+ * Checks if the interface should be displayed.
  *
+ * @since 1.0
+ * @deprecated 1.7.1
+ * @return bool True if the interface should be displayed, false otherwise.
  */
 function yourls_has_interface() {
     yourls_deprecated_function( __FUNCTION__, '1.7.1' );
@@ -266,12 +283,11 @@ function yourls_has_interface() {
 }
 
 /**
- * Check if a proxy is defined for HTTP requests
+ * Checks if a proxy is defined.
  *
- * @uses YOURLS_PROXY
  * @since 1.7
  * @deprecated 1.7.1
- * @return bool true if a proxy is defined, false otherwise
+ * @return bool True if a proxy is defined, false otherwise.
  */
 function yourls_http_proxy_is_defined() {
     yourls_deprecated_function( __FUNCTION__, '1.7.1', 'yourls_http_get_proxy' );
@@ -279,18 +295,14 @@ function yourls_http_proxy_is_defined() {
 }
 
 /**
- * Displays translated string with gettext context
+ * Displays a translated string with context.
  *
- * This function has been renamed yourls_xe() for consistency with other *e() functions
- *
- * @see yourls_x()
  * @since 1.6
  * @deprecated 1.7.1
- *
- * @param string $text Text to translate
- * @param string $context Context information for the translators
- * @param string $domain Optional. Domain to retrieve the translated text
- * @return string Translated context string without pipe
+ * @param string $text    The text to translate.
+ * @param string $context The context of the text.
+ * @param string $domain  The domain to retrieve the translated text from.
+ * @return void
  */
 function yourls_ex( $text, $context, $domain = 'default' ) {
     yourls_deprecated_function( __FUNCTION__, '1.7.1', 'yourls_xe' );
@@ -298,14 +310,12 @@ function yourls_ex( $text, $context, $domain = 'default' ) {
 }
 
 /**
- * Escape a string or an array of strings before DB usage. ALWAYS escape before using in a SQL query. Thanks.
+ * Escapes a string or an array of strings for use in a database query.
  *
- * Deprecated in 1.7.3 because we moved onto using PDO and using built-in escaping functions, instead of
- * rolling our own.
- *
+ * @since 1.0
  * @deprecated 1.7.3
- * @param string|array $data string or array of strings to be escaped
- * @return string|array escaped data
+ * @param string|array $data The string or array of strings to escape.
+ * @return string|array The escaped string or array of strings.
  */
 function yourls_escape( $data ) {
     yourls_deprecated_function( __FUNCTION__, '1.7.3', 'PDO' );
@@ -325,17 +335,12 @@ function yourls_escape( $data ) {
 }
 
 /**
- * "Real" escape. This function should NOT be called directly. Use yourls_escape() instead.
- *
- * This function uses a "real" escape if possible, using PDO, MySQL or MySQLi functions,
- * with a fallback to a "simple" addslashes
- * If you're implementing a custom DB engine or a custom cache system, you can define an
- * escape function using filter 'custom_escape_real'
+ * Escapes a string for use in a database query.
  *
  * @since 1.7
  * @deprecated 1.7.3
- * @param string $a string to be escaped
- * @return string escaped string
+ * @param string $string The string to escape.
+ * @return string The escaped string.
  */
 function yourls_escape_real( $string ) {
     yourls_deprecated_function( __FUNCTION__, '1.7.3', 'PDO' );

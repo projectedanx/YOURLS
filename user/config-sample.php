@@ -1,9 +1,13 @@
 <?php
-/* This is a sample config file.
- * Edit this file with your own settings and save it as "config.php"
+/**
+ * YOURLS Sample Configuration File
  *
- * IMPORTANT: edit and save this file as plain ASCII text, using a text editor, for instance TextEdit on Mac OS or
- * Notepad on Windows. Make sure there is no character before the opening <?php at the beginning of this file.
+ * This file is a sample configuration file for YOURLS. It contains the default
+ * settings for the application. To use it, copy it to `config.php` and
+ * customize the settings to your liking.
+ *
+ * @package YOURLS
+ * @since 1.0
  */
 
 /*

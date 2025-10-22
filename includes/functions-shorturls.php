@@ -1,33 +1,25 @@
 <?php
-/*
- * Functions relative to short URLs: adding, editing, etc
- * (either proper short URLs ("http://sho.rt/abc") or "keywords" (the "abc" part)
+/**
+ * YOURLS Short URL Functions
+ *
+ * This file contains functions that are used for managing short URLs. These
+ * functions are used to add, edit, and delete short URLs, as well as to
+ * retrieve information about them.
+ *
+ * @package YOURLS
+ * @since 1.0
  */
 
 
 /**
- * Add a new link in the DB, either with custom keyword, or find one
+ * Adds a new link to the database.
  *
- * The return array will contain at least the following keys:
- *    status: string, 'success' or 'fail'
- *    message: string, a descriptive localized message of what happened in any case
- *    code: string, a short descriptivish and untranslated message describing what happened
- *    errorCode: string, a HTTP status code
- *    statusCode: string, a HTTP status code
- * Depending on the operation, it will contain any of the following keys:
- *    url: array, the short URL creation information, with keys: 'keyword', 'url', 'title', 'date', 'ip', 'clicks'
- *    title: string, the URL title
- *    shorturl: string, the proper short URL in full (eg 'http://sho.rt/abc')
- *    html: string, the HTML part used by the ajax to update the page display if any
- *
- * For compatibility with early consumers and third parties, when people asked for various data and data formats
- * before the internal API was really structured, the return array now collects several redundant information.
- *
- * @param  string $url      URL to shorten
- * @param  string $keyword  optional "keyword"
- * @param  string $title    option title
- * @param  int    $row_id   used to form unique IDs in the generated HTML
- * @return array            array with error/success state and short URL information
+ * @since 1.0
+ * @param string $url     The URL to shorten.
+ * @param string $keyword Optional. The custom keyword for the short URL. Default ''.
+ * @param string $title   Optional. The title of the URL. Default ''.
+ * @param int    $row_id  Optional. The row ID for the new link. Default 1.
+ * @return array An array containing the result of the operation.
  */
 function yourls_add_new_link( $url, $keyword = '', $title = '', $row_id = 1 ) {
     // Allow plugins to short-circuit the whole function
@@ -165,9 +157,10 @@ function yourls_add_new_link( $url, $keyword = '', $title = '', $row_id = 1 ) {
     return yourls_apply_filter( 'add_new_link', $return, $url, $keyword, $title );
 }
 /**
- * Determine the allowed character set in short URLs
+ * Returns the allowed character set for short URLs.
  *
- * @return string    Acceptable charset for short URLS keywords
+ * @since 1.0
+ * @return string The allowed character set.
  */
 function yourls_get_shorturl_charset() {
     if ( defined( 'YOURLS_URL_CONVERT' ) && in_array( YOURLS_URL_CONVERT, [ 62, 64 ] ) ) {
@@ -182,10 +175,13 @@ function yourls_get_shorturl_charset() {
 }
 
 /**
- * Is a URL a short URL? Accept either 'http://sho.rt/abc' or 'abc'
+ * Checks if a URL is a short URL.
  *
- * @param  string $shorturl   short URL
- * @return bool               true if registered short URL, false otherwise
+ * This function accepts either a full short URL (e.g., 'http://sho.rt/abc') or a keyword (e.g., 'abc').
+ *
+ * @since 1.0
+ * @param string $shorturl The URL or keyword to check.
+ * @return bool True if the URL is a short URL, false otherwise.
  */
 function yourls_is_shorturl( $shorturl ) {
     // TODO: make sure this function evolves with the feature set.
@@ -208,9 +204,10 @@ function yourls_is_shorturl( $shorturl ) {
 }
 
 /**
- * Get the list of reserved keywords for URLs.
+ * Returns the list of reserved keywords.
  *
- * @return array             Array of reserved keywords
+ * @since 1.0
+ * @return array An array of reserved keywords.
  */
 function yourls_get_reserved_URL() {
     global $yourls_reserved_URL;
@@ -222,10 +219,14 @@ function yourls_get_reserved_URL() {
 }
 
 /**
- * Check to see if a given keyword is reserved (ie reserved URL or an existing page). Returns bool
+ * Checks if a keyword is reserved.
  *
- * @param  string $keyword   Short URL keyword
- * @return bool              True if keyword reserved, false if free to be used
+ * A keyword is reserved if it is in the list of reserved keywords or if it
+ * corresponds to an existing page.
+ *
+ * @since 1.0
+ * @param string $keyword The keyword to check.
+ * @return bool True if the keyword is reserved, false otherwise.
  */
 function yourls_keyword_is_reserved( $keyword ) {
     $keyword = yourls_sanitize_keyword( $keyword );
@@ -241,10 +242,11 @@ function yourls_keyword_is_reserved( $keyword ) {
 }
 
 /**
- * Delete a link in the DB
+ * Deletes a link from the database.
  *
- * @param  string $keyword   Short URL keyword
- * @return int               Number of links deleted
+ * @since 1.0
+ * @param string $keyword The keyword of the link to delete.
+ * @return int|null The number of deleted links, or null if the operation is short-circuited.
  */
 function yourls_delete_link_by_keyword( $keyword ) {
     // Allow plugins to short-circuit the whole function
@@ -261,12 +263,13 @@ function yourls_delete_link_by_keyword( $keyword ) {
 }
 
 /**
- * SQL query to insert a new link in the DB. Returns boolean for success or failure of the inserting
+ * Inserts a new link into the database.
  *
- * @param string $url
- * @param string $keyword
- * @param string $title
- * @return bool true if insert succeeded, false if failed
+ * @since 1.0
+ * @param string $url     The long URL.
+ * @param string $keyword The short URL keyword.
+ * @param string $title   Optional. The title of the URL. Default ''.
+ * @return bool True on success, false on failure.
  */
 function yourls_insert_link_in_db($url, $keyword, $title = '' ) {
     $url       = yourls_sanitize_url($url);
@@ -291,13 +294,11 @@ function yourls_insert_link_in_db($url, $keyword, $title = '' ) {
 }
 
 /**
- * Check if a long URL already exists in the DB. Return NULL (doesn't exist) or an object with URL informations.
- *
- * This function supersedes function yourls_url_exists(), deprecated in 1.7.10, with a better naming.
+ * Checks if a long URL already exists in the database.
  *
  * @since 1.7.10
- * @param  string $url  URL to check if already shortened
- * @return mixed        NULL if does not already exist in DB, or object with URL information as properties (eg keyword, url, title, ...)
+ * @param string $url The URL to check.
+ * @return object|null An object with URL information if the URL exists, otherwise null.
  */
 function yourls_long_url_exists( $url ) {
     // Allow plugins to short-circuit the whole function
@@ -318,13 +319,14 @@ function yourls_long_url_exists( $url ) {
 }
 
 /**
- * Edit a link
+ * Edits a link in the database.
  *
- * @param string $url
- * @param string $keyword
- * @param string $newkeyword
- * @param string $title
- * @return array Result of the edit and link information if successful
+ * @since 1.0
+ * @param string $url        The new long URL.
+ * @param string $keyword    The short URL keyword.
+ * @param string $newkeyword Optional. The new short URL keyword. Default ''.
+ * @param string $title      Optional. The new title. Default ''.
+ * @return array An array containing the result of the operation.
  */
 function yourls_edit_link($url, $keyword, $newkeyword='', $title='' ) {
     // Allow plugins to short-circuit the whole function
@@ -394,11 +396,12 @@ function yourls_edit_link($url, $keyword, $newkeyword='', $title='' ) {
 }
 
 /**
- * Update a title link (no checks for duplicates etc..)
+ * Updates the title of a link.
  *
- * @param string $keyword
- * @param string $title
- * @return int number of rows updated
+ * @since 1.0
+ * @param string $keyword The short URL keyword.
+ * @param string $title   The new title.
+ * @return int|null The number of updated rows, or null if the operation is short-circuited.
  */
 function yourls_edit_link_title( $keyword, $title ) {
     // Allow plugins to short-circuit the whole function
@@ -417,10 +420,13 @@ function yourls_edit_link_title( $keyword, $title ) {
 }
 
 /**
- * Check if keyword id is free (ie not already taken, and not reserved). Return bool.
+ * Checks if a keyword is available.
  *
- * @param  string $keyword    short URL keyword
- * @return bool               true if keyword is taken (ie there is a short URL for it), false otherwise
+ * A keyword is available if it is not reserved and not already taken.
+ *
+ * @since 1.0
+ * @param string $keyword The keyword to check.
+ * @return bool True if the keyword is available, false otherwise.
  */
 function yourls_keyword_is_free( $keyword  ) {
     $free = true;
@@ -432,27 +438,24 @@ function yourls_keyword_is_free( $keyword  ) {
 }
 
 /**
- * Check if a keyword matches a "page"
+ * Checks if a keyword corresponds to a page.
  *
- * @see https://docs.yourls.org/guide/extend/pages.html
  * @since 1.7.10
- * @param  string $keyword  Short URL $keyword
- * @return bool             true if is page, false otherwise
+ * @see https://docs.yourls.org/guide/extend/pages.html
+ * @param string $keyword The keyword to check.
+ * @return bool True if the keyword corresponds to a page, false otherwise.
  */
 function yourls_is_page($keyword) {
     return yourls_apply_filter( 'is_page', file_exists( YOURLS_PAGEDIR . "/$keyword.php" ) );
 }
 
 /**
- * Check if a keyword is taken (ie there is already a short URL with this id). Return bool.
+ * Checks if a keyword is taken.
  *
- */
-/**
- * Check if a keyword is taken (ie there is already a short URL with this id). Return bool.
- *
- * @param  string $keyword    short URL keyword
- * @param  bool   $use_cache  optional, default true: do we want to use what is cached in memory, if any, or force a new SQL query
- * @return bool               true if keyword is taken (ie there is a short URL for it), false otherwise
+ * @since 1.0
+ * @param string $keyword   The keyword to check.
+ * @param bool   $use_cache Optional. Whether to use the cache. Default true.
+ * @return bool True if the keyword is taken, false otherwise.
  */
 function yourls_keyword_is_taken( $keyword, $use_cache = true ) {
     // Allow plugins to short-circuit the whole function
@@ -472,16 +475,12 @@ function yourls_keyword_is_taken( $keyword, $use_cache = true ) {
 }
 
 /**
- * Return array of all information associated with keyword. Returns false if keyword not found. Set optional $use_cache to false to force fetching from DB
- *
- * Sincere apologies to native English speakers, we are aware that the plural of 'info' is actually 'info', not 'infos'.
- * This function yourls_get_keyword_infos() returns all information, while function yourls_get_keyword_info() (no 's') return only
- * one information. Blame YOURLS contributors whose mother tongue is not English :)
+ * Returns all information associated with a keyword.
  *
  * @since 1.4
- * @param  string $keyword    Short URL keyword
- * @param  bool   $use_cache  Default true, set to false to force fetching from DB
- * @return false|object       false if not found, object with URL properties if found
+ * @param string $keyword   The short URL keyword.
+ * @param bool   $use_cache Optional. Whether to use the cache. Default true.
+ * @return array|false An array of information, or false if the keyword is not found.
  */
 function yourls_get_keyword_infos( $keyword, $use_cache = true ) {
     $ydb = yourls_get_db();
@@ -511,12 +510,13 @@ function yourls_get_keyword_infos( $keyword, $use_cache = true ) {
 }
 
 /**
- * Return information associated with a keyword (eg clicks, URL, title...). Optional $notfound = string default message if nothing found
+ * Returns a specific piece of information about a keyword.
  *
- * @param string $keyword          Short URL keyword
- * @param string $field            Field to return (eg 'url', 'title', 'ip', 'clicks', 'timestamp', 'keyword')
- * @param false|string $notfound   Optional string to return if keyword not found
- * @return mixed|string
+ * @since 1.0
+ * @param string      $keyword  The short URL keyword.
+ * @param string      $field    The field to return (e.g., 'url', 'title', 'ip', 'clicks', 'timestamp').
+ * @param false|string $notfound Optional. The value to return if the keyword is not found. Default false.
+ * @return mixed The value of the field, or the value of $notfound if the keyword is not found.
  */
 function yourls_get_keyword_info($keyword, $field, $notfound = false ) {
 
@@ -536,68 +536,71 @@ function yourls_get_keyword_info($keyword, $field, $notfound = false ) {
 }
 
 /**
- * Return title associated with keyword. Optional $notfound = string default message if nothing found
+ * Returns the title of a short URL.
  *
- * @param string $keyword          Short URL keyword
- * @param false|string $notfound   Optional string to return if keyword not found
- * @return mixed|string
+ * @since 1.0
+ * @param string      $keyword  The short URL keyword.
+ * @param false|string $notfound Optional. The value to return if the keyword is not found. Default false.
+ * @return string The title of the short URL.
  */
 function yourls_get_keyword_title( $keyword, $notfound = false ) {
     return yourls_get_keyword_info( $keyword, 'title', $notfound );
 }
 
 /**
- * Return long URL associated with keyword. Optional $notfound = string default message if nothing found
+ * Returns the long URL of a short URL.
  *
- * @param string $keyword          Short URL keyword
- * @param false|string $notfound   Optional string to return if keyword not found
- * @return mixed|string
+ * @since 1.0
+ * @param string      $keyword  The short URL keyword.
+ * @param false|string $notfound Optional. The value to return if the keyword is not found. Default false.
+ * @return string The long URL.
  */
 function yourls_get_keyword_longurl( $keyword, $notfound = false ) {
     return yourls_get_keyword_info( $keyword, 'url', $notfound );
 }
 
 /**
- * Return number of clicks on a keyword. Optional $notfound = string default message if nothing found
+ * Returns the number of clicks for a short URL.
  *
- * @param string $keyword          Short URL keyword
- * @param false|string $notfound   Optional string to return if keyword not found
- * @return mixed|string
+ * @since 1.0
+ * @param string      $keyword  The short URL keyword.
+ * @param false|string $notfound Optional. The value to return if the keyword is not found. Default false.
+ * @return int The number of clicks.
  */
 function yourls_get_keyword_clicks( $keyword, $notfound = false ) {
     return yourls_get_keyword_info( $keyword, 'clicks', $notfound );
 }
 
 /**
- * Return IP that added a keyword. Optional $notfound = string default message if nothing found
+ * Returns the IP address that created a short URL.
  *
- * @param string $keyword          Short URL keyword
- * @param false|string $notfound   Optional string to return if keyword not found
- * @return mixed|string
+ * @since 1.0
+ * @param string      $keyword  The short URL keyword.
+ * @param false|string $notfound Optional. The value to return if the keyword is not found. Default false.
+ * @return string The IP address.
  */
 function yourls_get_keyword_IP( $keyword, $notfound = false ) {
     return yourls_get_keyword_info( $keyword, 'ip', $notfound );
 }
 
 /**
- * Return timestamp associated with a keyword. Optional $notfound = string default message if nothing found
+ * Returns the timestamp of a short URL.
  *
- * @param string $keyword          Short URL keyword
- * @param false|string $notfound   Optional string to return if keyword not found
- * @return mixed|string
+ * @since 1.0
+ * @param string      $keyword  The short URL keyword.
+ * @param false|string $notfound Optional. The value to return if the keyword is not found. Default false.
+ * @return string The timestamp.
  */
 function yourls_get_keyword_timestamp( $keyword, $notfound = false ) {
     return yourls_get_keyword_info( $keyword, 'timestamp', $notfound );
 }
 
 /**
- * Return array of stats for a given keyword
- *
- * This function supersedes function yourls_get_link_stats(), deprecated in 1.7.10, with a better naming.
+ * Returns an array of stats for a given keyword.
  *
  * @since 1.7.10
- * @param  string $shorturl short URL keyword
- * @return array            stats
+ * @param string $shorturl The short URL keyword.
+ * @return array An array of stats.
  */
 function yourls_get_keyword_stats( $shorturl ) {
     $table_url = YOURLS_DB_TABLE_URL;
@@ -630,12 +633,12 @@ function yourls_get_keyword_stats( $shorturl ) {
 }
 
 /**
- * Return array of keywords that redirect to the submitted long URL
+ * Returns an array of keywords that redirect to the submitted long URL.
  *
  * @since 1.7
- * @param string $longurl long url
- * @param string $order Optional SORT order (can be 'ASC' or 'DESC')
- * @return array array of keywords
+ * @param string $longurl The long URL.
+ * @param string $order   Optional. The sort order ('ASC' or 'DESC'). Default 'ASC'.
+ * @return array An array of keywords.
  */
 function yourls_get_longurl_keywords( $longurl, $order = 'ASC' ) {
     $longurl = yourls_sanitize_url($longurl);

@@ -1,4 +1,15 @@
 <?php
+/**
+ * YOURLS Installation
+ *
+ * This file handles the installation process for YOURLS. It checks for the
+ * necessary prerequisites, creates the database tables, and populates them
+ * with the initial data.
+ *
+ * @package YOURLS
+ * @since 1.0
+ */
+
 define( 'YOURLS_ADMIN', true );
 define( 'YOURLS_INSTALLING', true );
 require_once( dirname( __DIR__ ).'/includes/load-yourls.php' );

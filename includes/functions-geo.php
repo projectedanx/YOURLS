@@ -1,16 +1,22 @@
 <?php
 /**
- * Function relative to the geolocation functions (ip <-> country <-> flags), currently
- * tied to Maxmind's GeoIP but this should evolve to become more pluggable
+ * YOURLS Geolocation Functions
+ *
+ * This file contains functions that are used for geolocation purposes. These
+ * functions are used to determine the country of origin of an IP address and
+ * to display the corresponding country flag.
+ *
+ * @package YOURLS
+ * @since 1.4
  */
 
 /**
- * Converts an IP to a 2 letter country code, using GeoIP database if available in includes/geo/
+ * Converts an IP address to a country code.
  *
  * @since 1.4
- * @param string $ip      IP or, if empty string, will be current user IP
- * @param string $default Default string to return if IP doesn't resolve to a country (malformed, private IP...)
- * @return string 2 letter country code (eg 'US') or $default
+ * @param string $ip      The IP address to convert.
+ * @param string $default The default country code to return if the IP address cannot be converted.
+ * @return string The country code.
  */
 function yourls_geo_ip_to_countrycode( $ip = '', $default = '' ) {
     // Allow plugins to short-circuit the Geo IP API
@@ -63,14 +69,11 @@ function yourls_geo_ip_to_countrycode( $ip = '', $default = '' ) {
 }
 
 /**
- * Converts a 2 letter country code to long name (ie AU -> Australia)
- *
- * This associative array is the one used by MaxMind internal functions, it may differ from other lists (eg "A1" does
- * not universally stand for "Anon proxy")
+ * Converts a country code to a country name.
  *
  * @since 1.4
- * @param string $code 2 letter country code, eg 'FR'
- * @return string Country long name (eg 'France') or an empty string if not found
+ * @param string $code The country code to convert.
+ * @return string The country name.
  */
 function yourls_geo_countrycode_to_countryname( $code ) {
     // Allow plugins to short-circuit the function
@@ -140,9 +143,11 @@ function yourls_geo_countrycode_to_countryname( $code ) {
 }
 
 /**
- * Return flag URL from 2 letter country code
- * @param string $code
- * @return string
+ * Returns the URL of a country's flag.
+ *
+ * @since 1.4
+ * @param string $code The country code.
+ * @return string The URL of the flag.
  */
 function yourls_geo_get_flag( $code ) {
     if ( !file_exists( YOURLS_INC.'/geo/flags/flag_'.strtolower( $code ).'.gif' ) ) {

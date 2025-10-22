@@ -1,29 +1,41 @@
 <?php
+/**
+ * YOURLS Install Functions
+ *
+ * This file contains functions that are used during the installation and
+ * upgrade processes. These functions are responsible for creating the
+ * necessary database tables, checking for server requirements, and
+ * performing other tasks that are required to get YOURLS up and running.
+ *
+ * @package YOURLS
+ * @since 1.3
+ */
 
 /**
- * Check if we have PDO installed, returns bool
+ * Checks if the PDO extension is loaded.
  *
  * @since 1.7.3
- * @return bool
+ * @return bool True if PDO is loaded, false otherwise.
  */
 function yourls_check_PDO() {
     return extension_loaded('pdo');
 }
 
 /**
- * Check if server has MySQL 5.0+
+ * Checks if the database version is 5.0 or greater.
  *
- * @return bool
+ * @since 1.3
+ * @return bool True if the database version is 5.0 or greater, false otherwise.
  */
 function yourls_check_database_version() {
     return ( version_compare( '5.0', yourls_get_database_version() ) <= 0 );
 }
 
 /**
- * Get DB server version
+ * Gets the database server version.
  *
  * @since 1.7
- * @return string sanitized DB version
+ * @return string The sanitized database server version.
  */
 function yourls_get_database_version() {
     // Allow plugins to short-circuit the whole function
@@ -36,21 +48,20 @@ function yourls_get_database_version() {
 }
 
 /**
- * Check if PHP > 7.2
+ * Checks if the PHP version is 7.2 or greater.
  *
- * As of 1.8 we advertise YOURLS as being 7.4+ but it should work on 7.2 (although untested)
- * so we don't want to strictly enforce a limitation that may not be necessary.
- *
- * @return bool
+ * @since 1.3
+ * @return bool True if the PHP version is 7.2 or greater, false otherwise.
  */
 function yourls_check_php_version() {
     return version_compare( PHP_VERSION, '7.2.0', '>=' );
 }
 
 /**
- * Check if server is an Apache
+ * Checks if the server is Apache.
  *
- * @return bool
+ * @since 1.3
+ * @return bool True if the server is Apache, false otherwise.
  */
 function yourls_is_apache() {
     if( !array_key_exists( 'SERVER_SOFTWARE', $_SERVER ) )
@@ -62,9 +73,10 @@ function yourls_is_apache() {
 }
 
 /**
- * Check if server is running IIS
+ * Checks if the server is running IIS.
  *
- * @return bool
+ * @since 1.3
+ * @return bool True if the server is running IIS, false otherwise.
  */
 function yourls_is_iis() {
     return ( array_key_exists( 'SERVER_SOFTWARE', $_SERVER ) ? ( strpos( $_SERVER['SERVER_SOFTWARE'], 'IIS' ) !== false ) : false );
@@ -72,9 +84,10 @@ function yourls_is_iis() {
 
 
 /**
- * Create .htaccess or web.config. Returns boolean
+ * Creates the .htaccess or web.config file.
  *
- * @return bool
+ * @since 1.3
+ * @return bool True on success, false on failure.
  */
 function yourls_create_htaccess() {
     $host = parse_url( yourls_get_yourls_site() );
@@ -129,18 +142,13 @@ function yourls_create_htaccess() {
 }
 
 /**
- * Insert text into a file between BEGIN/END markers, return bool. Stolen from WP
- *
- * Inserts an array of strings into a file (eg .htaccess ), placing it between
- * BEGIN and END markers. Replaces existing marked info. Retains surrounding
- * data. Creates file if none exists.
+ * Inserts text into a file between BEGIN/END markers.
  *
  * @since 1.3
- *
- * @param string $filename
- * @param string $marker
- * @param array  $insertion
- * @return bool True on write success, false on failure.
+ * @param string $filename  The name of the file to modify.
+ * @param string $marker    The marker to look for.
+ * @param array  $insertion The text to insert.
+ * @return bool True on success, false on failure.
  */
 function yourls_insert_with_markers( $filename, $marker, $insertion ) {
     if ( !file_exists( $filename ) || is_writeable( $filename ) ) {
@@ -194,10 +202,10 @@ function yourls_insert_with_markers( $filename, $marker, $insertion ) {
 }
 
 /**
- * Create MySQL tables. Return array( 'success' => array of success strings, 'errors' => array of error strings )
+ * Creates the YOURLS database tables.
  *
  * @since 1.3
- * @return array  An array like array( 'success' => array of success strings, 'errors' => array of error strings )
+ * @return array An array containing 'success' and 'error' messages.
  */
 function yourls_create_sql_tables() {
     // Allow plugins (most likely a custom db.php layer in user dir) to short-circuit the whole function
@@ -285,14 +293,10 @@ function yourls_create_sql_tables() {
 }
 
 /**
- * Initializes the option table
- *
- * Each yourls_update_option() returns either true on success (option updated) or false on failure (new value == old value, or
- * for some reason it could not save to DB).
- * Since true & true & true = 1, we cast it to boolean type to return true (or false)
+ * Initializes the options table with default values.
  *
  * @since 1.7
- * @return bool
+ * @return bool True on success, false on failure.
  */
 function yourls_initialize_options() {
     return ( bool ) (
@@ -304,10 +308,10 @@ function yourls_initialize_options() {
 }
 
 /**
- * Populates the URL table with a few sample links
+ * Populates the URL table with sample links.
  *
  * @since 1.7
- * @return bool
+ * @return bool True on success, false on failure.
  */
 function yourls_insert_sample_links() {
     $link1 = yourls_add_new_link( 'https://blog.yourls.org/', 'yourlsblog', 'YOURLS\' Blog' );
@@ -322,10 +326,11 @@ function yourls_insert_sample_links() {
 
 
 /**
- * Toggle maintenance mode. Inspired from WP. Returns true for success, false otherwise
+ * Toggles maintenance mode.
  *
- * @param bool $maintenance  True to enable, false to disable
- * @return bool              True on success, false on failure
+ * @since 1.3
+ * @param bool $maintenance True to enable maintenance mode, false to disable.
+ * @return bool True on success, false on failure.
  */
 function yourls_maintenance_mode( $maintenance = true ) {
 
