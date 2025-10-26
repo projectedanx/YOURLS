@@ -906,7 +906,9 @@ function yourls_get_remote_title( $url ) {
         $title = $found[ 1 ];
         unset( $found );
     }
-    if ( !$title ) {
+
+    // Trim and check if empty. If so, return the URL
+    if ( !$title || !trim($title) ) {
         return $url;
     }
 
