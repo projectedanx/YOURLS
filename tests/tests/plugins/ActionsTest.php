@@ -513,6 +513,29 @@ class ActionsTest extends PHPUnit\Framework\TestCase {
         $this->assertSame( [], yourls_get_actions( rand_str() ) );
     }
 
+
+    /**
+     * Check that yourls_shutdown() executes the 'shutdown' action
+     */
+    public function test_yourls_shutdown() {
+        $action_called = false;
+        $callback = function() use (&$action_called) {
+            $action_called = true;
+        };
+
+        $did_before = yourls_did_action('shutdown');
+        yourls_add_action('shutdown', $callback);
+
+        yourls_shutdown();
+
+        $this->assertTrue($action_called);
+        $did_after = yourls_did_action('shutdown');
+        $this->assertSame($did_before + 1, $did_after);
+
+        // Clean up
+        yourls_remove_action('shutdown', $callback);
+    }
+
     /**
      * Dummy function -- just modifies the value of a global var
      */
