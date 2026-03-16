@@ -46,11 +46,19 @@ class GeneralTest extends PHPUnit\Framework\TestCase {
     public function test_get_locale() {
         global $yourls_locale;
 
+        $yourls_locale = null;
+        $this->assertSame( YOURLS_LANG, yourls_get_locale() );
+
         $yourls_locale = rand_str();
         $this->assertSame( $yourls_locale , yourls_get_locale() );
 
         $yourls_locale = false;
         $this->assertSame( '' , yourls_get_locale() );
+
+        yourls_add_filter( 'get_locale', function() { return 'dummy'; } );
+        $this->assertSame( 'dummy' , yourls_get_locale() );
+
+        yourls_remove_all_filters( 'get_locale' );
     }
 
     /**

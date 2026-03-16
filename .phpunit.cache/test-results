@@ -1,0 +1,1 @@
+{"version":1,"defects":[],"times":{"GeneralTest::test_is_rtl":0.002,"GeneralTest::test_get_locale_from_config":0,"GeneralTest::test_get_locale":0,"GeneralTest::test_get_languages":0}}
