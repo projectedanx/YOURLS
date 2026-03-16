@@ -40,37 +40,7 @@ function yourls_html_head( $context = 'index', $title = '' ) {
 
     yourls_do_action( 'pre_html_head', $context, $title );
 
-    // All components to false, except when specified true
-    $share = $insert = $tablesorter = $tabs = $cal = $charts = false;
-
-    // Load components as needed
-    switch ( $context ) {
-        case 'infos':
-            $share = $tabs = $charts = true;
-            break;
-
-        case 'bookmark':
-            $share = $insert = $tablesorter = true;
-            break;
-
-        case 'index':
-            $insert = $tablesorter = $cal = $share = true;
-            break;
-
-        case 'plugins':
-        case 'tools':
-            $tablesorter = true;
-            break;
-
-        case 'login':
-            $_title_page = 'Login';
-            break;
-
-        case 'install':
-        case 'new':
-        case 'upgrade':
-            break;
-    }
+    $components = yourls_get_html_components( $context );
 
     // Force no cache for all admin pages
     if( yourls_is_admin() && !headers_sent() ) {
@@ -84,15 +54,94 @@ function yourls_html_head( $context = 'index', $title = '' ) {
     yourls_set_html_context($context);
 
     // Body class
-    $bodyclass = yourls_apply_filter( 'bodyclass', '' );
-    $bodyclass .= ( yourls_is_mobile_device() ? 'mobile' : 'desktop' );
+    $bodyclass = yourls_get_html_bodyclass();
 
     // Page title
+    $title = yourls_get_html_title( $context, $title );
+
+    yourls_html_head_output( $context, $title, $bodyclass, $components );
+}
+
+/**
+ * Returns html body class based on context.
+ *
+ * @since 1.9.3
+ * @return string
+ */
+function yourls_get_html_bodyclass() {
+    $bodyclass = yourls_apply_filter( 'bodyclass', '' );
+    $bodyclass .= ( yourls_is_mobile_device() ? 'mobile' : 'desktop' );
+    return $bodyclass;
+}
+
+/**
+ * Returns html title based on context.
+ *
+ * @since 1.9.3
+ * @param string $context
+ * @param string $title_in
+ * @return string
+ */
+function yourls_get_html_title( $context, $title_in ) {
+    $_title_page = '';
+    if( $context == 'login' ) {
+        $_title_page = 'Login';
+    }
+
     $_title = 'YOURLS &mdash; Your Own URL Shortener | ' . yourls_link();
     $_title = empty($_title_page) ? $_title : $_title_page . ' &mdash; ' . $_title;
-    $title = $title ? $title . " &laquo; " . $_title : $_title;
-    $title = yourls_apply_filter( 'html_title', $title, $context );
+    $title = $title_in ? $title_in . " &laquo; " . $_title : $_title;
+    return yourls_apply_filter( 'html_title', $title, $context );
+}
 
+/**
+ * Returns components to load for a given context.
+ *
+ * @since 1.9.3
+ * @param string $context
+ * @return array
+ */
+function yourls_get_html_components( $context ) {
+    $components = array(
+        'share' => false,
+        'insert' => false,
+        'tablesorter' => false,
+        'tabs' => false,
+        'cal' => false,
+        'charts' => false,
+    );
+
+    switch ( $context ) {
+        case 'infos':
+            $components['share'] = $components['tabs'] = $components['charts'] = true;
+            break;
+        case 'bookmark':
+            $components['share'] = $components['insert'] = $components['tablesorter'] = true;
+            break;
+        case 'index':
+            $components['insert'] = $components['tablesorter'] = $components['cal'] = $components['share'] = true;
+            break;
+        case 'plugins':
+        case 'tools':
+            $components['tablesorter'] = true;
+            break;
+    }
+
+    return $components;
+}
+
+/**
+ * Displays the HTML head elements.
+ *
+ * @since 1.9.3
+ * @param string $context
+ * @param string $title
+ * @param string $bodyclass
+ * @param array $components
+ * @return void
+ */
+function yourls_html_head_output( $context, $title, $bodyclass, $components ) {
+    extract($components);
     ?>
 <!DOCTYPE html>
 <html <?php yourls_html_language_attributes(); ?>>
