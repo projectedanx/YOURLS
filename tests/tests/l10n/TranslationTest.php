@@ -115,6 +115,26 @@ class TranslationTest extends PHPUnit\Framework\TestCase {
     /**
      * Translation with context
      *
+     * @since 1.6
+     */
+    public function test_yourls_translate_with_context() {
+        $this->assertSame( 'Chaine simple (default)', yourls_translate_with_context( 'Simple string', 'data' ) );
+        $this->assertSame( 'Chaine simple (test)', yourls_translate_with_context( 'Simple string', 'data', 'test' ) );
+    }
+
+    /**
+     * Translation with invalid context - string returned untranslated
+     *
+     * @since 1.6
+     */
+    public function test_yourls_translate_with_context_invalid() {
+        $this->assertSame( 'Simple string', yourls_translate_with_context( 'Simple string', rand_str() ) );
+        $this->assertSame( 'Simple string', yourls_translate_with_context( 'Simple string', rand_str(), 'test' ) );
+    }
+
+    /**
+     * Translation with context
+     *
      * @since 0.1
      */
     public function test_yourls_x() {
