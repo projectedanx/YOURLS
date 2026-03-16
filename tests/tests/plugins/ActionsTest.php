@@ -528,4 +528,38 @@ class ActionsTest extends PHPUnit\Framework\TestCase {
         echo preg_replace( '/\s{2,}|\t|\n|\r/', '', var_export( $args, true ) );;
     }
 
+    /**
+     * Check that the 'all' hook is called when an action is fired
+     *
+     * @since 1.8.1
+     */
+    public function test_call_all_hooks_with_action() {
+        global $yourls_filters;
+        $hook = rand_str();
+        $var_value = rand_str();
+
+        $all_hook_args = [];
+
+        // Register a callback on the 'all' hook
+        yourls_add_action('all', function($type, $hook_name, $args) use (&$all_hook_args) {
+            $all_hook_args[] = [$type, $hook_name, $args];
+        });
+
+        // Fire a random action
+        yourls_do_action($hook, $var_value, 'extra_arg');
+
+        // Check if the 'all' hook intercepted it
+        $this->assertNotEmpty($all_hook_args);
+        $last_call = end($all_hook_args);
+
+        // Verify the parameters passed to the 'all' hook
+        $this->assertSame('action', $last_call[0]);
+        $this->assertSame($hook, $last_call[1]);
+        $this->assertSame($var_value, $last_call[2][0]);
+        $this->assertSame('extra_arg', $last_call[2][1]);
+
+        // Clean up the 'all' hook to avoid polluting other tests
+        unset($yourls_filters['all']);
+    }
+
 }

@@ -485,4 +485,38 @@ class FiltersTest extends PHPUnit\Framework\TestCase {
         return $var;
     }
 
+    /**
+     * Check that the 'all' hook is called when a filter is applied
+     *
+     * @since 1.8.1
+     */
+    public function test_call_all_hooks_with_filter() {
+        global $yourls_filters;
+        $hook = rand_str();
+        $var_value = rand_str();
+
+        $all_hook_args = [];
+
+        // Register a callback on the 'all' hook
+        yourls_add_filter('all', function($type, $hook_name, $args) use (&$all_hook_args) {
+            $all_hook_args[] = [$type, $hook_name, $args];
+        });
+
+        // Apply a random filter
+        yourls_apply_filter($hook, $var_value, 'extra_arg');
+
+        // Check if the 'all' hook intercepted it
+        $this->assertNotEmpty($all_hook_args);
+        $last_call = end($all_hook_args);
+
+        // Verify the parameters passed to the 'all' hook
+        $this->assertSame('filter', $last_call[0]);
+        $this->assertSame($hook, $last_call[1]);
+        $this->assertSame($var_value, $last_call[2][0]);
+        $this->assertSame('extra_arg', $last_call[2][1]);
+
+        // Clean up the 'all' hook to avoid polluting other tests
+        unset($yourls_filters['all']);
+    }
+
 }
