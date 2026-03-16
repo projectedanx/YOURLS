@@ -12,22 +12,15 @@
 
 
 /**
- * Adds a new link to the database.
+ * Validate and sanitize URL, keyword and title for a new link
  *
- * @since 1.0
+ * @since x.x
  * @param string $url     The URL to shorten.
  * @param string $keyword Optional. The custom keyword for the short URL. Default ''.
  * @param string $title   Optional. The title of the URL. Default ''.
- * @param int    $row_id  Optional. The row ID for the new link. Default 1.
- * @return array An array containing the result of the operation.
+ * @return array An array containing the result of the validation (with status 'fail') or sanitized values (with status 'success').
  */
-function yourls_add_new_link( $url, $keyword = '', $title = '', $row_id = 1 ) {
-    // Allow plugins to short-circuit the whole function
-    $pre = yourls_apply_filter( 'shunt_add_new_link', false, $url, $keyword, $title );
-    if ( false !== $pre ) {
-        return $pre;
-    }
-
+function yourls_check_new_link( $url, $keyword = '', $title = '' ) {
     /**
      * The result array.
      */
@@ -121,6 +114,45 @@ function yourls_add_new_link( $url, $keyword = '', $title = '', $row_id = 1 ) {
 
         yourls_update_next_decimal($id);
     }
+
+    $return['status']  = 'success';
+    $return['url']     = $url;
+    $return['keyword'] = $keyword;
+    $return['title']   = $title;
+
+    return $return;
+}
+
+/**
+ * Adds a new link to the database.
+ *
+ * @since 1.0
+ * @param string $url     The URL to shorten.
+ * @param string $keyword Optional. The custom keyword for the short URL. Default ''.
+ * @param string $title   Optional. The title of the URL. Default ''.
+ * @param int    $row_id  Optional. The row ID for the new link. Default 1.
+ * @return array An array containing the result of the operation.
+ */
+function yourls_add_new_link( $url, $keyword = '', $title = '', $row_id = 1 ) {
+    // Allow plugins to short-circuit the whole function
+    $pre = yourls_apply_filter( 'shunt_add_new_link', false, $url, $keyword, $title );
+    if ( false !== $pre ) {
+        return $pre;
+    }
+
+    $return = yourls_check_new_link( $url, $keyword, $title );
+    if ( $return['status'] === 'fail' ) {
+        return $return;
+    }
+
+    // Extract sanitized values
+    $url     = $return['url'];
+    $keyword = $return['keyword'];
+    $title   = $return['title'];
+
+    // Set other variables used in the rest of the function
+
+    $ip = yourls_get_IP();
 
     // We should be all set now. Store the short URL !
 
