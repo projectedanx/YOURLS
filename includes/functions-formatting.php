@@ -147,15 +147,11 @@ function yourls_sanitize_url_safe( $unsafe_url, $protocols = array() ) {
  * @return string The modified string.
  */
 function yourls_deep_replace($search, $subject ){
-    $found = true;
-    while($found) {
-        $found = false;
-        foreach( (array) $search as $val ) {
-            while( strpos( $subject, $val ) !== false ) {
-                $found = true;
-                $subject = str_replace( $val, '', $subject );
-            }
-        }
+    $subject = (string) $subject;
+
+    $count = 1;
+    while ( $count ) {
+        $subject = str_replace( $search, '', $subject, $count );
     }
 
     return $subject;
