@@ -33,9 +33,11 @@ if( function_exists('ozh_random_keyword') ) {
 // Generate a random keyword
 function ozh_random_shorturl() {
     $possible = yourls_get_shorturl_charset() ;
+    $length = yourls_get_option( 'random_shorturls_length', 5 );
+    $possible_length = strlen( $possible ) - 1;
     $str='';
-    while( strlen( $str ) < yourls_get_option( 'random_shorturls_length', 5 ) ) {
-        $str .= substr($possible, rand( 0, strlen( $possible ) - 1 ), 1 );
+    while( strlen( $str ) < $length ) {
+        $str .= substr($possible, rand( 0, $possible_length ), 1 );
     }
     return $str;
 }
