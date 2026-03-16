@@ -187,4 +187,21 @@ class FilesTest extends PHPUnit\Framework\TestCase {
         $this->assertNotTrue( yourls_activate_plugin( $plugin ) );
         $this->assertNotTrue( yourls_is_active_plugin( $plugin ) );
     }
+
+    /**
+     * Check yourls_plugin_basename()
+     */
+    public function test_yourls_plugin_basename() {
+        $file = YOURLS_PLUGINDIR . '/test-plugin/plugin.php';
+        $this->assertSame('test-plugin/plugin.php', yourls_plugin_basename($file));
+
+        // Mixed slashes
+        $file2 = YOURLS_PLUGINDIR . '\test-plugin\plugin.php';
+        $this->assertSame('test-plugin/plugin.php', yourls_plugin_basename($file2));
+
+        // Random file
+        $file3 = '/var/www/html/test-plugin/plugin.php';
+        $expected = ltrim(yourls_sanitize_filename($file3), '/');
+        $this->assertSame($expected, yourls_plugin_basename($file3));
+    }
 }
