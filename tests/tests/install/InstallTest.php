@@ -12,6 +12,39 @@ class InstallTest extends PHPUnit\Framework\TestCase {
     public function test_install() {
         $this->assertTrue( yourls_is_installed() );
     }
+    /**
+     * Check if yourls_is_iis() works correctly
+     */
+    public function test_yourls_is_iis() {
+        $original = isset($_SERVER['SERVER_SOFTWARE']) ? $_SERVER['SERVER_SOFTWARE'] : null;
+        $original_set = array_key_exists('SERVER_SOFTWARE', $_SERVER);
+
+        // Test missing SERVER_SOFTWARE
+        unset($_SERVER['SERVER_SOFTWARE']);
+        $this->assertFalse(yourls_is_iis());
+
+        // Test non-IIS strings
+        $_SERVER['SERVER_SOFTWARE'] = 'Apache/2.4.41 (Ubuntu)';
+        $this->assertFalse(yourls_is_iis());
+
+        $_SERVER['SERVER_SOFTWARE'] = 'nginx/1.18.0';
+        $this->assertFalse(yourls_is_iis());
+
+        // Test IIS strings
+        $_SERVER['SERVER_SOFTWARE'] = 'Microsoft-IIS/7.5';
+        $this->assertTrue(yourls_is_iis());
+
+        $_SERVER['SERVER_SOFTWARE'] = 'Microsoft-IIS/10.0';
+        $this->assertTrue(yourls_is_iis());
+
+        // Restore original SERVER_SOFTWARE
+        if ($original_set) {
+            $_SERVER['SERVER_SOFTWARE'] = $original;
+        } else {
+            unset($_SERVER['SERVER_SOFTWARE']);
+        }
+    }
+
 
     /**
      * Check that tables were correctly populated during install
