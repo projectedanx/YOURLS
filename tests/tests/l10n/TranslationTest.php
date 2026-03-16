@@ -172,4 +172,15 @@ class TranslationTest extends PHPUnit\Framework\TestCase {
         $this->assertSame( '%s sources (test)', yourls_nx( '1 spring', '%s springs', 2, 'water', 'test' ) );
     }
 
+    /**
+     * Translation of user role
+     *
+     * @since 1.6
+     */
+    public function test_yourls_translate_user_role() {
+        $this->assertSame( 'Administrator', yourls_translate_user_role( 'Administrator' ) );
+        $this->assertSame( 'Editor', yourls_translate_user_role( 'Editor' ) );
+        $this->assertSame( 'Contributor', yourls_translate_user_role( 'Contributor' ) );
+        $this->assertSame( 'Subscriber', yourls_translate_user_role( 'Subscriber' ) );
+    }
 }
