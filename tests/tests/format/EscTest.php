@@ -143,6 +143,14 @@ class EscTest extends PHPUnit\Framework\TestCase {
             "http://example.com/?this=that&that=<this>",
             'http://example.com/?this=that&#038;that=this',
         );
+        yield array(
+            "http://example.com/?this=that&that=^this^",
+            'http://example.com/?this=that&#038;that=^this^',
+        );
+        yield array(
+            "http://example.com/?this=that&that={this}",
+            'http://example.com/?this=that&#038;that={this}',
+        );
     }
 
     /**
