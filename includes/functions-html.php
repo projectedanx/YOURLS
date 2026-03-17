@@ -246,26 +246,39 @@ function yourls_html_addnew( $url = '', $keyword = '' ) {
  * @return void
  */
 function yourls_html_tfooter( $params = array() ) {
-    // Manually extract all parameters from the array. We prefer doing it this way, over using extract(),
-    // to make things clearer and more explicit about what var is used.
-    $search       = $params['search'];
+    ?>
+    <tfoot>
+        <tr>
+            <th colspan="6">
+            <?php yourls_html_tfooter_filter_form( $params ); ?>
+            <?php yourls_html_tfooter_pagination( $params ); ?>
+            </th>
+        </tr>
+        <?php yourls_do_action( 'html_tfooter' ); ?>
+    </tfoot>
+    <?php
+}
+
+/**
+ * Displays the filter form for the main table.
+ *
+ * @since 1.9.3
+ * @param array $params Array of all required parameters.
+ * @return void
+ */
+function yourls_html_tfooter_filter_form( $params = array() ) {
     $search_text  = $params['search_text'];
     $search_in    = $params['search_in'];
     $sort_by      = $params['sort_by'];
     $sort_order   = $params['sort_order'];
-    $page         = $params['page'];
     $perpage      = $params['perpage'];
     $click_filter = $params['click_filter'];
     $click_limit  = $params['click_limit'];
-    $total_pages  = $params['total_pages'];
     $date_filter  = $params['date_filter'];
     $date_first   = $params['date_first'];
     $date_second  = $params['date_second'];
 
     ?>
-    <tfoot>
-        <tr>
-            <th colspan="6">
             <div id="filter_form">
                 <form action="" method="get">
                     <div id="filter_options">
@@ -345,17 +358,29 @@ function yourls_html_tfooter( $params = array() ) {
                     </div>
                 </form>
             </div>
+    <?php
+}
 
-            <?php
-            // Remove empty keys from the $params array so it doesn't clutter the pagination links
-            $params = array_filter( $params, function($val){ return $val !== '';} ); // remove keys with empty values
+/**
+ * Displays the pagination for the main table.
+ *
+ * @since 1.9.3
+ * @param array $params Array of all required parameters.
+ * @return void
+ */
+function yourls_html_tfooter_pagination( $params = array() ) {
+    $search_text  = $params['search_text'];
+    $page         = $params['page'];
+    $total_pages  = $params['total_pages'];
 
-            if( isset( $search_text ) ) {
-                $params['search'] = $search_text;
-                unset( $params['search_text'] );
-            }
-            ?>
+    // Remove empty keys from the $params array so it doesn't clutter the pagination links
+    $params = array_filter( $params, function($val){ return $val !== '';} ); // remove keys with empty values
 
+    if( isset( $search_text ) ) {
+        $params['search'] = $search_text;
+        unset( $params['search_text'] );
+    }
+    ?>
             <div id="pagination">
                 <span class="navigation">
                 <?php if( $total_pages > 1 ) { ?>
@@ -387,12 +412,9 @@ function yourls_html_tfooter( $params = array() ) {
                 <?php } ?>
                 </span>
             </div>
-            </th>
-        </tr>
-        <?php yourls_do_action( 'html_tfooter' ); ?>
-    </tfoot>
     <?php
 }
+
 
 /**
  * Returns or displays a select dropdown field.
