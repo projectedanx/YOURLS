@@ -607,91 +607,12 @@ function yourls_table_add_row( $keyword, $url, $title, $ip, $clicks, $timestamp,
         yourls_add_query_arg( array( 'id' => $id, 'action' => 'edit', 'keyword' => $keyword ), yourls_admin_url( 'admin-ajax.php' ) )
     );
 
-    // Action link buttons: the array
-    $actions = array(
-        'stats' => array(
-            'href'    => $statlink,
-            'id'      => "statlink-$id",
-            'title'   => yourls_esc_attr__( 'Stats' ),
-            'anchor'  => yourls__( 'Stats' ),
-        ),
-        'share' => array(
-            'href'    => '',
-            'id'      => "share-button-$id",
-            'title'   => yourls_esc_attr__( 'Share' ),
-            'anchor'  => yourls__( 'Share' ),
-            'onclick' => "toggle_share('$id');return false;",
-        ),
-        'edit' => array(
-            'href'    => $edit_link,
-            'id'      => "edit-button-$id",
-            'title'   => yourls_esc_attr__( 'Edit' ),
-            'anchor'  => yourls__( 'Edit' ),
-            'onclick' => "edit_link_display('$id');return false;",
-        ),
-        'delete' => array(
-            'href'    => $delete_link,
-            'id'      => "delete-button-$id",
-            'title'   => yourls_esc_attr__( 'Delete' ),
-            'anchor'  => yourls__( 'Delete' ),
-            'onclick' => "remove_link('$id');return false;",
-        )
-    );
-    $actions = yourls_apply_filter( 'table_add_row_action_array', $actions, $keyword );
-
-    // Action link buttons: the HTML
-    $action_links = '';
-    foreach( $actions as $key => $action ) {
-        $onclick = isset( $action['onclick'] ) ? 'onclick="' . $action['onclick'] . '"' : '' ;
-        $action_links .= sprintf( '<a href="%s" id="%s" title="%s" class="%s" %s>%s</a>',
-            $action['href'], $action['id'], $action['title'], 'button button_'.$key, $onclick, $action['anchor']
-        );
-    }
-    $action_links = yourls_apply_filter( 'action_links', $action_links, $keyword, $url, $ip, $clicks, $timestamp );
-
     if( ! $title )
         $title = $url;
 
-    $protocol_warning = '';
-    if( ! in_array( yourls_get_protocol( $url ) , array( 'http://', 'https://' ) ) )
-        $protocol_warning = yourls_apply_filter( 'add_row_protocol_warning', '<span class="warning" title="' . yourls__( 'Not a common link' ) . '">&#9733;</span>' );
-
-    // Row cells: the array
-    $cells = array(
-        'keyword' => array(
-            'template'      => '<a href="%shorturl%">%keyword_html%</a>',
-            'shorturl'      => yourls_esc_url( $shorturl ),
-            'keyword_html'  => yourls_esc_html( $keyword ),
-        ),
-        'url' => array(
-            'template'      => '<a href="%long_url%" title="%title_attr%">%title_html%</a><br/><small>%warning%<a href="%long_url%">%long_url_html%</a></small>',
-            'long_url'      => yourls_esc_url( $url ),
-            'title_attr'    => yourls_esc_attr( $title ),
-            'title_html'    => yourls_esc_html( yourls_trim_long_string( $title ) ),
-            'long_url_html' => yourls_esc_html( yourls_trim_long_string( urldecode( $url ) ) ),
-            'warning'       => $protocol_warning,
-        ),
-        'timestamp' => array(
-            'template' => '<span class="timestamp" aria-hidden="true">%timestamp%</span> %date%',
-            'timestamp' => $timestamp,
-            'date'     => yourls_date_i18n( yourls_get_datetime_format('M d, Y H:i'), yourls_get_timestamp( $timestamp )),
-        ),
-        'ip' => array(
-            'template' => '%ip%',
-            'ip'       => $ip,
-        ),
-        'clicks' => array(
-            'template' => '%clicks%',
-            'clicks'   => yourls_number_format_i18n( $clicks, 0 ),
-        ),
-        'actions' => array(
-            'template' => '%actions% <input type="hidden" id="keyword_%id%" value="%keyword%"/>',
-            'actions'  => $action_links,
-            'id'       => $id,
-            'keyword'  => $keyword,
-        ),
-    );
-    $cells = yourls_apply_filter( 'table_add_row_cell_array', $cells, $keyword, $url, $title, $ip, $clicks, $timestamp );
+    $actions = yourls_table_add_row_action_array( $keyword, $id, $statlink, $edit_link, $delete_link );
+    $action_links = yourls_table_add_row_action_links( $keyword, $url, $ip, $clicks, $timestamp, $actions );
+    $cells = yourls_table_add_row_cell_array( $keyword, $shorturl, $url, $title, $ip, $clicks, $timestamp, $id, $action_links );
 
     // Row cells: the HTML. Replace every %stuff% in 'template' with 'stuff' value.
     $row = "<tr id=\"id-$id\">";
@@ -1095,4 +1016,129 @@ function yourls_html_favicon() {
     }
 
     printf( '<link rel="shortcut icon" href="%s" />', yourls_get_yourls_favicon_url(false) );
+}
+
+/**
+ * Generate the action array for a table row
+ *
+ * @since 1.9.3
+ * @param string $keyword     The keyword.
+ * @param string $id          The row ID.
+ * @param string $statlink    The stat link.
+ * @param string $edit_link   The edit link.
+ * @param string $delete_link The delete link.
+ * @return array The actions array.
+ */
+function yourls_table_add_row_action_array( $keyword, $id, $statlink, $edit_link, $delete_link ) {
+    $actions = array(
+        'stats' => array(
+            'href'    => $statlink,
+            'id'      => "statlink-$id",
+            'title'   => yourls_esc_attr__( 'Stats' ),
+            'anchor'  => yourls__( 'Stats' ),
+        ),
+        'share' => array(
+            'href'    => '',
+            'id'      => "share-button-$id",
+            'title'   => yourls_esc_attr__( 'Share' ),
+            'anchor'  => yourls__( 'Share' ),
+            'onclick' => "toggle_share('$id');return false;",
+        ),
+        'edit' => array(
+            'href'    => $edit_link,
+            'id'      => "edit-button-$id",
+            'title'   => yourls_esc_attr__( 'Edit' ),
+            'anchor'  => yourls__( 'Edit' ),
+            'onclick' => "edit_link_display('$id');return false;",
+        ),
+        'delete' => array(
+            'href'    => $delete_link,
+            'id'      => "delete-button-$id",
+            'title'   => yourls_esc_attr__( 'Delete' ),
+            'anchor'  => yourls__( 'Delete' ),
+            'onclick' => "remove_link('$id');return false;",
+        )
+    );
+    return yourls_apply_filter( 'table_add_row_action_array', $actions, $keyword );
+}
+
+/**
+ * Generate the HTML for action link buttons
+ *
+ * @since 1.9.3
+ * @param string $keyword   The keyword.
+ * @param string $url       The URL.
+ * @param string $ip        The IP.
+ * @param int|string $clicks    The number of clicks.
+ * @param string $timestamp The timestamp.
+ * @param array  $actions   The actions array.
+ * @return string The HTML of the action links.
+ */
+function yourls_table_add_row_action_links( $keyword, $url, $ip, $clicks, $timestamp, $actions ) {
+    $action_links = '';
+    foreach( $actions as $key => $action ) {
+        $onclick = isset( $action['onclick'] ) ? 'onclick="' . $action['onclick'] . '"' : '' ;
+        $action_links .= sprintf( '<a href="%s" id="%s" title="%s" class="%s" %s>%s</a>',
+            $action['href'], $action['id'], $action['title'], 'button button_'.$key, $onclick, $action['anchor']
+        );
+    }
+    return yourls_apply_filter( 'action_links', $action_links, $keyword, $url, $ip, $clicks, $timestamp );
+}
+
+/**
+ * Generate the cell array for a table row
+ *
+ * @since 1.9.3
+ * @param string $keyword      The keyword.
+ * @param string $shorturl     The short URL.
+ * @param string $url          The URL.
+ * @param string $title        The title.
+ * @param string $ip           The IP.
+ * @param int|string $clicks       The number of clicks.
+ * @param string $timestamp    The timestamp.
+ * @param string $id           The row ID.
+ * @param string $action_links The action links HTML.
+ * @return array The cells array.
+ */
+function yourls_table_add_row_cell_array( $keyword, $shorturl, $url, $title, $ip, $clicks, $timestamp, $id, $action_links ) {
+
+    $protocol_warning = '';
+    if( ! in_array( yourls_get_protocol( $url ) , array( 'http://', 'https://' ) ) )
+        $protocol_warning = yourls_apply_filter( 'add_row_protocol_warning', '<span class="warning" title="' . yourls__( 'Not a common link' ) . '">&#9733;</span>' );
+
+    $cells = array(
+        'keyword' => array(
+            'template'      => '<a href="%shorturl%">%keyword_html%</a>',
+            'shorturl'      => yourls_esc_url( $shorturl ),
+            'keyword_html'  => yourls_esc_html( $keyword ),
+        ),
+        'url' => array(
+            'template'      => '<a href="%long_url%" title="%title_attr%">%title_html%</a><br/><small>%warning%<a href="%long_url%">%long_url_html%</a></small>',
+            'long_url'      => yourls_esc_url( $url ),
+            'title_attr'    => yourls_esc_attr( $title ),
+            'title_html'    => yourls_esc_html( yourls_trim_long_string( $title ) ),
+            'long_url_html' => yourls_esc_html( yourls_trim_long_string( urldecode( $url ) ) ),
+            'warning'       => $protocol_warning,
+        ),
+        'timestamp' => array(
+            'template' => '<span class="timestamp" aria-hidden="true">%timestamp%</span> %date%',
+            'timestamp' => $timestamp,
+            'date'     => yourls_date_i18n( yourls_get_datetime_format('M d, Y H:i'), yourls_get_timestamp( $timestamp )),
+        ),
+        'ip' => array(
+            'template' => '%ip%',
+            'ip'       => $ip,
+        ),
+        'clicks' => array(
+            'template' => '%clicks%',
+            'clicks'   => yourls_number_format_i18n( $clicks, 0 ),
+        ),
+        'actions' => array(
+            'template' => '%actions% <input type="hidden" id="keyword_%id%" value="%keyword%"/>',
+            'actions'  => $action_links,
+            'id'       => $id,
+            'keyword'  => $keyword,
+        ),
+    );
+    return yourls_apply_filter( 'table_add_row_cell_array', $cells, $keyword, $url, $title, $ip, $clicks, $timestamp );
 }
