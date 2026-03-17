@@ -48,14 +48,9 @@ class DecoratedPdo extends AbstractExtendedPdo
         string $dsn,
         ?string $username = null,
         ?string $password = null,
-        ?array $options = null,
-        ?ProfilerInterface $profiler = null
+        ?array $options = []
     ): static {
-        if (version_compare(PHP_VERSION, '8.4.0', '>=')) {
-            return new static(\PDO::connect($dsn, $username, $password, $options));
-        } else {
-            return new static(new PDO($dsn, $username, $password, $options), $profiler);
-        }
+        return new static(\PDO::connect($dsn, $username, $password, $options));
     }
 
     /**

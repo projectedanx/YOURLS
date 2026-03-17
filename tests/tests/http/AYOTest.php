@@ -395,6 +395,21 @@ class AYOTest extends PHPUnit\Framework\TestCase {
     }
 
     /**
+     * Test yourls_is_valid_github_repo_url() with a custom domain filter
+     */
+    public function test_is_valid_github_repo_url_with_filter() {
+        yourls_add_filter('github_api_domains', function() {
+            return ['github.com', 'githubapi.com'];
+        });
+
+        $this->assertTrue( yourls_is_valid_github_repo_url('https://api.githubapi.com/repos/YOURLS/YOURLS/zipball/1.2.3') );
+        $this->assertFalse( yourls_is_valid_github_repo_url('https://api.g1thubapi.com/repos/YOURLS/YOURLS/zipball/1.2.3') );
+
+        global $yourls_filters;
+        unset($yourls_filters['github_api_domains']);
+    }
+
+    /**
      * Provide various scenarios for version reported by api.yourls.org / current version to check if notice is shown
      */
     public static function new_version_scenarios() {

@@ -184,8 +184,6 @@ function yourls_get_shorturl_charset() {
  * @return bool True if the URL is a short URL, false otherwise.
  */
 function yourls_is_shorturl( $shorturl ) {
-    // TODO: make sure this function evolves with the feature set.
-
     $is_short = false;
 
     // Is $shorturl a URL (http://sho.rt/abc) or a keyword (abc) ?
@@ -194,6 +192,15 @@ function yourls_is_shorturl( $shorturl ) {
     } else {
         $keyword = $shorturl;
     }
+
+    // Unless request looks like a full URL (ie request is a simple keyword) strip query string
+    if ( !preg_match( "@^[a-zA-Z]+://.+@", $keyword ) ) {
+        $keyword = current( explode( '?', $keyword ) );
+    }
+
+    // Let's look at the request : what we want to catch here is "anything", or "anything+" / "anything+all" (stat page)
+    preg_match( "@^(.+?)(\+(all)?)?/?$@", $keyword, $matches );
+    $keyword = isset($matches[1]) ? $matches[1] : '';
 
     // Check if it's a valid && used keyword
     if( $keyword && $keyword == yourls_sanitize_keyword( $keyword ) && yourls_keyword_is_taken( $keyword ) ) {
