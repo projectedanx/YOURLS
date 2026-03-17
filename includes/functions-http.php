@@ -419,12 +419,16 @@ function yourls_get_version_from_zipball_url($zipurl) {
  */
 function yourls_is_valid_github_repo_url($url) {
     $url = yourls_sanitize_url($url);
+    $host = parse_url($url, PHP_URL_HOST) ?? '';
+    $domain = join('.', array_slice(explode('.', $host), -2, 2));
+
+    // explodes on '.' (['api','github','com']) and keeps the last two elements
+    // to make sure domain is either github.com or one of its subdomain (api.github.com for instance)
+    $valid_domains = (array)yourls_apply_filter('github_api_domains', ['github.com']);
+
     return (
-        join('.',array_slice(explode('.', parse_url($url, PHP_URL_HOST) ?? ''), -2, 2)) === 'github.com'
-            // explodes on '.' (['api','github','com']) and keeps the last two elements
-            // to make sure domain is either github.com or one of its subdomain (api.github.com for instance)
-            // TODO: keep an eye on Github API to make sure it doesn't change some day to another domain (githubapi.com, ...)
-        && substr( parse_url($url, PHP_URL_PATH), 0, 21 ) === '/repos/YOURLS/YOURLS/'
+        in_array($domain, $valid_domains, true)
+        && substr( parse_url($url, PHP_URL_PATH) ?? '', 0, 21 ) === '/repos/YOURLS/YOURLS/'
             // make sure path starts with '/repos/YOURLS/YOURLS/'
     );
 }
