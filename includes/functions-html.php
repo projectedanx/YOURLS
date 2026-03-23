@@ -779,6 +779,25 @@ function yourls_login_screen( $error_msg = '' ) {
 
 
 /**
+ * Helper function to output a menu item
+ *
+ * @since 1.9.3
+ * @param string $link        Link ID
+ * @param array  $ar          Link data (url, anchor, title)
+ * @param bool   $is_sublevel Whether it's a sublevel link
+ * @return void
+ */
+function yourls_html_menu_item( $link, $ar, $is_sublevel = false ) {
+    if( !isset( $ar['url'] ) ) {
+        return;
+    }
+    $anchor = isset( $ar['anchor'] ) ? $ar['anchor'] : $link;
+    $title  = isset( $ar['title'] ) ? 'title="' . yourls_esc_attr( $ar['title'] ) . '"' : '';
+    $class  = $is_sublevel ? "admin_menu_sublevel admin_menu_sublevel_$link" : 'admin_menu_toplevel';
+    printf( '<li id="admin_menu_%s_link" class="%s"><a href="%s" %s>%s</a>', $link, $class, $ar['url'], $title, $anchor );
+}
+
+/**
  * Displays the admin menu.
  *
  * @since 1.0
@@ -827,20 +846,13 @@ function yourls_html_menu() {
         echo '<li id="admin_menu_logout_link">' . $logout_link .'</li>';
 
     foreach( (array)$admin_links as $link => $ar ) {
-        if( isset( $ar['url'] ) ) {
-            $anchor = isset( $ar['anchor'] ) ? $ar['anchor'] : $link;
-            $title  = isset( $ar['title'] ) ? 'title="' . $ar['title'] . '"' : '';
-            printf( '<li id="admin_menu_%s_link" class="admin_menu_toplevel"><a href="%s" %s>%s</a>', $link, $ar['url'], $title, $anchor );
-        }
-        // Output submenu if any. TODO: clean up, too many code duplicated here
+        yourls_html_menu_item( $link, $ar );
+
+        // Output submenu if any
         if( isset( $admin_sublinks[$link] ) ) {
             echo "<ul>\n";
-            foreach( $admin_sublinks[$link] as $link => $ar ) {
-                if( isset( $ar['url'] ) ) {
-                    $anchor = isset( $ar['anchor'] ) ? $ar['anchor'] : $link;
-                    $title  = isset( $ar['title'] ) ? 'title="' . $ar['title'] . '"' : '';
-                    printf( '<li id="admin_menu_%s_link" class="admin_menu_sublevel admin_menu_sublevel_%s"><a href="%s" %s>%s</a>', $link, $link, $ar['url'], $title, $anchor );
-                }
+            foreach( $admin_sublinks[$link] as $sublink => $subar ) {
+                yourls_html_menu_item( $sublink, $subar, true );
             }
             echo "</ul>\n";
         }
