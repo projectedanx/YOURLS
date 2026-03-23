@@ -200,9 +200,6 @@ class Options {
         if ($this->ydb->has_option($name)) {
             return false;
         }
-        // if (false !== yourls_get_option($name)) {
-            // return false;
-        // }
 
         $table = YOURLS_DB_TABLE_OPTIONS;
         $_value = yourls_maybe_serialize($value);
