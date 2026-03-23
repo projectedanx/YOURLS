@@ -25,8 +25,7 @@ jobs:
         ports:
           - 3306/tcp
         env:
-          MYSQL_ALLOW_EMPTY_PASSWORD: false
-          MYSQL_ROOT_PASSWORD: secret
+          MYSQL_ALLOW_EMPTY_PASSWORD: true
           MYSQL_DATABASE: yourls_tests
           MARIADB_MYSQL_LOCALHOST_USER: 1
           MARIADB_MYSQL_LOCALHOST_GRANTS: USAGE
@@ -74,3 +73,7 @@ jobs:
       run: phpunit --configuration phpunit.xml.dist --testdox --display-deprecations --display-notices --display-warnings --display-errors ${{ matrix.flags }}
       env:
         DB_PORT: ${{ job.services.mysql.ports['3306'] }}
+        YOURLS_DB_USER: root
+        YOURLS_DB_PASS: ''
+        YOURLS_DB_NAME: yourls_tests
+        YOURLS_DB_HOST: 127.0.0.1

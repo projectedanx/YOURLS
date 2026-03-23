@@ -8,10 +8,16 @@ define('YOURLS_ABSPATH', getenv('GITHUB_WORKSPACE'));
 define( 'YOURLS_SITE', 'http://localhost/YOURLS' );
 
 /*** MySQL settings */
-define( 'YOURLS_DB_USER', 'root' );
-define( 'YOURLS_DB_PASS', 'secret' );
-define( 'YOURLS_DB_NAME', 'yourls_tests' );
-define( 'YOURLS_DB_HOST', '127.0.0.1:' . getenv('DB_PORT') );
+define( 'YOURLS_DB_USER', getenv('YOURLS_DB_USER') !== false ? getenv('YOURLS_DB_USER') : 'root' );
+define( 'YOURLS_DB_PASS', getenv('YOURLS_DB_PASS') !== false ? getenv('YOURLS_DB_PASS') : '' );
+define( 'YOURLS_DB_NAME', getenv('YOURLS_DB_NAME') !== false ? getenv('YOURLS_DB_NAME') : 'yourls_tests' );
+
+$yourls_db_host = getenv('YOURLS_DB_HOST') !== false ? getenv('YOURLS_DB_HOST') : '127.0.0.1';
+$yourls_db_port = getenv('DB_PORT');
+if ( $yourls_db_port && strpos($yourls_db_host, ':') === false ) {
+    $yourls_db_host .= ':' . $yourls_db_port;
+}
+define( 'YOURLS_DB_HOST', $yourls_db_host );
 
 /*** Site options */
 define( 'YOURLS_PHP_BIN', 'php' );
