@@ -32,9 +32,6 @@ function yourls_db_connect() {
     $pass = YOURLS_DB_PASS;
     $dbname = YOURLS_DB_NAME;
 
-    // This action is deprecated
-    yourls_do_action( 'set_DB_driver', 'deprecated' );
-
     // Get custom port if any
     if ( false !== strpos( $dbhost, ':' ) ) {
         list( $dbhost, $dbport ) = explode( ':', $dbhost );
