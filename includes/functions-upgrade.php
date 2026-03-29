@@ -438,16 +438,29 @@ function yourls_update_table_to_14() {
 
     $count = 0;
     $queries = 0;
-    foreach( $rows as $row ) {
-        $keyword = $row->keyword;
-        $url = $row->url;
-        $newkeyword = yourls_int2string( $keyword );
-        if( true === $ydb->perform("UPDATE `$table` SET `keyword` = '$newkeyword' WHERE `url` = '$url';") ) {
-            $queries++;
-        } else {
-            echo "<p>Huho... Could not update rown with url='$url', from keyword '$keyword' to keyword '$newkeyword'</p>"; // Find what went wrong :/
+
+    if (count($rows) > 0) {
+        $sql = "UPDATE `$table` SET `keyword` = CASE `url` ";
+        $binds = [];
+        $url_binds = [];
+
+        foreach( $rows as $i => $row ) {
+            $keyword = $row->keyword;
+            $url = $row->url;
+            $newkeyword = yourls_int2string( $keyword );
+
+            $sql .= "WHEN :url_$i THEN :newkeyword_$i ";
+            $binds["url_$i"] = $url;
+            $binds["newkeyword_$i"] = $newkeyword;
+            $url_binds[] = ":url_$i";
+
+            $count++;
         }
-        $count++;
+        $sql .= "END WHERE `url` IN (" . implode( ', ', $url_binds ) . ");";
+
+        if ($ydb->perform($sql, $binds)) {
+            $queries = $count;
+        }
     }
 
     // All done for this chunk of queries, did it all go as expected?
