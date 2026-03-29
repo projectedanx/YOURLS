@@ -18,11 +18,11 @@
  * @return array An array containing the result of the API call.
  */
 function yourls_api_action_shorturl() {
-    $url = ( isset( $_REQUEST['url'] ) ? $_REQUEST['url'] : '' );
-    $keyword = ( isset( $_REQUEST['keyword'] ) ? $_REQUEST['keyword'] : '' );
-    $title = ( isset( $_REQUEST['title'] ) ? $_REQUEST['title'] : '' );
+    $url = $_REQUEST['url'] ?? '';
+    $keyword = $_REQUEST['keyword'] ?? '';
+    $title = $_REQUEST['title'] ?? '';
     $return = yourls_add_new_link( $url, $keyword, $title );
-    $return['simple'] = ( isset( $return['shorturl'] ) ? $return['shorturl'] : '' ); // This one will be used in case output mode is 'simple'
+    $return['simple'] = $return['shorturl'] ?? ''; // This one will be used in case output mode is 'simple'
     unset( $return['html'] ); // in API mode, no need for our internal HTML output
     return yourls_apply_filter( 'api_result_shorturl', $return );
 }
@@ -34,9 +34,9 @@ function yourls_api_action_shorturl() {
  * @return array An array containing the result of the API call.
  */
 function yourls_api_action_stats() {
-    $filter = ( isset( $_REQUEST['filter'] ) ? $_REQUEST['filter'] : '' );
-    $limit = ( isset( $_REQUEST['limit'] ) ? $_REQUEST['limit'] : '' );
-    $start = ( isset( $_REQUEST['start'] ) ? $_REQUEST['start'] : '' );
+    $filter = $_REQUEST['filter'] ?? '';
+    $limit = $_REQUEST['limit'] ?? '';
+    $start = $_REQUEST['start'] ?? '';
     return yourls_apply_filter( 'api_result_stats', yourls_api_stats( $filter, $limit, $start ) );
 }
 
@@ -57,7 +57,7 @@ function yourls_api_action_db_stats() {
  * @return array An array containing the result of the API call.
  */
 function yourls_api_action_url_stats() {
-    $shorturl = ( isset( $_REQUEST['shorturl'] ) ? $_REQUEST['shorturl'] : '' );
+    $shorturl = $_REQUEST['shorturl'] ?? '';
     return yourls_apply_filter( 'api_result_url_stats', yourls_api_url_stats( $shorturl ) );
 }
 
@@ -68,7 +68,7 @@ function yourls_api_action_url_stats() {
  * @return array An array containing the result of the API call.
  */
 function yourls_api_action_expand() {
-    $shorturl = ( isset( $_REQUEST['shorturl'] ) ? $_REQUEST['shorturl'] : '' );
+    $shorturl = $_REQUEST['shorturl'] ?? '';
     return yourls_apply_filter( 'api_result_expand', yourls_api_expand( $shorturl ) );
 }
 
@@ -121,7 +121,7 @@ function yourls_api_output( $mode, $output, $send_headers = true, $echo = true )
             if( $send_headers )
                 yourls_content_type_header( 'application/javascript' );
 
-            $callback = isset( $output['callback'] ) ? $output['callback'] : '';
+            $callback = $output['callback'] ?? '';
             $result =  $callback . '(' . json_encode( $output ) . ')';
             break;
 
@@ -144,7 +144,7 @@ function yourls_api_output( $mode, $output, $send_headers = true, $echo = true )
             if( $send_headers )
                 yourls_content_type_header( 'text/plain' );
 
-            $result = isset( $simple ) ? $simple : '';
+            $result = $simple ?? '';
             break;
     }
 
