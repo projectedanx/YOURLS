@@ -54,6 +54,29 @@ class QueryArgTest extends PHPUnit\Framework\TestCase {
     /**
      * Test yourls_add_query_arg() with default REQUEST_URI
      */
+
+    /**
+     * Test yourls_add_query_arg() edge cases
+     */
+    public function test_yourls_add_query_arg_edge_cases() {
+        // Handling of &amp;
+        $this->assertEquals( 'http://example.com/?foo=bar&baz=qux&hello=world', yourls_add_query_arg( 'hello', 'world', 'http://example.com/?foo=bar&amp;baz=qux' ) );
+
+        // Removal of arguments with false value
+        $this->assertEquals( 'http://example.com/', yourls_add_query_arg( 'hello', false, 'http://example.com/?hello=world' ) );
+        $this->assertEquals( 'http://example.com/?foo=bar', yourls_add_query_arg( 'hello', false, 'http://example.com/?foo=bar&hello=world' ) );
+
+        // Empty string value handling (should not have '=' at the end)
+        $this->assertEquals( 'http://example.com/?hello', yourls_add_query_arg( 'hello', '', 'http://example.com/' ) );
+        $this->assertEquals( 'http://example.com/?foo=bar&hello', yourls_add_query_arg( 'hello', '', 'http://example.com/?foo=bar' ) );
+
+        // URLs without '?' but with '='
+        $this->assertEquals( 'foo=bar&hello=world', yourls_add_query_arg( 'hello', 'world', 'foo=bar' ) );
+        $this->assertEquals( 'foo?hello=world', yourls_add_query_arg( 'hello', 'world', 'foo' ) );
+
+        // URLs with protocol but no ? and with =
+        $this->assertEquals( 'http://example.com/page=1?hello=world', yourls_add_query_arg( 'hello', 'world', 'http://example.com/page=1' ) );
+    }
     public function test_yourls_add_query_arg_default() {
         $_SERVER['REQUEST_URI'] = '/test.php';
 
