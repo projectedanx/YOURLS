@@ -208,6 +208,44 @@ class YDB extends ExtendedPdo {
         return $this->context;
     }
 
+
+    /**
+     * @param string $property
+     * @param string $key
+     * @param mixed  $value
+     * @return void
+     */
+    protected function set_array_item($property, $key, $value) {
+        $this->{$property}[$key] = $value;
+    }
+
+    /**
+     * @param string $property
+     * @param string $key
+     * @return bool
+     */
+    protected function has_array_item($property, $key) {
+        return array_key_exists($key, $this->{$property});
+    }
+
+    /**
+     * @param string $property
+     * @param string $key
+     * @return mixed
+     */
+    protected function get_array_item($property, $key) {
+        return $this->{$property}[$key];
+    }
+
+    /**
+     * @param string $property
+     * @param string $key
+     * @return void
+     */
+    protected function delete_array_item($property, $key) {
+        unset($this->{$property}[$key]);
+    }
+
     // Options low level functions, see \YOURLS\Database\Options
 
     /**
@@ -216,7 +254,7 @@ class YDB extends ExtendedPdo {
      * @return void
      */
     public function set_option($name, $value) {
-        $this->option[$name] = $value;
+        $this->set_array_item('option', $name, $value);
     }
 
     /**
@@ -224,7 +262,7 @@ class YDB extends ExtendedPdo {
      * @return bool
      */
     public function has_option($name) {
-        return array_key_exists($name, $this->option);
+        return $this->has_array_item('option', $name);
     }
 
     /**
@@ -232,7 +270,7 @@ class YDB extends ExtendedPdo {
      * @return string
      */
     public function get_option($name) {
-        return $this->option[$name];
+        return $this->get_array_item('option', $name);
     }
 
     /**
@@ -240,7 +278,7 @@ class YDB extends ExtendedPdo {
      * @return void
      */
     public function delete_option($name) {
-        unset($this->option[$name]);
+        $this->delete_array_item('option', $name);
     }
 
 
@@ -252,7 +290,7 @@ class YDB extends ExtendedPdo {
      * @return void
      */
     public function set_infos($keyword, $infos) {
-        $this->infos[$keyword] = $infos;
+        $this->set_array_item('infos', $keyword, $infos);
     }
 
     /**
@@ -260,7 +298,7 @@ class YDB extends ExtendedPdo {
      * @return bool
      */
     public function has_infos($keyword) {
-        return array_key_exists($keyword, $this->infos);
+        return $this->has_array_item('infos', $keyword);
     }
 
     /**
@@ -268,7 +306,7 @@ class YDB extends ExtendedPdo {
      * @return array
      */
     public function get_infos($keyword) {
-        return $this->infos[$keyword];
+        return $this->get_array_item('infos', $keyword);
     }
 
     /**
@@ -276,13 +314,8 @@ class YDB extends ExtendedPdo {
      * @return void
      */
     public function delete_infos($keyword) {
-        unset($this->infos[$keyword]);
+        $this->delete_array_item('infos', $keyword);
     }
-
-    /**
-     * @todo: infos & options are working the same way here. Abstract this.
-     */
-
 
     // Plugin low level functions, see functions-plugins.php
 
