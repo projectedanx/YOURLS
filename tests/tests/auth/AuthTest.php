@@ -232,6 +232,57 @@ class AuthTest extends PHPUnit\Framework\TestCase {
      * PHP file as expected. It doesn't test that the different kinds of password get correctly hashed
      * and can be correctly deciphered. This task is covered in test_hash_and_check()
      */
+
+    /**
+     * Check that yourls_hash_passwords_now correctly updates file contents
+     */
+
+    public function test_hash_passwords_now_contents_updated() {
+        global $yourls_user_passwords;
+
+        $temp_file = YOURLS_TESTDATA_DIR . '/auth/temp_config_' . uniqid() . '.php';
+        $content = "<?php
+\$yourls_user_passwords = [
+    'test_user' => 'test_password',
+    'hashed_user' => 'phpass:!2y!10!alreadyhashed',
+];
+";
+        file_put_contents( $temp_file, $content );
+
+        // yourls_has_phpass_password checks the global $yourls_user_passwords variable.
+        // During real execution, the config file is loaded in global scope.
+        // For testing, we mock this by overriding the global variable.
+        $backup_passwords = $yourls_user_passwords;
+        $yourls_user_passwords = [
+            'test_user' => 'test_password',
+            'hashed_user' => 'phpass:!2y!10!alreadyhashed',
+        ];
+
+        $result = yourls_hash_passwords_now( $temp_file );
+        $this->assertTrue( $result );
+
+        // verify contents
+        $updated_content = file_get_contents( $temp_file );
+        $this->assertStringContainsString( "'test_user' => 'phpass:", $updated_content );
+        $this->assertStringContainsString( "/* Password encrypted by YOURLS */", $updated_content );
+        $this->assertStringNotContainsString( "'test_user' => 'test_password'", $updated_content );
+
+        // verify untouched password stays untouched
+        $this->assertStringContainsString( "'hashed_user' => 'phpass:!2y!10!alreadyhashed'", $updated_content );
+
+        // require the new file to check the actual password array
+        require $temp_file;
+
+        $this->assertArrayHasKey( 'test_user', $yourls_user_passwords );
+        $this->assertStringStartsWith( 'phpass:', $yourls_user_passwords['test_user'] );
+
+        // restore $ to verify the hash
+        $hash = str_replace( '!', '$', substr( $yourls_user_passwords['test_user'], 7 ) );
+        $this->assertTrue( yourls_phpass_check( 'test_password', $hash ) );
+
+        unlink( $temp_file );
+        $yourls_user_passwords = $backup_passwords;
+    }
     public function test_hash_passwords_special_chars_now() {
 
         if( !copy( YOURLS_TESTDATA_DIR . '/auth/config-test-auth.php', YOURLS_TESTDATA_DIR . '/auth/config-test-auth-hashed.php' ) ) {
