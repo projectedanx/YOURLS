@@ -503,9 +503,7 @@ function yourls_esc_url( $url, $context = 'display', $protocols = array() ) {
     // force scheme and domain to lowercase - see issues 591 and 1630
     $url = yourls_normalize_uri( $url );
 
-    $url = preg_replace( '|[^a-z0-9-~+_.?#=!&;,/:%@$\|*\'()\[\]\\x80-\\xff]|i', '', $url );
-    // Previous regexp in YOURLS was '|[^a-z0-9-~+_.?\[\]\^#=!&;,/:%@$\|*`\'<>"()\\x80-\\xff\{\}]|i'
-    // TODO: check if that was it too destructive
+    $url = preg_replace( '|[^a-z0-9-~+_.?#=!&;,/:%@$\|*\'()\[\]\^`\\{\\}\\x80-\\xff]|i', '', $url );
 
     // If $context is 'safe', an extra step is taken to make sure no CRLF injection is possible.
     // To be used when $url can be forged by evil user (eg it's from a $_SERVER variable, a query string, etc..)
