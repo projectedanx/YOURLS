@@ -685,7 +685,8 @@ function yourls_plugin_url( $file ) {
  */
 function yourls_list_plugin_admin_pages() {
     $plugin_links = [];
-    foreach ( yourls_get_db()->get_plugin_pages() as $plugin => $page ) {
+    $pages = yourls_get_db()->get_plugin_pages();
+    foreach ( $pages as $plugin => $page ) {
         $plugin_links[ $plugin ] = [
             'url'    => yourls_admin_url( 'plugins.php?page='.$page[ 'slug' ] ),
             'anchor' => $page[ 'title' ],
