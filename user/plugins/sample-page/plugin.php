@@ -23,9 +23,6 @@ function ozh_yourls_samplepage_do_page() {
 
     // Check if a form was submitted
     if( isset( $_POST['test_option'] ) ) {
-        // Check nonce
-        yourls_verify_nonce( 'sample_page' );
-
         // Process form
         ozh_yourls_samplepage_update_option();
     }
@@ -33,31 +30,24 @@ function ozh_yourls_samplepage_do_page() {
     // Get value from database
     $test_option = yourls_get_option( 'test_option' );
 
-    // Create nonce
-    $nonce = yourls_create_nonce( 'sample_page' );
-
-    echo <<<HTML
-        <h2>Sample Plugin Administration Page</h2>
-        <p>This plugin stores an integer in the option database</p>
-        <form method="post">
-        <input type="hidden" name="nonce" value="$nonce" />
-        <p><label for="test_option">Enter an integer</label> <input type="text" id="test_option" name="test_option" value="$test_option" /></p>
-        <p><input type="submit" value="Update value" /></p>
-        </form>
-
-HTML;
+    echo "<h2>Sample Plugin Administration Page</h2>";
+    echo "<p>This plugin stores an integer in the option database</p>";
+    echo '<form method="post">';
+    yourls_nonce_field( 'sample_page' );
+    echo '<p><label for="test_option">Enter an integer</label> <input type="text" id="test_option" name="test_option" value="' . $test_option . '" /></p>';
+    echo '<p><input type="submit" value="Update value" /></p>';
+    echo '</form>';
 }
 
 // Update option in database
 function ozh_yourls_samplepage_update_option() {
-    $in = $_POST['test_option'];
+    // Check nonce
+    yourls_verify_nonce( 'sample_page' );
 
-    if( $in ) {
-        // Validate test_option. ALWAYS validate and sanitize user input.
-        // Here, we want an integer
-        $in = intval( $in);
+    // Validate test_option. ALWAYS validate and sanitize user input.
+    // Here, we want an integer
+    $in = intval( $_POST['test_option'] ?? 0 );
 
-        // Update value in database
-        yourls_update_option( 'test_option', $in );
-    }
+    // Update value in database
+    yourls_update_option( 'test_option', $in );
 }
