@@ -52,6 +52,9 @@ function yourls_current_admin_page() {
 /**
  * Encodes a URI.
  *
+ * Known limit: this will most likely break IDN URLs such as http://www.académie-française.fr/
+ * To fully support IDN URLs, advocate use of a plugin.
+ *
  * @since 1.0
  * @deprecated 1.9.1
  * @param string $url The URI to encode.
@@ -67,9 +70,6 @@ function yourls_encodeURI($url) {
         '%26' => '&', '%3D' => '=', '%2B' => '+', '%24' => '$', '%21' => '!', '%2A' => '*',
         '%27' => '\'', '%28' => '(', '%29' => ')', '%23' => '#',
     ) );
-    // @TODO:
-    // Known limit: this will most likely break IDN URLs such as http://www.académie-française.fr/
-    // To fully support IDN URLs, advocate use of a plugin.
     return yourls_apply_filter( 'encodeURI', $result, $url );
 }
 
