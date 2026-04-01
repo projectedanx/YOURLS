@@ -13,7 +13,7 @@ define( 'YOURLS_API', true );
 require_once( dirname( __FILE__ ) . '/includes/load-yourls.php' );
 yourls_maybe_require_auth();
 
-$action = ( isset( $_REQUEST['action'] ) ? $_REQUEST['action'] : null );
+$action = $_REQUEST['action'] ?? null;
 
 yourls_do_action( 'api', $action );
 
@@ -48,7 +48,7 @@ if( isset( $_REQUEST['callback'] ) )
 elseif ( isset( $_REQUEST['jsonp'] ) )
     $return['callback'] = $_REQUEST['jsonp'];
 
-$format = ( isset( $_REQUEST['format'] ) ? $_REQUEST['format'] : 'xml' );
+$format = $_REQUEST['format'] ?? 'xml';
 
 yourls_api_output( $format, $return );
 

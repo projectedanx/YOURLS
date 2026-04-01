@@ -1,3 +1,3 @@
 ## Modernizer — Refactor verbose isset checks to use Null Coalescing Operator
 **Learning:** Legacy `isset($var) ? $var : 'default'` patterns introduce unnecessary cognitive overhead and verbosity. By migrating to the PHP 7+ Null Coalescing Operator (`$var ?? 'default'`), we streamline the logic safely because PHP's minimum requirement for the project (`^8.1`) natively handles it.
-**Action:** Replaced loose logical ternary fallbacks with strict nullish coalescing operators (`??`) across `includes/functions-api.php` to prevent false-falsy bugs and reduce visual clutter without altering behavior.
+**Action:** Replaced loose logical ternary fallbacks with strict nullish coalescing operators (`??`) across `includes/functions-api.php` and `yourls-api.php` to prevent false-falsy bugs and reduce visual clutter without altering behavior.
