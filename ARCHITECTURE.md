@@ -143,3 +143,81 @@ sequenceDiagram
     end
     Index->>Plugins: Execution continues, invoking hooks (yourls_do_action, yourls_apply_filter)
 ```
+
+## Authentication Lifecycle (functions-auth.php)
+
+```mermaid
+sequenceDiagram
+    participant User
+    participant Auth as YOURLS Auth (yourls_is_valid_user)
+    participant Config as YOURLS Config
+    participant Hooks as Plugin Hooks
+
+    User->>Auth: Request Admin Area (with Cookie or Credentials)
+    Auth->>Hooks: apply_filters('shunt_is_valid_user')
+    alt Shunt returns true
+        Hooks-->>Auth: bypass standard auth
+    else Proceed with standard auth
+        alt Action is 'logout'
+            Auth->>Auth: Verify Logout Nonce
+            Auth->>Auth: Destroy Cookie
+            Auth-->>User: 302 Redirect to Login Page
+        else Action is not logout
+            Auth->>Auth: Check Auth Cookie (yourls_check_auth_cookie)
+            alt Cookie is valid
+                Auth-->>User: Granted Access
+            else Cookie is invalid or missing
+                alt HTTP Credentials provided
+                    Auth->>Config: Check Basic/Digest Auth
+                else POST Credentials provided
+                    Auth->>Config: Check Username/Password (yourls_check_username_password)
+                end
+
+                alt Credentials match
+                    Auth->>Auth: Generate Cookie & Hash Password (if needed)
+                    Auth-->>User: Granted Access
+                else Credentials do not match
+                    Auth->>Hooks: do_action('login_failed')
+                    Auth-->>User: 403 / Redirect to Login Page
+                end
+            end
+        end
+    end
+```
+
+## Loader Routing State Machine (yourls-loader.php)
+
+```mermaid
+stateDiagram-v2
+    [*] --> Request_Received: $_SERVER['REQUEST_URI']
+
+    Request_Received --> Favicon: /favicon.ico
+    Favicon --> [*]: Return 1x1 GIF & Exit
+
+    Request_Received --> Robots_Txt: /robots.txt
+    Robots_Txt --> [*]: Return text/plain & Exit
+
+    Request_Received --> Parse_Request: Any other URI
+    Parse_Request --> Pre_Load_Template: Extract keyword and stats modifiers
+    Pre_Load_Template --> Scheme_Check
+
+    state Scheme_Check {
+        [*] --> Has_Protocol
+        Has_Protocol --> Bookmarklet_Redirect: e.g. http://..., https://...
+        Bookmarklet_Redirect --> Redirect_Admin: 302 Redirect to /admin/index.php
+
+        [*] --> No_Protocol
+        No_Protocol --> Keyword_Check: e.g. abc, abc+, abc+all
+    }
+
+    Keyword_Check --> Valid_Keyword: Exists in DB or Page
+    Valid_Keyword --> Route_To_Go: Keyword only
+    Route_To_Go --> [*]: include yourls-go.php & Exit
+
+    Valid_Keyword --> Route_To_Infos: Keyword + Stats (+)
+    Route_To_Infos --> [*]: include yourls-infos.php & Exit
+
+    Keyword_Check --> Invalid_Keyword: Not Found
+    Invalid_Keyword --> Fallback_Redirect: 302 Redirect to YOURLS_SITE
+    Fallback_Redirect --> [*]: Exit
+```
