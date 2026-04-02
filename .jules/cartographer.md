@@ -1,3 +1,3 @@
-## Cartographer — Redirection and API Pipeline Sequence Diagrams
-**Learning:** YOURLS implements two distinct routing entry points (`yourls-go.php` and `yourls-api.php`), each with specific action hooks and fallback redirection mechanisms.
-**Action:** Added sequence diagrams to ARCHITECTURE.md detailing the request lifecycle for both short URL redirection and API requests.
+## Cartographer — Redirection, API Pipeline, and Core Initialization Sequence Diagrams
+**Learning:** YOURLS initializes via `yourls-loader.php` which delegates configuration and default action setup to `YOURLS\Config\Init`. This class registers all core files, DB connections, plugins, and emits vital lifecycle events (`init`, `plugins_loaded`, `admin_init`). The plugin architecture relies on a global `$yourls_filters` array and custom functions (`yourls_add_filter`, `yourls_do_action`) rather than native PHP event dispatchers.
+**Action:** Added a sequence diagram to ARCHITECTURE.md detailing the Core Initialization and Plugin Hook Architecture to visualize the bootstrap lifecycle and extension points.

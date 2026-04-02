@@ -116,3 +116,30 @@ sequenceDiagram
         API-->>Client: Formatted Response (XML, JSON, JSONP, Simple)
     end
 ```
+
+## Core Initialization & Plugin Hook Architecture
+
+```mermaid
+sequenceDiagram
+    participant Index as Entry Point (e.g. index.php)
+    participant Config as YOURLS\Config\Init
+    participant DB as Database Engine
+    participant Plugins as Plugin System
+
+    Index->>Config: require 'load-yourls.php'
+    Config->>Config: Define Core Constants & Include Functions
+    Config->>DB: include_db_files() (Sandbox or class-mysql.php)
+    Config->>Config: Get all options from DB
+    Config->>Plugins: yourls_do_action('init')
+    Config->>Plugins: yourls_load_plugins()
+    loop Active Plugins
+        Plugins->>Plugins: include_file_sandbox()
+        Plugins->>Plugins: Hook functions via yourls_add_action() / yourls_add_filter()
+    end
+    Config->>Plugins: yourls_do_action('plugins_loaded')
+    Config->>Config: Load Text Domain (L10n)
+    alt Is Admin Request
+        Config->>Plugins: yourls_do_action('admin_init')
+    end
+    Index->>Plugins: Execution continues, invoking hooks (yourls_do_action, yourls_apply_filter)
+```
