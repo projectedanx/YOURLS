@@ -173,7 +173,7 @@ function yourls_build_list_of_days($dates) {
             for ( $day = $current_first_day; $day <= $current_last_day; $day++ ) {
                 $day = sprintf( '%02d', $day );
                 $key = date( 'M d, Y', mktime( 0, 0, 0, $_month, $day, $_year ) );
-                $list_of_days[ $key ] = isset( $dates[$_year][$_month][$day] ) ? $dates[$_year][$_month][$day] : 0;
+                $list_of_days[ $key ] = $dates[$_year][$_month][$day] ?? 0;
             }
         }
     }
@@ -272,9 +272,9 @@ function yourls_get_domain($url, $include_scheme = false) {
     $parse = @parse_url( $url ); // Hiding ugly stuff coming from malformed referrer URLs
 
     // Get host & scheme. Fall back to path if not found.
-    $host = isset( $parse['host'] ) ? $parse['host'] : '';
-    $scheme = isset( $parse['scheme'] ) ? $parse['scheme'] : '';
-    $path = isset( $parse['path'] ) ? $parse['path'] : '';
+    $host = $parse['host'] ?? '';
+    $scheme = $parse['scheme'] ?? '';
+    $path = $parse['path'] ?? '';
     if( !$host )
         $host = $path;
 
