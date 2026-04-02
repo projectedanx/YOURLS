@@ -1,3 +1,3 @@
-## Cortex — Fallback Compliance
-**Learning:** Evaluated previous states and scanned codebase for legacy AI API endpoints, unvalidated JSON parses, missing timeout boundaries, and unstructured AI generations. No targets found in current scope.
-**Action:** Proceed with immediate Category Fallback protocol to generate a zero-target Compliance PR, maintaining strict structural integration boundaries.
+## Cortex — Category Fallback
+**Learning:** Evaluated current codebase for legacy AI integrations, fetch calls missing timeouts, unvalidated JSON parses, and unstructured outputs. Zero targets found.
+**Action:** Execute immediate Stop-on-First cadence and generate a Compliance PR per the Category Fallback protocol.
