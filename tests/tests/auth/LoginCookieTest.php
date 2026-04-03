@@ -59,6 +59,7 @@ class LoginCookieTest extends PHPUnit\Framework\TestCase {
     /**
      * Test login with valid cookie - also check that cookie is set
      */
+    #[\PHPUnit\Framework\Attributes\RunInSeparateProcess]
     public function test_login_valid_cookie() {
         global $yourls_user_passwords;
         $random_user = array_rand($yourls_user_passwords);
