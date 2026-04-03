@@ -26,9 +26,9 @@ yourls_do_action( 'pre_load_template', $request );
 
 // Let's look at the request : what we want to catch here is "anything", or "anything+" / "anything+all" (stat page)
 preg_match( "@^(.+?)(\+(all)?)?/?$@", $request, $matches );
-$keyword   = isset($matches[1]) ? $matches[1] : null; // 'anything' whatever the request is (keyword, bookmarklet URL...)
-$stats     = isset($matches[2]) ? $matches[2] : null; // null, or '+' if request is 'anything+', '+all' if request is 'anything+all'
-$stats_all = isset($matches[3]) ? $matches[3] : null; // null, or 'all' if request is 'anything+all'
+$keyword   = $matches[1] ?? null; // 'anything' whatever the request is (keyword, bookmarklet URL...)
+$stats     = $matches[2] ?? null; // null, or '+' if request is 'anything+', '+all' if request is 'anything+all'
+$stats_all = $matches[3] ?? null; // null, or 'all' if request is 'anything+all'
 
 // if request has a scheme (eg scheme://uri) : "Prefix-n-Shorten" sends to bookmarklet (doesn't work on Windows)
 if ( yourls_get_protocol($keyword) ) {
