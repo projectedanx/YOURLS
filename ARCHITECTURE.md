@@ -221,3 +221,56 @@ stateDiagram-v2
     Invalid_Keyword --> Fallback_Redirect: 302 Redirect to YOURLS_SITE
     Fallback_Redirect --> [*]: Exit
 ```
+## URL Shortening Core Flow (yourls_add_new_link)
+
+```mermaid
+sequenceDiagram
+    participant Caller
+    participant Core as Core (yourls_add_new_link)
+    participant DB as Database
+    participant Hooks as Plugin Hooks
+
+    Caller->>Core: yourls_add_new_link($url, $keyword, $title)
+    Core->>Hooks: apply_filters('shunt_add_new_link')
+    alt Shunt returns data
+        Hooks-->>Core: Short-circuit Result
+        Core-->>Caller: Return Result
+    else Proceed with core logic
+        Core->>Core: Sanitize & Validate URL
+        Core->>Core: Check IP Flood & Redirection Loops
+        Core->>DB: Check if Long URL exists (if duplicates not allowed)
+        alt URL already stored
+            DB-->>Core: Existing Short URL
+            Core-->>Caller: 400 Bad Request (Duplicate)
+        else URL is new
+            Core->>Core: Sanitize or Fetch Title
+            alt Custom Keyword provided
+                Core->>Core: Sanitize Keyword
+                Core->>DB: Check if Keyword is free
+                alt Keyword taken
+                    Core-->>Caller: 400 Bad Request (Keyword exists)
+                end
+            else No Keyword provided
+                loop Until Keyword is free
+                    Core->>DB: Get Next Decimal
+                    Core->>Core: Convert Decimal to String Keyword
+                    Core->>DB: Check if Keyword is free
+                end
+                Core->>DB: Update Next Decimal
+            end
+
+            Core->>DB: yourls_insert_link_in_db()
+            alt Insert successful
+                DB-->>Core: Success
+                Core->>Hooks: do_action('post_add_new_link')
+                Core-->>Caller: 200 OK (Short URL Data)
+            else Concurrency Exception
+                DB-->>Core: DB Exception
+                Core-->>Caller: 503 Service Unavailable
+            else General DB Error
+                DB-->>Core: False
+                Core-->>Caller: 500 Internal Server Error
+            end
+        end
+    end
+```
