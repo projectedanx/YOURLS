@@ -274,3 +274,38 @@ sequenceDiagram
         end
     end
 ```
+
+## Core Version Check Pipeline (yourls_check_core_version)
+
+```mermaid
+sequenceDiagram
+    participant Admin
+    participant Core as Core (yourls_check_core_version)
+    participant DB as Database (Options)
+    participant API as External API (api.yourls.org)
+
+    Admin->>Core: Trigger Admin Request
+    Core->>DB: yourls_get_option('core_version_checks')
+    DB-->>Core: Check Data (failed_attempts, last_attempt, etc.)
+
+    alt Valid Cached Data & Recent Check
+        Core-->>Admin: Return Cached Version Result
+    else Expired or Missing Check Data
+        Core->>DB: yourls_get_db_stats() (URLs, Clicks)
+        DB-->>Core: Stats
+        Core->>Core: Gather Server & Usage Data ($stuff)
+        Core->>API: HTTP POST /core/version/1.1/
+
+        alt API Request Fails or Invalid JSON
+            API-->>Core: HTTP Error or Invalid Data
+            Core->>Core: Increment failed_attempts
+            Core->>DB: yourls_update_option('core_version_checks', Update)
+            Core-->>Admin: Return Error/Retry Later
+        else API Request Succeeds
+            API-->>Core: JSON response (latest_version, zipurl)
+            Core->>Core: Reset failed_attempts, update last_result
+            Core->>DB: yourls_update_option('core_version_checks', Update)
+            Core-->>Admin: Return Latest Version Info
+        end
+    end
+```
