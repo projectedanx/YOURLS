@@ -29,13 +29,13 @@ function add_link() {
 	if( $('#add-button').hasClass('disabled') ) {
 		return false;
 	}
-	var newurl = $("#add-url").val();
-	var nonce = $("#nonce-add").val();
+	const newurl = $("#add-url").val();
+	const nonce = $("#nonce-add").val();
 	if ( !newurl || newurl == 'http://' || newurl == 'https://' ) {
 		return;
 	}
-	var keyword = $("#add-keyword").val();
-	var nextid = parseInt($('#main_table tbody tr[id^="id-"]').length) + 1;
+	const keyword = $("#add-keyword").val();
+	const nextid = parseInt($('#main_table tbody tr[id^="id-"]').length) + 1;
 	add_loading("#add-button");
 	$.getJSON(
 		ajaxurl,
@@ -63,7 +63,7 @@ function toggle_share_fill_boxes( url, shorturl, title ) {
 	$('#titlelink').val( title );
 	$('#origlink').attr( 'href', url ).html( url );
 	$('#statlink').attr( 'href', shorturl+'+' ).html( shorturl+'+' );
-	var tweet = ( title ? title + ' ' + shorturl : shorturl );
+	const tweet = ( title ? title + ' ' + shorturl : shorturl );
 	$('#tweet_body').val( tweet ).keypress();
 	$('#shareboxes').slideDown( '300', function(){ init_clipboard(); } ); // clipboard re-initialized after slidedown to make sure the invisible Flash element is correctly positionned
 	$('#tweet_body').keypress();
@@ -75,8 +75,8 @@ function edit_link_display(id) {
 		return false;
 	}
 	add_loading('#actions-'+id+' .button');
-	var keyword = $('#keyword_'+id).val();
-	var nonce = get_var_from_query( $('#edit-button-'+id).attr('href'), 'nonce' );
+	const keyword = $('#keyword_'+id).val();
+	const nonce = get_var_from_query( $('#edit-button-'+id).attr('href'), 'nonce' );
 	$.getJSON(
 		ajaxurl,
 		{ action: "edit_display", keyword: keyword, nonce: nonce, id: id },
@@ -96,8 +96,8 @@ function remove_link(id) {
 	if (!confirm('Really delete?')) {
 		return;
 	}
-	var keyword = $('#keyword_'+id).val();
-	var nonce = get_var_from_query( $('#delete-button-'+id).attr('href'), 'nonce' );
+	const keyword = $('#keyword_'+id).val();
+	const nonce = get_var_from_query( $('#delete-button-'+id).attr('href'), 'nonce' );
 	$.getJSON(
 		ajaxurl,
 		{ action: "delete", keyword: keyword, nonce: nonce, id: id },
@@ -136,22 +136,23 @@ function edit_link_hide(id) {
 // Save edition of a link
 function edit_link_save(id) {
 	add_loading("#edit-close-" + id);
-	var newurl = $("#edit-url-" + id).val();
-	var newkeyword = $("#edit-keyword-" + id).val();
-	var title = $("#edit-title-" + id).val();
-	var keyword = $('#old_keyword_'+id).val();
-	var nonce = $('#nonce_'+id).val();
-	var www = $('#yourls-site').val();
+	const newurl = $("#edit-url-" + id).val();
+	const newkeyword = $("#edit-keyword-" + id).val();
+	const title = $("#edit-title-" + id).val();
+	const keyword = $('#old_keyword_'+id).val();
+	const nonce = $('#nonce_'+id).val();
+	const www = $('#yourls-site').val();
 	$.getJSON(
 		ajaxurl,
 		{action:'edit_save', url: newurl, id: id, keyword: keyword, newkeyword: newkeyword, title: title, nonce: nonce },
 		function(data){
 			if(data.status == 'success') {
 
+				let display_link = '';
 				if( data.url.title != '' ) {
-					var display_link = '<a href="' + data.url.url + '" title="' + data.url.title + '">' + data.url.display_title + '</a><br/><small><a href="' + data.url.url + '">' + data.url.display_url + '</a></small>';
+					display_link = '<a href="' + data.url.url + '" title="' + data.url.title + '">' + data.url.display_title + '</a><br/><small><a href="' + data.url.url + '">' + data.url.display_url + '</a></small>';
 				} else {
-					var display_link = '<a href="' + data.url.url + '" title="' + data.url.url + '">' + data.url.display_url + '</a>';
+					display_link = '<a href="' + data.url.url + '" title="' + data.url.url + '">' + data.url.display_url + '</a>';
 				}
 
 				$("#url-" + id).html(display_link);
@@ -202,7 +203,7 @@ function decrement_counter() {
 
 // Decrease number of total clicks
 function decrease_total_clicks( id ) {
-	var total_clicks = $("#overall_tracking strong:nth-child(2)");
+	const total_clicks = $("#overall_tracking strong:nth-child(2)");
 	total_clicks.html( parseInt( total_clicks.html() ) - parseInt( $('#clicks-' + id).html() ) );
 }
 
@@ -211,10 +212,10 @@ function toggle_share(id) {
 	if( $('#share-button-'+id).hasClass('disabled') ) {
 		return false;
 	}
-	var link = $('#url-'+id+' a:first');
-	var longurl = link.attr('href');
-	var title = link.attr('title');
-	var shorturl = $('#keyword-'+id+' a:first').attr('href');
+	const link = $('#url-'+id+' a:first');
+	const longurl = link.attr('href');
+	const title = link.attr('title');
+	const shorturl = $('#keyword-'+id+' a:first').attr('href');
 
 	toggle_share_fill_boxes( longurl, shorturl, title );
 }
@@ -225,7 +226,7 @@ function split_search_text_before_search() {
 	// Add 2 hidden fields and populate them with parts of search text
 	$("<input type='hidden' name='search_protocol' />").appendTo('#filter_form');
 	$("<input type='hidden' name='search_slashes' />").appendTo('#filter_form');
-	var search = get_protocol_slashes_and_rest( $('#filter_form input[name=search]').val() );
+	const search = get_protocol_slashes_and_rest( $('#filter_form input[name=search]').val() );
 	$('#filter_form input[name=search]').val( search.rest );
 	$('#filter_form input[name=search_protocol]').val( search.protocol );
 	$('#filter_form input[name=search_slashes]').val( search.slashes );
