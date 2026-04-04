@@ -75,6 +75,7 @@ class LoginCookieTest extends PHPUnit\Framework\TestCase {
     /**
      * Test login with invalid cookie - also check that no cookie is set
      */
+    #[\PHPUnit\Framework\Attributes\RunInSeparateProcess]
     public function test_login_invalid_cookie() {
         $_COOKIE[yourls_cookie_name()] = yourls_cookie_value( rand_str() );
         unset($_REQUEST);
