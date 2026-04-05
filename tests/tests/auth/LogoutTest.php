@@ -38,7 +38,9 @@ class LogoutTest extends PHPUnit\Framework\TestCase {
         $_REQUEST['nonce'] = yourls_create_nonce('admin_login');
         $valid = yourls_is_valid_user();
         $this->assertTrue($valid);
-        $this->assertSame('yourls_tests', self::$user);
+
+        $expected_user = defined('YOURLS_USER') ? YOURLS_USER : 'yourls';
+        $this->assertSame($expected_user, self::$user);
     }
 
     /**
@@ -61,7 +63,9 @@ class LogoutTest extends PHPUnit\Framework\TestCase {
         $_REQUEST['nonce'] = yourls_create_nonce('admin_login');
         $valid = yourls_is_valid_user();
         $this->assertTrue( $valid );
-        $this->assertSame('yourls_tests', self::$user);
+
+        $expected_user = defined('YOURLS_USER') ? YOURLS_USER : 'yourls';
+        $this->assertSame($expected_user, self::$user);
     }
 
 }
