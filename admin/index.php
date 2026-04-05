@@ -129,8 +129,8 @@ if ( isset( $_GET['u'] ) or isset( $_GET['up'] ) ) {
         // New style bookmarklet: ?up=<url protocol>&us=<url slashes>&ur=<url rest>
         $url = $_GET['up'] . $_GET['us'] . $_GET['ur'];
     }
-    $keyword = ( isset( $_GET['k'] ) ? ( $_GET['k'] ) : '' );
-    $title   = ( isset( $_GET['t'] ) ? ( $_GET['t'] ) : '' );
+    $keyword = $_GET['k'] ?? '';
+    $title   = $_GET['t'] ?? '';
     $return  = yourls_add_new_link( $url, $keyword, $title );
 
     // If fails because keyword already exist, retry with no keyword
@@ -158,7 +158,7 @@ if ( isset( $_GET['u'] ) or isset( $_GET['up'] ) ) {
     $page   = $total_pages = $perpage = 1;
     $offset = 0;
 
-    $text   = ( isset( $_GET['s'] ) ? stripslashes( $_GET['s'] ) : '' );
+    $text   = stripslashes( $_GET['s'] ?? '' );
 
     // Sharing with social bookmarklets
     if( !empty($_GET['share']) ) {
