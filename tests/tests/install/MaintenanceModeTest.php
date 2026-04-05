@@ -13,6 +13,7 @@ class MaintenanceModeTest extends PHPUnit\Framework\TestCase {
     }
 
     #[\PHPUnit\Framework\Attributes\RunInSeparateProcess]
+    #[\PHPUnit\Framework\Attributes\PreserveGlobalState(false)]
     public function test_maintenance_mode_enable() {
         $file = YOURLS_ABSPATH . '/.maintenance';
 
@@ -31,6 +32,7 @@ class MaintenanceModeTest extends PHPUnit\Framework\TestCase {
     }
 
     #[\PHPUnit\Framework\Attributes\RunInSeparateProcess]
+    #[\PHPUnit\Framework\Attributes\PreserveGlobalState(false)]
     public function test_maintenance_mode_disable() {
         $file = YOURLS_ABSPATH . '/.maintenance';
 

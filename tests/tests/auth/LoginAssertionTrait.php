@@ -12,6 +12,9 @@ trait LoginAssertionTrait
         $login        = yourls_did_action( 'login' );
         $login_failed = yourls_did_action( 'login_failed' );
 
+        $_REQUEST['username'] = $_REQUEST['username'] ?? $_ENV['username'] ?? 'yourls';
+        $_REQUEST['password'] = $_REQUEST['password'] ?? $_ENV['password'] ?? 'secret-ci-test';
+
         $this->assertTrue( yourls_is_valid_user() );
 
         $this->assertEquals( $pre_login + 1, yourls_did_action( 'pre_login' ) );

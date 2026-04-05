@@ -503,7 +503,7 @@ class FiltersTest extends PHPUnit\Framework\TestCase {
         });
 
         // Apply a random filter
-        yourls_apply_filter($hook, $var_value, 'extra_arg');
+        yourls_apply_filter($hook, $var_value, false, 'extra_arg');
 
         // Check if the 'all' hook intercepted it
         $this->assertNotEmpty($all_hook_args);
@@ -512,8 +512,7 @@ class FiltersTest extends PHPUnit\Framework\TestCase {
         // Verify the parameters passed to the 'all' hook
         $this->assertSame('filter', $last_call[0]);
         $this->assertSame($hook, $last_call[1]);
-        $this->assertSame($var_value, $last_call[2][0]);
-        $this->assertSame('extra_arg', $last_call[2][1]);
+        $this->assertSame([[$hook, $var_value, false, 'extra_arg']], $last_call[2]);
 
         // Clean up the 'all' hook to avoid polluting other tests
         unset($yourls_filters['all']);
