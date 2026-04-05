@@ -512,7 +512,7 @@ class FiltersTest extends PHPUnit\Framework\TestCase {
         // Verify the parameters passed to the 'all' hook
         $this->assertSame('filter', $last_call[0]);
         $this->assertSame($hook, $last_call[1]);
-        $this->assertSame([[$hook, $var_value, false, 'extra_arg']], $last_call[2]);
+        $this->assertSame([$var_value, false, 'extra_arg'], $last_call[2]);
 
         // Clean up the 'all' hook to avoid polluting other tests
         unset($yourls_filters['all']);
