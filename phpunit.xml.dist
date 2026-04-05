@@ -32,15 +32,14 @@
         <!-- Constants -->
         <const name="PHPUNIT_TESTSUITE" value="true"/>
         <!-- Login -->
-        <request name="username" value="yourls"/>
-        <request name="password" value="secret-ci-test"/>
+        <env name="username" value="yourls"/>
+        <env name="password" value="secret-ci-test"/>
+        <env name="format" value="simple"/>
         <!-- Install -->
         <server name="SERVER_SOFTWARE" value="TRAVIS APACHE"/>
         <!-- Stats data -->
         <server name="HTTP_USER_AGENT" value="Travis-CI (PHPUnit\3.7)"/>
         <server name="HTTP_HOST" value="travis.com"/>
         <server name="HTTP_CLIENT_IP" value="10.10.10.1"/>
-        <!-- API -->
-        <request name="format" value="simple"/>
     </php>
 </phpunit>
