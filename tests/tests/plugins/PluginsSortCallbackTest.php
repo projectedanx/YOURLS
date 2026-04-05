@@ -1,7 +1,7 @@
 <?php
 
 #[\PHPUnit\Framework\Attributes\Group('plugins')]
-class PluginsSortCallbackTest extends yut_TestCase {
+class PluginsSortCallbackTest extends PHPUnit\Framework\TestCase {
 
     public function test_plugins_sort_callback_asc() {
         $plugin_a = ['Plugin Name' => 'AAA'];

@@ -1,0 +1,49 @@
+{
+  "patterns": [
+    {
+      "id": "P-001",
+      "name": "Semantic Saponification",
+      "type": "Decay",
+      "measurement_proxy": "Percentage of backlog tagged P1 or Critical",
+      "diagnostic_threshold": "> 40% P1 = saponification confirmed",
+      "vortex_remediation": "Forced-rank distribution: maximum 10% P1, enforced by priority-sort before MoSCoW",
+      "structural_isomorphism": "Tier 1 Workflow Narrowing Effect — sequential context collapse without EntropyAnchor"
+    },
+    {
+      "id": "P-002",
+      "name": "Projection Tax",
+      "type": "Cognitive Bias",
+      "measurement_proxy": "Optimism Bias Delta (OBD) = actual_completion_pts / estimated_pts per ticket type",
+      "diagnostic_threshold": "OBD > 1.5 on >30% of tickets indicates systemic planning fallacy",
+      "vortex_remediation": "Confidence-Fidelity Buffer (CFB) multiplier: 1.3x–1.8x applied from Scar Registry",
+      "structural_isomorphism": "DCCDSchemaGuard Projection Tax — forcing rigid JSON schema collapses reasoning depth"
+    },
+    {
+      "id": "P-003",
+      "name": "Dependency Deadlock (Anionic Architecture Violation)",
+      "type": "Topological",
+      "measurement_proxy": "Betti-1 loop count in sprint DAG (non-contractible cycles)",
+      "diagnostic_threshold": "Any cycle > 0 = immediate halt; sprint unpluggable",
+      "vortex_remediation": "Kahn's Algorithm topological sort; all cycle participants ejected to Cut Line",
+      "structural_isomorphism": "Tier 3 Topological Obstruction (Betti-1 homological void); Sheaf Laplacian non-zero cohomology"
+    },
+    {
+      "id": "P-004",
+      "name": "Game Mechanic Exploit (Shadow System)",
+      "type": "Behavioral",
+      "measurement_proxy": "Point inflation ratio (developer estimate vs. Scar Registry median); epic fragmentation detection (shared AC + shared component)",
+      "diagnostic_threshold": "Inflation ratio > 1.4 on >20% of tickets = systemic gaming",
+      "vortex_remediation": "OBD recalibration + epic re-unification before sprint inclusion",
+      "structural_isomorphism": "GPT-5.3 Alignment Faking — agent optimizes surface metric while violating system invariants"
+    },
+    {
+      "id": "P-005",
+      "name": "Tech Debt Entropy Accumulation",
+      "type": "Compounding Decay",
+      "measurement_proxy": "Ratio of infrastructure tickets to feature tickets over rolling 5-sprint window",
+      "diagnostic_threshold": "Infrastructure < 10% of sprint allocation over 3 consecutive sprints = compounding debt confirmed",
+      "vortex_remediation": "Mandatory 15% Tech Debt Tithe; system halt if violated",
+      "structural_isomorphism": "SCOS Layer 11 Autopoietic Evolution failure — epistemic sclerosis from failure to prune necrotic logic"
+    }
+  ]
+}

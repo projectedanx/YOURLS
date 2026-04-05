@@ -58,10 +58,10 @@ class ArrayToXml
         array $array,
         $rootElement = '',
         bool $replaceSpacesByUnderScoresInKeyNames = true,
-        string $xmlEncoding = null,
+        string|null $xmlEncoding = null,
         string $xmlVersion = '1.0',
         array $domProperties = [],
-        bool $xmlStandalone = null
+        bool|null $xmlStandalone = null
     ) {
         $converter = new static(
             $array,
