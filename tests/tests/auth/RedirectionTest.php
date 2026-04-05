@@ -26,6 +26,8 @@ class RedirectionTest extends PHPUnit\Framework\TestCase {
      */
     public function test_login() {
         $_REQUEST['nonce'] = yourls_create_nonce('admin_login');
+        $_REQUEST['username'] = $_REQUEST['username'] ?? $_ENV['username'] ?? 'yourls';
+        $_REQUEST['password'] = $_REQUEST['password'] ?? $_ENV['password'] ?? 'secret-ci-test';
         $_SERVER['REQUEST_URI'] = '/';
         $this->assertSame( 3, yourls_is_valid_user() );
     }

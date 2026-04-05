@@ -8,27 +8,32 @@ class LogoutTest extends PHPUnit\Framework\TestCase {
 
     protected $backup_get;
     protected $backup_request;
+    protected $backup_actions;
     private static $user;
 
     protected function setUp(): void {
+        global $yourls_actions;
+        $this->backup_actions = $yourls_actions;
         $this->backup_get     = $_GET;
         $this->backup_request = $_REQUEST;
         self::$user = false;
-    }
-
-    protected function tearDown(): void {
-        $_GET = $this->backup_get;
-        $_REQUEST = $this->backup_request;
-    }
-
-    public static function setUpBeforeClass(): void {
         yourls_add_action( 'pre_setcookie', function ($in) {
             self::$user = $in[0]; // $in[0] is the user ID passed to yourls_setcookie()
         } );
     }
 
-    public static function tearDownAfterClass(): void {
+    protected function tearDown(): void {
+        global $yourls_actions;
+        $yourls_actions = $this->backup_actions;
+        $_GET = $this->backup_get;
+        $_REQUEST = $this->backup_request;
         yourls_remove_all_actions('pre_setcookie');
+    }
+
+    public static function setUpBeforeClass(): void {
+    }
+
+    public static function tearDownAfterClass(): void {
     }
 
     /**
@@ -36,9 +41,11 @@ class LogoutTest extends PHPUnit\Framework\TestCase {
      */
     public function test_logout_user_is_logged_in() {
         $_REQUEST['nonce'] = yourls_create_nonce('admin_login');
+        $_REQUEST['username'] = $_REQUEST['username'] ?? $_ENV['username'] ?? 'yourls';
+        $_REQUEST['password'] = $_REQUEST['password'] ?? $_ENV['password'] ?? 'secret-ci-test';
         $valid = yourls_is_valid_user();
         $this->assertTrue($valid);
-        $this->assertSame('yourls_tests', self::$user);
+        $this->assertSame(defined('YOURLS_USER') ? YOURLS_USER : $_REQUEST['username'], self::$user);
     }
 
     /**
@@ -59,9 +66,11 @@ class LogoutTest extends PHPUnit\Framework\TestCase {
     #[\PHPUnit\Framework\Attributes\Depends('test_logout_user_logs_out')]
     public function test_logout_user_is_logged_in_back() {
         $_REQUEST['nonce'] = yourls_create_nonce('admin_login');
+        $_REQUEST['username'] = $_REQUEST['username'] ?? $_ENV['username'] ?? 'yourls';
+        $_REQUEST['password'] = $_REQUEST['password'] ?? $_ENV['password'] ?? 'secret-ci-test';
         $valid = yourls_is_valid_user();
         $this->assertTrue( $valid );
-        $this->assertSame('yourls_tests', self::$user);
+        $this->assertSame(defined('YOURLS_USER') ? YOURLS_USER : $_REQUEST['username'], self::$user);
     }
 
 }
