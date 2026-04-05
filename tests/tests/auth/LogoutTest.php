@@ -16,6 +16,8 @@ class LogoutTest extends PHPUnit\Framework\TestCase {
         $this->backup_actions = $yourls_actions;
         $this->backup_get     = $_GET;
         $this->backup_request = $_REQUEST;
+        global $yourls_actions;
+        $this->backup_actions = $yourls_actions;
         self::$user = false;
         yourls_add_action( 'pre_setcookie', function ($in) {
             self::$user = $in[0]; // $in[0] is the user ID passed to yourls_setcookie()
@@ -40,6 +42,9 @@ class LogoutTest extends PHPUnit\Framework\TestCase {
      * Check logout procedure - phase 1 - we're logging in
      */
     public function test_logout_user_is_logged_in() {
+        // Mock a specific user login by providing specific $_REQUEST variables. We use 'yourls' defined in yourls-tests-config
+        $_REQUEST['username'] = 'yourls';
+        $_REQUEST['password'] = 'secret-ci-test';
         $_REQUEST['nonce'] = yourls_create_nonce('admin_login');
         $_REQUEST['username'] = $_REQUEST['username'] ?? $_ENV['username'] ?? 'yourls';
         $_REQUEST['password'] = $_REQUEST['password'] ?? $_ENV['password'] ?? 'secret-ci-test';
@@ -65,6 +70,8 @@ class LogoutTest extends PHPUnit\Framework\TestCase {
      */
     #[\PHPUnit\Framework\Attributes\Depends('test_logout_user_logs_out')]
     public function test_logout_user_is_logged_in_back() {
+        $_REQUEST['username'] = 'yourls';
+        $_REQUEST['password'] = 'secret-ci-test';
         $_REQUEST['nonce'] = yourls_create_nonce('admin_login');
         $_REQUEST['username'] = $_REQUEST['username'] ?? $_ENV['username'] ?? 'yourls';
         $_REQUEST['password'] = $_REQUEST['password'] ?? $_ENV['password'] ?? 'secret-ci-test';

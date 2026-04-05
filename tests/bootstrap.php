@@ -11,6 +11,10 @@ global $yourls_user_passwords, $yourls_reserved_URL,          // main object & c
        $yourls_locale, $yourls_l10n, $yourls_locale_formats,  // used by L10N API
        $yourls_allowedentitynames, $yourls_allowedprotocols;  // used by KSES
 
+// Polyfill $_REQUEST for PHPUnit 10+
+$_REQUEST['username'] = $_REQUEST['username'] ?? $_ENV['username'] ?? null;
+$_REQUEST['password'] = $_REQUEST['password'] ?? $_ENV['password'] ?? null;
+
 require_once __DIR__ . '/includes/utils.php';
 require_once __DIR__ . '/includes/install.php';
 
