@@ -162,8 +162,8 @@ function yourls_apply_filter( $hook, $value = '', $is_action = false ) {
     $args = func_get_args();
 
     // Do 'all' filters first. We check if $is_action to avoid calling `yourls_call_all_hooks()` twice
-    if ( !$is_action && isset($yourls_filters['all']) ) {
-        yourls_call_all_hooks('filter', $hook, $args);
+    if ( $is_action !== true && isset($yourls_filters['all']) ) {
+        yourls_call_all_hooks('filter', $hook, array_slice($args, 1));
     }
 
     // If we have no hook attached to that filter, just return unmodified $value
@@ -266,7 +266,7 @@ function yourls_did_action( $hook ) {
  * @param mixed  ...$args The arguments passed to the hook.
  * @return void
  */
-function yourls_call_all_hooks($type, $hook, ...$args) {
+function yourls_call_all_hooks($type, $hook, $args) {
     global $yourls_filters;
 
     // Loops through each filter or action hooked with the 'all' hook
