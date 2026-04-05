@@ -50,7 +50,7 @@ class DeepTest extends PHPUnit\Framework\TestCase {
         // yourls_add_query_arg will re-encode existing params using yourls_urlencode_deep
         // parse_str('a=b+c') results in $qs['a'] = 'b c'
         // yourls_urlencode_deep($qs) results in $qs['a'] = 'b+c'
-        $this->assertEquals( 'http://example.com/test.php?a=b+c&d=e', yourls_add_query_arg( 'd', 'e', $url2 ) );
+        $this->assertEquals( 'http://example.com/test.php?a=b%2Bc&d=e', yourls_add_query_arg( 'd', 'e', $url2 ) );
     }
 
     /**

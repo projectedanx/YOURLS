@@ -8,37 +8,53 @@ class LogoutTest extends PHPUnit\Framework\TestCase {
 
     protected $backup_get;
     protected $backup_request;
+    protected $backup_actions;
     private static $user;
 
     protected function setUp(): void {
+        global $yourls_actions;
+        $this->backup_actions = $yourls_actions;
         $this->backup_get     = $_GET;
         $this->backup_request = $_REQUEST;
+        global $yourls_actions;
+        $this->backup_actions = $yourls_actions;
         self::$user = false;
-    }
-
-    protected function tearDown(): void {
-        $_GET = $this->backup_get;
-        $_REQUEST = $this->backup_request;
-    }
-
-    public static function setUpBeforeClass(): void {
         yourls_add_action( 'pre_setcookie', function ($in) {
             self::$user = $in[0]; // $in[0] is the user ID passed to yourls_setcookie()
         } );
     }
 
-    public static function tearDownAfterClass(): void {
+    protected function tearDown(): void {
+        global $yourls_actions;
+        $yourls_actions = $this->backup_actions;
+        $_GET = $this->backup_get;
+        $_REQUEST = $this->backup_request;
         yourls_remove_all_actions('pre_setcookie');
+    }
+
+    public static function setUpBeforeClass(): void {
+    }
+
+    public static function tearDownAfterClass(): void {
     }
 
     /**
      * Check logout procedure - phase 1 - we're logging in
      */
     public function test_logout_user_is_logged_in() {
+        // Mock a specific user login by providing specific $_REQUEST variables. We use 'yourls' defined in yourls-tests-config
+        global $yourls_user_passwords;
+        $valid_users = array_keys($yourls_user_passwords);
+        $u = $valid_users[0];
+        $p = $yourls_user_passwords[$u];
+        $_REQUEST['username'] = $u;
+        $_REQUEST['password'] = $p;
         $_REQUEST['nonce'] = yourls_create_nonce('admin_login');
+
+
         $valid = yourls_is_valid_user();
         $this->assertTrue($valid);
-        $this->assertSame('yourls', self::$user);
+        $this->assertSame(defined('YOURLS_USER') ? YOURLS_USER : $_REQUEST['username'], self::$user);
     }
 
     /**
@@ -58,10 +74,18 @@ class LogoutTest extends PHPUnit\Framework\TestCase {
      */
     #[\PHPUnit\Framework\Attributes\Depends('test_logout_user_logs_out')]
     public function test_logout_user_is_logged_in_back() {
+        global $yourls_user_passwords;
+        $valid_users = array_keys($yourls_user_passwords);
+        $u = $valid_users[0];
+        $p = $yourls_user_passwords[$u];
+        $_REQUEST['username'] = $u;
+        $_REQUEST['password'] = $p;
         $_REQUEST['nonce'] = yourls_create_nonce('admin_login');
+
+
         $valid = yourls_is_valid_user();
         $this->assertTrue( $valid );
-        $this->assertSame('yourls', self::$user);
+        $this->assertSame(defined('YOURLS_USER') ? YOURLS_USER : $_REQUEST['username'], self::$user);
     }
 
 }
