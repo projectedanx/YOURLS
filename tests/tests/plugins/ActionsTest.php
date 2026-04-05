@@ -578,7 +578,7 @@ class ActionsTest extends PHPUnit\Framework\TestCase {
         // Verify the parameters passed to the 'all' hook
         $this->assertSame('action', $last_call[0]);
         $this->assertSame($hook, $last_call[1]);
-        $this->assertSame([[$var_value, 'extra_arg']], $last_call[2]);
+        $this->assertSame([$var_value, 'extra_arg'], $last_call[2]);
 
         // Clean up the 'all' hook to avoid polluting other tests
         unset($yourls_filters['all']);

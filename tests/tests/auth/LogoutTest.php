@@ -43,11 +43,15 @@ class LogoutTest extends PHPUnit\Framework\TestCase {
      */
     public function test_logout_user_is_logged_in() {
         // Mock a specific user login by providing specific $_REQUEST variables. We use 'yourls' defined in yourls-tests-config
-        $_REQUEST['username'] = 'yourls';
-        $_REQUEST['password'] = 'secret-ci-test';
+        global $yourls_user_passwords;
+        $valid_users = array_keys($yourls_user_passwords);
+        $u = $valid_users[0];
+        $p = $yourls_user_passwords[$u];
+        $_REQUEST['username'] = $u;
+        $_REQUEST['password'] = $p;
         $_REQUEST['nonce'] = yourls_create_nonce('admin_login');
-        $_REQUEST['username'] = $_REQUEST['username'] ?? $_ENV['username'] ?? 'yourls';
-        $_REQUEST['password'] = $_REQUEST['password'] ?? $_ENV['password'] ?? 'secret-ci-test';
+
+
         $valid = yourls_is_valid_user();
         $this->assertTrue($valid);
         $this->assertSame(defined('YOURLS_USER') ? YOURLS_USER : $_REQUEST['username'], self::$user);
@@ -70,11 +74,15 @@ class LogoutTest extends PHPUnit\Framework\TestCase {
      */
     #[\PHPUnit\Framework\Attributes\Depends('test_logout_user_logs_out')]
     public function test_logout_user_is_logged_in_back() {
-        $_REQUEST['username'] = 'yourls';
-        $_REQUEST['password'] = 'secret-ci-test';
+        global $yourls_user_passwords;
+        $valid_users = array_keys($yourls_user_passwords);
+        $u = $valid_users[0];
+        $p = $yourls_user_passwords[$u];
+        $_REQUEST['username'] = $u;
+        $_REQUEST['password'] = $p;
         $_REQUEST['nonce'] = yourls_create_nonce('admin_login');
-        $_REQUEST['username'] = $_REQUEST['username'] ?? $_ENV['username'] ?? 'yourls';
-        $_REQUEST['password'] = $_REQUEST['password'] ?? $_ENV['password'] ?? 'secret-ci-test';
+
+
         $valid = yourls_is_valid_user();
         $this->assertTrue( $valid );
         $this->assertSame(defined('YOURLS_USER') ? YOURLS_USER : $_REQUEST['username'], self::$user);
