@@ -50,3 +50,41 @@ erDiagram
 
     URL ||--o{ LOG : "logs clicks"
 ```
+
+## URL Redirection Flow (Sequence Diagram)
+
+```mermaid
+sequenceDiagram
+    participant Visitor
+    participant yourls_loader as yourls-loader.php
+    participant yourls_go as yourls-go.php
+    participant DB as Database
+
+    Visitor->>yourls_loader: GET /abc
+    yourls_loader->>yourls_loader: yourls_get_request()
+    yourls_loader->>yourls_loader: Parse keyword (e.g., "abc")
+
+    alt is shorturl or page
+        yourls_loader->>yourls_go: include yourls-go.php
+        yourls_go->>yourls_go: yourls_sanitize_keyword()
+
+        alt is page
+            yourls_go->>Visitor: Render page
+        else is shorturl
+            yourls_go->>DB: yourls_get_keyword_longurl()
+            DB-->>yourls_go: Returns long URL
+
+            yourls_go->>yourls_go: yourls_redirect_shorturl()
+
+            yourls_go->>DB: yourls_update_clicks()
+            DB-->>yourls_go: Clicks updated
+
+            yourls_go->>DB: yourls_log_redirect()
+            DB-->>yourls_go: Redirect logged
+
+            yourls_go->>Visitor: HTTP 301 Redirect to long URL
+        end
+    else keyword not found
+        yourls_loader->>Visitor: HTTP 302 Redirect to YOURLS_SITE
+    end
+```
