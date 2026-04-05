@@ -432,7 +432,7 @@ function yourls_update_table_to_14() {
     $total = yourls_get_db_stats();
     $total = $total['total_links'];
 
-    $sql = "SELECT `keyword`,`url` FROM `$table` WHERE 1=1 ORDER BY `url` ASC LIMIT $from, $chunk ;";
+    $sql = "SELECT `keyword` FROM `$table` WHERE 1=1 ORDER BY `url` ASC LIMIT $from, $chunk ;";
 
     $rows = $ydb->fetchObjects($sql);
 
@@ -440,23 +440,22 @@ function yourls_update_table_to_14() {
     $queries = 0;
 
     if (count($rows) > 0) {
-        $sql = "UPDATE `$table` SET `keyword` = CASE `url` ";
+        $sql = "UPDATE `$table` SET `keyword` = CASE `keyword` ";
         $binds = [];
-        $url_binds = [];
+        $keyword_binds = [];
 
         foreach( $rows as $i => $row ) {
             $keyword = $row->keyword;
-            $url = $row->url;
             $newkeyword = yourls_int2string( $keyword );
 
-            $sql .= "WHEN :url_$i THEN :newkeyword_$i ";
-            $binds["url_$i"] = $url;
+            $sql .= "WHEN :oldkeyword_$i THEN :newkeyword_$i ";
+            $binds["oldkeyword_$i"] = $keyword;
             $binds["newkeyword_$i"] = $newkeyword;
-            $url_binds[] = ":url_$i";
+            $keyword_binds[] = ":oldkeyword_$i";
 
             $count++;
         }
-        $sql .= "END WHERE `url` IN (" . implode( ', ', $url_binds ) . ");";
+        $sql .= "END WHERE `keyword` IN (" . implode( ', ', $keyword_binds ) . ")";
 
         if ($ydb->perform($sql, $binds)) {
             $queries = $count;
