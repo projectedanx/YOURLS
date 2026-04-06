@@ -59,8 +59,8 @@ class LoginCookieTest extends PHPUnit\Framework\TestCase {
     /**
      * Test login with valid cookie - also check that cookie is set
      */
-    #[\PHPUnit\Framework\Attributes\RunInSeparateProcess]
-    #[\PHPUnit\Framework\Attributes\PreserveGlobalState(false)]
+    //#[\PHPUnit\Framework\Attributes\RunInSeparateProcess]
+    //#[\PHPUnit\Framework\Attributes\PreserveGlobalState(false)]
     public function test_login_valid_cookie() {
         global $yourls_user_passwords;
         $random_user = array_rand($yourls_user_passwords);
@@ -76,8 +76,8 @@ class LoginCookieTest extends PHPUnit\Framework\TestCase {
     /**
      * Test login with invalid cookie - also check that no cookie is set
      */
-    #[\PHPUnit\Framework\Attributes\RunInSeparateProcess]
-    #[\PHPUnit\Framework\Attributes\PreserveGlobalState(false)]
+    //#[\PHPUnit\Framework\Attributes\RunInSeparateProcess]
+    //#[\PHPUnit\Framework\Attributes\PreserveGlobalState(false)]
     public function test_login_invalid_cookie() {
         $_COOKIE[yourls_cookie_name()] = yourls_cookie_value( rand_str() );
         unset($_REQUEST);
