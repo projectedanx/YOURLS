@@ -129,7 +129,7 @@ class AdminParams
         }
 
         // @hook Default search text in links displayed
-        return yourls_apply_filter('admin_view_get_search_text', htmlspecialchars(strip_tags(trim($search)), ENT_QUOTES));
+        return yourls_apply_filter('admin_view_get_search_text', strip_tags(trim($search)));
     }
 
     /**
