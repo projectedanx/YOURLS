@@ -66,5 +66,7 @@ yourls_add_action( 'pre_yourls_die', function($params) {
 
 echo "YOURLS installed, starting PHPUnit\n\n";
 
-require_once __DIR__ . "/tests/auth/AbstractLoginTestCase.php";
-require_once __DIR__ . "/tests/auth/LoginAssertionTrait.php";
+if (class_exists('PHPUnit\Framework\TestCase')) {
+    require_once __DIR__ . "/tests/auth/AbstractLoginTestCase.php";
+    require_once __DIR__ . "/tests/auth/LoginAssertionTrait.php";
+}
