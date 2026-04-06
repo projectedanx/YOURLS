@@ -27,7 +27,7 @@ class Format_Deep_Replace extends PHPUnit\Framework\TestCase {
         // Other tests
         $this->assertEquals( 'testtest', yourls_deep_replace( 'a', 'testaatest' ) );
         $this->assertEquals( 'testtest', yourls_deep_replace( array('a', 'b'), 'testbaatest' ) );
-        $this->assertEquals( 'testtest', yourls_deep_replace( array('ab', 'cd'), 'testacbdtest' ) );
+        $this->assertEquals( 'testtest', yourls_deep_replace( array('ab', 'cd'), 'testacdbtest' ) );
     }
 
 }

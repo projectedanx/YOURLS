@@ -65,10 +65,10 @@ class LoginCookieTest extends PHPUnit\Framework\TestCase {
         $_COOKIE[yourls_cookie_name()] = yourls_cookie_value( $random_user );
         unset($_REQUEST);
 
-        $this->assertSame( 0, yourls_did_action('pre_setcookie') );
+        $before = yourls_did_action('pre_setcookie');
         $this->assertTrue(yourls_check_auth_cookie());
         $this->assertTrue(yourls_is_valid_user());
-        $this->assertSame( 1, yourls_did_action('pre_setcookie') );
+        $this->assertSame( $before + 1, yourls_did_action('pre_setcookie') );
     }
 
     /**
@@ -78,10 +78,10 @@ class LoginCookieTest extends PHPUnit\Framework\TestCase {
         $_COOKIE[yourls_cookie_name()] = yourls_cookie_value( rand_str() );
         unset($_REQUEST);
 
-        $this->assertSame( 0, yourls_did_action('pre_setcookie') );
+        $before = yourls_did_action('pre_setcookie');
         $this->assertFalse(yourls_check_auth_cookie());
         $this->assertNotTrue(yourls_is_valid_user());
-        $this->assertSame( 0, yourls_did_action('pre_setcookie') );
+        $this->assertSame( $before, yourls_did_action('pre_setcookie') );
     }
 
 }
