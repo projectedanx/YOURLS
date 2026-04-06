@@ -112,4 +112,21 @@ class CRUDTest extends PHPUnit\Framework\TestCase {
         $this->assertFalse( yourls_is_shorturl( $keyword ) );
     }
 
+
+    public function test_insert_link_in_db() {
+        $keyword = rand_str();
+        $title   = rand_str();
+        $url     = 'http://' . rand_str();
+
+        $insert = yourls_insert_link_in_db( $url, $keyword, $title );
+        $this->assertTrue( $insert );
+
+        $infos = yourls_get_keyword_infos( $keyword, false );
+        $this->assertEquals( $title, $infos['title'] );
+        $this->assertEquals( $url, $infos['url'] );
+
+        // Clean up
+        yourls_delete_link_by_keyword( $keyword );
+    }
+
 }
