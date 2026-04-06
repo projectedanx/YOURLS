@@ -357,7 +357,7 @@ function yourls_html_tfooter_filter_form( $params = array() ) {
                             'clicks'       => yourls__( 'Clicks' ),
                         );
                         $_select = yourls_html_select( 'sort_by', $_options, $sort_by, false,  yourls__( 'Sort by' ) );
-                        $sort_order = isset( $sort_order ) ? $sort_order : 'desc' ;
+                        $sort_order = $sort_order ?? 'desc' ;
                         $_options = array(
                             'asc'  => yourls__( 'Ascending' ),
                             'desc' => yourls__( 'Descending' ),
@@ -786,7 +786,7 @@ function yourls_html_link( $href, $anchor = '', $element = '' ) {
 function yourls_login_screen( $error_msg = '' ) {
     yourls_html_head( 'login' );
 
-    $action = ( isset( $_GET['action'] ) && $_GET['action'] == 'logout' ? '?' : '' );
+    $action = ( ($_GET['action'] ?? '') === 'logout' ? '?' : '' );
 
     yourls_html_logo();
     ?>
@@ -840,7 +840,7 @@ function yourls_html_menu_item( $link, $ar, $class = 'admin_menu_toplevel' ) {
     if( !isset( $ar['url'] ) ) {
         return;
     }
-    $anchor = isset( $ar['anchor'] ) ? $ar['anchor'] : $link;
+    $anchor = $ar['anchor'] ?? $link;
     $title  = isset( $ar['title'] ) ? 'title="' . $ar['title'] . '"' : '';
 
     if( $class == 'admin_menu_toplevel' ) {
@@ -1039,7 +1039,8 @@ function yourls_new_core_version_notice($compare_with = null) {
     $compare_with = $compare_with ?: YOURLS_VERSION;
 
     $checks = yourls_get_option( 'core_version_checks' );
-    $latest = isset($checks->last_result->latest) ? yourls_sanitize_version($checks->last_result->latest) : false;
+    $latest_result = $checks->last_result->latest ?? false;
+    $latest = $latest_result ? yourls_sanitize_version($latest_result) : false;
 
     if( $latest AND version_compare( $latest, $compare_with, '>' ) ) {
         yourls_do_action('new_core_version_notice', $latest);
@@ -1164,7 +1165,8 @@ function yourls_table_add_row_action_array( $keyword, $id, $statlink, $edit_link
 function yourls_table_add_row_action_links( $keyword, $url, $ip, $clicks, $timestamp, $actions ) {
     $action_links = '';
     foreach( $actions as $key => $action ) {
-        $onclick = isset( $action['onclick'] ) ? 'onclick="' . $action['onclick'] . '"' : '' ;
+        $onclick_val = $action['onclick'] ?? '';
+        $onclick = $onclick_val ? 'onclick="' . $onclick_val . '"' : '';
         $action_links .= sprintf( '<a href="%s" id="%s" title="%s" class="%s" %s>%s</a>',
             $action['href'], $action['id'], $action['title'], 'button button_'.$key, $onclick, $action['anchor']
         );
