@@ -24,6 +24,16 @@ class GetDomainTest extends PHPUnit\Framework\TestCase {
         yield array( 'http:///example.com', '', '' ); // parse_url returns false or empty for this
         yield array( '', '', '' );
         yield array( '://', '://', '://' ); // malformed parse_url fallback to path
+
+        // Add additional edge cases
+        yield array( 'http://192.168.1.1/foo', '192.168.1.1', 'http://192.168.1.1' ); // IPv4
+        yield array( 'http://[2001:db8::1]/', '[2001:db8::1]', 'http://[2001:db8::1]' ); // IPv6
+        yield array( '//example.com/foo', 'example.com', 'example.com' ); // Protocol-relative
+        yield array( 'http://xn--bcher-kva.example/', 'xn--bcher-kva.example', 'http://xn--bcher-kva.example' ); // IDN domain
+        yield array( 'http://example.com/path?foo=bar#baz', 'example.com', 'http://example.com' ); // Queries and fragments
+        yield array( 'example.com:8080/foo', 'example.com', 'example.com' ); // Path-like string with port but no scheme
+        yield array( 'http://user:pass@example.com/foo', 'example.com', 'http://example.com' ); // HTTP Basic Auth
+        yield array( 'http://sub.sub.example.co.uk', 'sub.sub.example.co.uk', 'http://sub.sub.example.co.uk' ); // Subdomains
     }
 
     /**
