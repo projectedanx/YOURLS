@@ -128,8 +128,8 @@ class AdminParams
             $search .= $_GET['search'];
         }
 
-        // @hook Default search text in links displayed
-        return yourls_apply_filter('admin_view_get_search_text', htmlspecialchars(strip_tags(trim($search)), ENT_QUOTES));
+        // @hook Default searching in the admin view
+        return trim(yourls_apply_filter('admin_view_search', $search));
     }
 
     /**
