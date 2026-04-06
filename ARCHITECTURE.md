@@ -309,3 +309,38 @@ sequenceDiagram
         end
     end
 ```
+
+## System Installation Pipeline (admin/install.php)
+
+```mermaid
+sequenceDiagram
+    participant Admin
+    participant Install as Install Script (admin/install.php)
+    participant Core as Core Checks
+    participant FS as File System
+    participant DB as Database Engine
+
+    Admin->>Install: GET /admin/install.php
+    Install->>Core: yourls_check_PDO()
+    Install->>Core: yourls_check_database_version()
+    Install->>Core: yourls_check_php_version()
+    Install->>Core: yourls_is_installed()
+    alt Already Installed
+        Install->>FS: check & yourls_create_htaccess()
+        Install-->>Admin: Show "Already installed" error
+    else Not Installed & Pre-requisites Met
+        Admin->>Install: POST /admin/install.php?install=Install YOURLS
+        Install->>FS: yourls_create_htaccess()
+        alt IIS Server
+            FS-->>Install: Create web.config
+        else Apache/Other
+            FS-->>Install: Create .htaccess
+        end
+        Install->>DB: yourls_create_sql_tables()
+        DB->>DB: Create URL, OPTIONS, LOG tables
+        DB->>DB: yourls_initialize_options() (version, next_id, etc.)
+        DB->>DB: yourls_insert_sample_links()
+        DB-->>Install: Return Success/Error Arrays
+        Install-->>Admin: Show Success & Admin Link
+    end
+```
