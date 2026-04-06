@@ -16,9 +16,7 @@ class NeedsSSLTest extends PHPUnit\Framework\TestCase {
      * Check that yourls_needs_ssl() behaves as expected
      *
      * @since 0.1
-     * @runInSeparateProcess
      */
-    #[\PHPUnit\Framework\Attributes\PreserveGlobalState(false)]
     public function test_yourls_needs_ssl() {
         if (!defined('YOURLS_ADMIN_SSL')) {
             define('YOURLS_ADMIN_SSL', false);
