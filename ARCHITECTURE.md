@@ -344,3 +344,9 @@ sequenceDiagram
         Install-->>Admin: Show Success & Admin Link
     end
 ```
+
+### MCP Server Integration (KORSAKOV)
+The `mcp_server.py` implementation exposes YOURLS API functionalities (`shorturl`, `expand`, `url-stats`) over the Model Context Protocol. Auth credentials are mathematically extracted from the environment (`YOURLS_SIGNATURE`, `YOURLS_USERNAME`, etc) fulfilling CABP isolation invariants—Zero-Trust boundary maintained.
+- **Topological DAG**: Documented in `mcp_topology_analysis.md`.
+- **Fault Taxonomy**: Handlers implement SERF-compliant error returns protecting against JSON-RPC 2.0 hallucination leakage.
+- **Martensite State**: CFDI verified < 0.15 across all tools (`martensite_check.json`).
