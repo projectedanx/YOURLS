@@ -202,22 +202,6 @@ if( yourls_do_log_redirect() ) {
     $last_24h       = yourls_apply_filter( 'pre_yourls_info_last_24h', $last_24h );
     $countries      = yourls_apply_filter( 'pre_yourls_info_countries', $countries );
 
-    // I can haz debug data
-    /**
-    echo "<pre>";
-    echo "referrers: "; print_r( $referrers );
-    echo "referrer sort: "; print_r( $referrer_sort );
-    echo "direct: $direct\n";
-    echo "notdirect: $notdirect\n";
-    echo "dates: "; print_r( $dates );
-    echo "list of days: "; print_r( $list_of_days );
-    echo "list_of_months: "; print_r( $list_of_months );
-    echo "list_of_years: "; print_r( $list_of_years );
-    echo "last_24h: "; print_r( $last_24h );
-    echo "countries: "; print_r( $countries );
-    die();
-    **/
-
 }
 
 yourls_html_head( 'infos', yourls_s( 'Statistics for %s', YOURLS_SITE.'/'.$keyword ) );
