@@ -81,9 +81,9 @@ if( yourls_do_log_redirect() ) {
         }
 
         $host = yourls_get_domain( $row->referrer );
-        if( !array_key_exists( $host, $referrers ) )
+        if( !isset( $referrers[$host] ) )
             $referrers[$host] = array( );
-        if( !array_key_exists( $row->referrer, $referrers[$host] ) ) {
+        if( !isset( $referrers[$host][$row->referrer] ) ) {
             $referrers[$host][$row->referrer] = $row->count;
             $notdirect += $row->count;
         } else {

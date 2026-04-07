@@ -518,7 +518,7 @@ class AYOTest extends PHPUnit\Framework\TestCase {
     function test_yourls_get_core_version_json($url) {
         $req = yourls_http_get($url);
 
-        if ($req->status_code != 200) {
+        if (is_string($req) || $req->status_code != 200) {
             $this->markTestSkipped("Unable to reach $url - test skipped");
         }
 
