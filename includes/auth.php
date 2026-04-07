@@ -31,7 +31,7 @@ yourls_do_action( 'auth_successful' );
  * The following code is a shim that helps users store passwords securely in config.php
  * by storing a password hash and removing the plaintext.
  *
- * TODO: Remove this once real user management is implemented
+ * Note: This shim is required until real user management is implemented
  */
 
 // Did we just fail at encrypting passwords ?
