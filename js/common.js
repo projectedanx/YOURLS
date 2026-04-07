@@ -78,7 +78,14 @@ function trim_long_string( string, length = 60 ) {
 }
 
 // Get the var=xxx from a query string
-function get_var_from_query( url, varname = 'nonce', default_val = '' ) {
+function get_var_from_query( url, varname, default_val ) {
+	if( varname === undefined ) {
+		varname = 'nonce';
+	}
+	if( default_val === undefined ) {
+		default_val = '';
+	}
+
 	// Split the url on '?' and get only the params (which is element 1)
 	let parts = url.split('?');
 	if (parts.length < 2) return default_val;
