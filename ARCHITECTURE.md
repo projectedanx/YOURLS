@@ -350,3 +350,87 @@ The `mcp_server.py` implementation exposes YOURLS API functionalities (`shorturl
 - **Topological DAG**: Documented in `mcp_topology_analysis.md`.
 - **Fault Taxonomy**: Handlers implement SERF-compliant error returns protecting against JSON-RPC 2.0 hallucination leakage.
 - **Martensite State**: CFDI verified < 0.15 across all tools (`martensite_check.json`).
+
+## Click Tracking & Stats Logging Pipeline (yourls_log_redirect)
+
+```mermaid
+sequenceDiagram
+    participant Core as Core (yourls_log_redirect)
+    participant Hooks as Plugin Hooks
+    participant IP as GeoIP / IP Parser
+    participant DB as Database Layer
+
+    Core->>Hooks: apply_filters('shunt_log_redirect')
+    alt Shunt returns true (short-circuit)
+        Hooks-->>Core: Stop logging
+    else Proceed with logging
+        Core->>Core: yourls_do_log_redirect() (Check if stats enabled)
+        alt Stats Disabled
+            Core-->>Core: Return true
+        else Stats Enabled
+            Core->>IP: yourls_get_IP()
+            IP-->>Core: IP Address
+            Core->>Core: yourls_sanitize_keyword()
+            Core->>Core: yourls_get_referrer()
+            Core->>Core: yourls_get_user_agent()
+            Core->>IP: yourls_geo_ip_to_countrycode(IP)
+            IP-->>Core: Country Code
+
+            Core->>DB: prepare INSERT into LOG table (click_time, shorturl, referrer, ua, ip, location)
+            alt Database Write Successful
+                DB-->>Core: Success (1 affected row)
+                Core-->>Core: Return 1
+            else Concurrency / DB Error
+                DB-->>Core: Exception thrown
+                Core-->>Core: Catch Exception, Return 0
+            end
+        end
+    end
+```
+
+## Plugin Hook Resolution Flow (yourls_do_action / yourls_apply_filter)
+
+```mermaid
+sequenceDiagram
+    participant Caller
+    participant DoAction as yourls_do_action()
+    participant ApplyFilter as yourls_apply_filter()
+    participant AllHooks as yourls_call_all_hooks()
+    participant Registry as $yourls_filters
+
+    alt Dispatch Action
+        Caller->>DoAction: yourls_do_action('hook_name', $args)
+        DoAction->>DoAction: Increment $yourls_actions['hook_name'] count
+
+        alt 'all' hook registered
+            DoAction->>AllHooks: yourls_call_all_hooks('action', 'hook_name')
+            AllHooks->>Registry: iterate over $yourls_filters['all']
+            Registry-->>AllHooks: execute callbacks
+        end
+        DoAction->>ApplyFilter: yourls_apply_filter('hook_name', $args, $is_action = true)
+    else Dispatch Filter
+        Caller->>ApplyFilter: yourls_apply_filter('hook_name', $value, $is_action = false)
+        alt 'all' hook registered
+            ApplyFilter->>AllHooks: yourls_call_all_hooks('filter', 'hook_name')
+            AllHooks->>Registry: iterate over $yourls_filters['all']
+            Registry-->>AllHooks: execute callbacks
+        end
+    end
+
+    ApplyFilter->>Registry: Check if $yourls_filters['hook_name'] exists
+    alt Hook Not Found
+        Registry-->>ApplyFilter: false
+        ApplyFilter-->>Caller: Return original $value / execution continues
+    else Hook Found
+        Registry-->>ApplyFilter: Sorted array by priority
+        loop Priority Levels
+            loop Callbacks inside Priority
+                ApplyFilter->>ApplyFilter: Execute call_user_func_array(callback)
+                alt Is Filter Type
+                    ApplyFilter->>ApplyFilter: Update $value with callback result
+                end
+            end
+        end
+        ApplyFilter-->>Caller: Return modified $value (or null for actions)
+    end
+```

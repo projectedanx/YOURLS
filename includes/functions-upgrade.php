@@ -376,15 +376,8 @@ function yourls_alter_url_table_to_14() {
     $ydb = yourls_get_db();
     $table = YOURLS_DB_TABLE_URL;
 
-    $alters = array();
-    $results = array();
-    $alters[] = "ALTER TABLE `$table` CHANGE `id` `keyword` VARCHAR( 200 ) NOT NULL";
-    $alters[] = "ALTER TABLE `$table` CHANGE `url` `url` TEXT NOT NULL";
-    $alters[] = "ALTER TABLE `$table` DROP PRIMARY KEY";
-
-    foreach ( $alters as $query ) {
-        $ydb->perform( $query );
-    }
+    $query = "ALTER TABLE `$table` CHANGE `id` `keyword` VARCHAR( 200 ) NOT NULL, CHANGE `url` `url` TEXT NOT NULL, DROP PRIMARY KEY";
+    $ydb->perform( $query );
 
     echo "<p>Structure of existing tables updated. Please wait...</p>";
 }
@@ -401,14 +394,8 @@ function yourls_alter_url_table_to_14_part_two() {
     $ydb = yourls_get_db();
     $table = YOURLS_DB_TABLE_URL;
 
-    $alters = array();
-    $alters[] = "ALTER TABLE `$table` ADD PRIMARY KEY ( `keyword` )";
-    $alters[] = "ALTER TABLE `$table` ADD INDEX ( `ip` )";
-    $alters[] = "ALTER TABLE `$table` ADD INDEX ( `timestamp` )";
-
-    foreach ( $alters as $query ) {
-        $ydb->perform( $query );
-    }
+    $query = "ALTER TABLE `$table` ADD PRIMARY KEY ( `keyword` ), ADD INDEX ( `ip` ), ADD INDEX ( `timestamp` )";
+    $ydb->perform( $query );
 
     echo "<p>New table index created</p>";
 }

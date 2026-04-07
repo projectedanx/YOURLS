@@ -380,14 +380,44 @@ class FiltersTest extends PHPUnit\Framework\TestCase {
     public function test_get_filters() {
         $hook = rand_str();
 
+        // 1. Test empty hook
+        $this->assertSame( [], yourls_get_filters( $hook ) );
+
+        // 2. Test with various priority and callback types
+        $anon_func = function( $val ) { return $val; };
         yourls_add_filter( $hook, 'some_function' );
-        yourls_add_filter( $hook, 'some_other_function', 1337 );
+        yourls_add_filter( $hook, 'some_other_function', 1337, 2 );
+        yourls_add_filter( $hook, $anon_func, 10 );
+        yourls_add_filter( $hook, array( 'Change_Variable', 'change_it' ), 5 );
 
         $filters = yourls_get_filters( $hook );
-        $this->assertArrayHasKey('some_function', $filters[10]);
-        $this->assertArrayHasKey('some_other_function', $filters[1337]);
 
-        $this->assertSame( [], yourls_get_filters( rand_str() ) );
+        // Check structure for 'some_function' (default priority 10)
+        $this->assertArrayHasKey( 10, $filters );
+        $this->assertArrayHasKey( 'some_function', $filters[10] );
+        $this->assertSame( 'some_function', $filters[10]['some_function']['function'] );
+        $this->assertNull( $filters[10]['some_function']['accepted_args'] );
+        $this->assertSame( 'filter', $filters[10]['some_function']['type'] );
+
+        // Check structure for 'some_other_function' (priority 1337)
+        $this->assertArrayHasKey( 1337, $filters );
+        $this->assertArrayHasKey( 'some_other_function', $filters[1337] );
+        $this->assertSame( 2, $filters[1337]['some_other_function']['accepted_args'] );
+
+        // Check anonymous function (unpredictable ID)
+        $found_anon = false;
+        foreach( $filters[10] as $id => $data ) {
+            if ( $data['function'] === $anon_func ) {
+                $found_anon = true;
+                break;
+            }
+        }
+        $this->assertTrue( $found_anon );
+
+        // Check class method
+        $this->assertArrayHasKey( 5, $filters );
+        $this->assertArrayHasKey( 'Change_Variable::change_it', $filters[5] );
+        $this->assertSame( array( 'Change_Variable', 'change_it' ), $filters[5]['Change_Variable::change_it']['function'] );
     }
 
     /**
