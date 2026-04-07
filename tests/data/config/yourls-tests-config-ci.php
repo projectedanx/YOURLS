@@ -2,6 +2,25 @@
 /**
  * YOURLS Config for CI
  */
+
+// Polyfill environment variables for PHPUnit 10+ child processes
+$env_file = __DIR__ . '/.env.test.php';
+if (getenv('GITHUB_WORKSPACE') !== false) {
+    file_put_contents($env_file, '<?php return ' . var_export([
+        'GITHUB_WORKSPACE' => getenv('GITHUB_WORKSPACE'),
+        'DB_PORT'          => getenv('DB_PORT'),
+        'YOURLS_DB_USER'   => getenv('YOURLS_DB_USER'),
+        'YOURLS_DB_PASS'   => getenv('YOURLS_DB_PASS'),
+        'YOURLS_DB_NAME'   => getenv('YOURLS_DB_NAME'),
+        'YOURLS_DB_HOST'   => getenv('YOURLS_DB_HOST'),
+    ], true) . ';');
+} elseif (file_exists($env_file)) {
+    $env = require $env_file;
+    foreach ((array)$env as $k => $v) {
+        if ($v !== false) putenv("$k=$v");
+    }
+}
+
 define('YOURLS_TESTS_CI', getenv('CI') || false);
 define('YOURLS_ABSPATH', getenv('GITHUB_WORKSPACE'));
 

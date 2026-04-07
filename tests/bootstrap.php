@@ -14,6 +14,13 @@ global $yourls_user_passwords, $yourls_reserved_URL,          // main object & c
 // Polyfill $_REQUEST for PHPUnit 10+
 $_REQUEST['username'] = $_REQUEST['username'] ?? $_ENV['username'] ?? null;
 $_REQUEST['password'] = $_REQUEST['password'] ?? $_ENV['password'] ?? null;
+// Polyfill $_ENV for PHPUnit 10+ separate processes
+$env_vars = ['YOURLS_DB_USER', 'YOURLS_DB_PASS', 'YOURLS_DB_NAME', 'YOURLS_DB_HOST', 'DB_PORT', 'GITHUB_WORKSPACE'];
+foreach ($env_vars as $var) {
+    if (getenv($var) !== false) {
+        $_ENV[$var] = getenv($var);
+    }
+}
 
 require_once __DIR__ . '/includes/utils.php';
 require_once __DIR__ . '/includes/install.php';
@@ -66,5 +73,7 @@ yourls_add_action( 'pre_yourls_die', function($params) {
 
 echo "YOURLS installed, starting PHPUnit\n\n";
 
-require_once __DIR__ . "/tests/auth/AbstractLoginTestCase.php";
-require_once __DIR__ . "/tests/auth/LoginAssertionTrait.php";
+if (class_exists('PHPUnit\Framework\TestCase')) {
+    require_once __DIR__ . "/tests/auth/AbstractLoginTestCase.php";
+    require_once __DIR__ . "/tests/auth/LoginAssertionTrait.php";
+}
