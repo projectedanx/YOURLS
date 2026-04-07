@@ -503,14 +503,26 @@ class ActionsTest extends PHPUnit\Framework\TestCase {
     public function test_get_actions() {
         $hook = rand_str();
 
-        yourls_add_action( $hook, 'some_function' );
-        yourls_add_action( $hook, 'some_other_function', 1337 );
+        // 1. Test empty hook
+        $this->assertSame( [], yourls_get_actions( $hook ) );
+
+        // 2. Test with various priority and callback types
+        yourls_add_action( $hook, 'some_action' );
+        yourls_add_action( $hook, 'some_other_action', 1337, 2 );
 
         $actions = yourls_get_actions( $hook );
-        $this->assertArrayHasKey('some_function', $actions[10]);
-        $this->assertArrayHasKey('some_other_function', $actions[1337]);
 
-        $this->assertSame( [], yourls_get_actions( rand_str() ) );
+        // Check structure for 'some_action' (default priority 10)
+        $this->assertArrayHasKey( 10, $actions );
+        $this->assertArrayHasKey( 'some_action', $actions[10] );
+        $this->assertSame( 'some_action', $actions[10]['some_action']['function'] );
+        $this->assertSame( 1, $actions[10]['some_action']['accepted_args'] );
+        $this->assertSame( 'action', $actions[10]['some_action']['type'] );
+
+        // Check structure for 'some_other_action' (priority 1337)
+        $this->assertArrayHasKey( 1337, $actions );
+        $this->assertArrayHasKey( 'some_other_action', $actions[1337] );
+        $this->assertSame( 2, $actions[1337]['some_other_action']['accepted_args'] );
     }
 
 
