@@ -61,11 +61,13 @@ msgstr " "
 msgid "number_format_decimal_point"
 msgstr ","
 
-msgid "Feb_February_abbreviation"
+msgctxt "February abbreviation"
+msgid "Feb"
 msgstr "Fév"
 
 msgid "Mon"
 msgstr "Lun"
 
-msgid "M_Monday_initial"
+msgctxt "Monday initial"
+msgid "M"
 msgstr "L"
