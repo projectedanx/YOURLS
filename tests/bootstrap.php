@@ -12,6 +12,11 @@ global $yourls_user_passwords, $yourls_reserved_URL,          // main object & c
        $yourls_allowedentitynames, $yourls_allowedprotocols;  // used by KSES
 
 // Polyfill $_REQUEST for PHPUnit 10+
+$_SERVER["SERVER_PROTOCOL"] = $_SERVER["SERVER_PROTOCOL"] ?? "HTTP/1.1";
+$_SERVER["REQUEST_METHOD"] = $_SERVER["REQUEST_METHOD"] ?? "GET";
+$_SERVER["HTTP_USER_AGENT"] = $_SERVER["HTTP_USER_AGENT"] ?? "PHPUnit";
+$_SERVER["SERVER_SOFTWARE"] = $_SERVER["SERVER_SOFTWARE"] ?? "PHPUnit";
+$_SERVER["HTTP_HOST"] = $_SERVER["HTTP_HOST"] ?? "localhost";
 $_REQUEST['username'] = $_REQUEST['username'] ?? $_ENV['username'] ?? null;
 $_REQUEST['password'] = $_REQUEST['password'] ?? $_ENV['password'] ?? null;
 // Polyfill $_ENV for PHPUnit 10+ separate processes
