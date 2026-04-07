@@ -197,8 +197,8 @@ function yourls_is_shorturl( $shorturl ) {
     // We only strip if it doesn't look like a full URL,
     // otherwise we would break URLs that act as keywords and contain ? or #.
     if ( !preg_match( "@^[a-zA-Z]+://.+@", $keyword ) ) {
-        $keyword = explode( '?', $keyword )[0];
-        $keyword = explode( '#', $keyword )[0];
+        $keyword = current( explode( '?', $keyword ) );
+        $keyword = current( explode( '#', $keyword ) );
     }
 
     // Let's look at the request : what we want to catch here is "anything", or "anything+" / "anything+all" (stat page)
