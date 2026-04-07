@@ -61,7 +61,7 @@ function yourls_current_admin_page() {
  * @return string The encoded URI.
  */
 function yourls_encodeURI($url) {
-    yourls_deprecated_function( __FUNCTION__, '1.9.1', '' );
+    yourls_deprecated_function( __FUNCTION__, '1.9.1', 'yourls_normalize_uri' );
     // Decode URL all the way
     $result = yourls_rawurldecode_while_encoded( $url );
     // Encode once
