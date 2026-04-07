@@ -60,9 +60,12 @@ class CRUDTest extends PHPUnit\Framework\TestCase {
         $this->assertTrue( yourls_is_shorturl( yourls_link( $keyword ) . '+' ) );
         $this->assertTrue( yourls_is_shorturl( yourls_link( $keyword ) . '+all' ) );
 
-        // query strings
+        // query strings and fragments
         $this->assertTrue( yourls_is_shorturl( $keyword . '?foo=bar' ) );
+        $this->assertTrue( yourls_is_shorturl( $keyword . '#foo' ) );
         $this->assertTrue( yourls_is_shorturl( yourls_link( $keyword ) . '?foo=bar' ) );
+        $this->assertTrue( yourls_is_shorturl( yourls_link( $keyword ) . '#foo' ) );
+        $this->assertTrue( yourls_is_shorturl( yourls_link( $keyword ) . '?foo=bar#baz' ) );
     }
 
     #[\PHPUnit\Framework\Attributes\Depends('test_add_url')]
