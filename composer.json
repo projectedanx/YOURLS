@@ -39,7 +39,7 @@
     "config": {
         "vendor-dir": "includes/vendor",
         "platform": {
-            "php": "8.4"
+            "php": "8.3.6"
         }
     },
     "autoload": {
