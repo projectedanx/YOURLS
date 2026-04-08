@@ -117,6 +117,72 @@ sequenceDiagram
     end
 ```
 
+## Auth Pipeline Sequencing (includes/auth.php & functions-auth.php)
+
+```mermaid
+sequenceDiagram
+    participant User
+    participant Router as Entry Point (e.g., yourls-api.php, admin/index.php)
+    participant Core as Core Auth (yourls_maybe_require_auth)
+    participant Auth as Auth Validator (yourls_is_valid_user)
+    participant Hooks as Plugin Hooks
+    participant API as API Output
+    participant UI as Login Screen
+
+    Router->>Core: yourls_maybe_require_auth()
+    alt Is Private Installation
+        Core->>Hooks: do_action('require_auth')
+        Core->>Auth: include auth.php -> calls yourls_is_valid_user()
+        Auth->>Hooks: apply_filters('shunt_is_valid_user')
+
+        alt Shunt active
+            Hooks-->>Auth: Custom Auth Result
+        else Standard Flow
+            alt Logout Request
+                Auth->>Auth: Verify Nonce
+                Auth->>Hooks: do_action('logout')
+                Auth->>Auth: Destroy Cookies
+                Auth-->>User: 302 Redirect
+            else
+                Auth->>Auth: yourls_check_auth_cookie()
+                alt Valid Cookie
+                    Auth-->>Auth: true
+                else Invalid Cookie
+                    Auth->>Auth: Check HTTP Credentials
+                    Auth->>Auth: Check POST Credentials (yourls_check_username_password)
+                    alt Valid Credentials
+                        Auth->>Auth: Generate Cookie & Hash Password
+                        Auth-->>Auth: true
+                    else Invalid Credentials
+                        Auth->>Hooks: do_action('login_failed')
+                        Auth-->>Auth: false or Error Message
+                    end
+                end
+            end
+        end
+
+        Auth-->>Core: Result ($auth)
+
+        alt Result !== true
+            alt Is API Mode
+                Core->>API: yourls_api_output() (403 Forbidden)
+                API-->>User: Error Response (XML/JSON)
+            else Is Regular Mode
+                Core->>UI: yourls_login_screen($auth)
+                UI-->>User: Display Login Form
+            end
+            Core->>Core: die() / Exit
+        else Result === true
+            Core->>Hooks: do_action('auth_successful')
+            Core->>Core: Hash Passwords (if deferred)
+            Core-->>Router: Access Granted
+        end
+    else Is Public Installation
+        Core->>Hooks: do_action('require_no_auth')
+        Core-->>Router: Access Granted
+    end
+```
+
 ## Core Initialization & Plugin Hook Architecture
 
 ```mermaid
