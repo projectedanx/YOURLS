@@ -7,28 +7,28 @@ $(document).ready(function(){
 })
 
 function update_share() {
-	var text = encodeURIComponent( $('#tweet_body').val() );
-	var url = encodeURIComponent( $('#copylink').val() );
-	var tw = 'https://twitter.com/intent/tweet?text='+text;
-	var fb = 'https://www.facebook.com/share.php?u='+url ;
+	const text = encodeURIComponent( $('#tweet_body').val() );
+	const url = encodeURIComponent( $('#copylink').val() );
+	const tw = 'https://twitter.com/intent/tweet?text='+text;
+	const fb = 'https://www.facebook.com/share.php?u='+url ;
 	$('#share_tw').attr('href', tw);
 	$('#share_fb').attr('href', fb);
 
-	var charcount = parseInt(280 - $('#tweet_body').val().length);
+	const charcount = parseInt(280 - $('#tweet_body').val().length);
 	$('#charcount')
 		.toggleClass("negative", charcount < 0)
 		.text( charcount );
 }
 
 function share(dest) {
-	var url = $('#share_'+dest).attr('href');
+	const url = $('#share_'+dest).attr('href');
 	switch (dest) {
 	case 'fb':
-		//var url = $('#share_fb').attr('href');
+		//const url = $('#share_fb').attr('href');
 		window.open( url, 'fb','toolbar=no,width=1000,height=550');
 		break;
 	case 'tw':
-		//var url = $('#share_tw').attr('href');
+		//const url = $('#share_tw').attr('href');
 		window.open(url, 'tw','toolbar=no,width=800,height=550');
 		break;
 	}
@@ -36,7 +36,7 @@ function share(dest) {
 }
 
 function init_clipboard() {
-    var clipboard = new ClipboardJS('#copylink', {
+    const clipboard = new ClipboardJS('#copylink', {
         text: function (trigger) {
             return $(trigger).val();
         }
