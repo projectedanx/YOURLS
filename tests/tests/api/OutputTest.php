@@ -49,7 +49,7 @@ class OutputTest extends PHPUnit\Framework\TestCase {
         yield array( 'json',     'application/json' );
         yield array( 'jsonp',    'application/javascript' );
         yield array( 'simple',   'text/plain' );
-        yield array( rand_str(), 'text/plain' );
+        yield array( 'random_string', 'text/plain' );
     }
 
     /**
@@ -77,7 +77,7 @@ class OutputTest extends PHPUnit\Framework\TestCase {
 
         $content_success = array( 'statusCode'    => $success_code );
         $content_error   = array( 'errorCode'     => $error_code );
-        $content_random  = array( 'thereIsNoCode' => rand_str() );
+        $content_random  = array( 'thereIsNoCode' => 'random_string' );
         yield array( $content_success, $success_code );
         yield array( $content_error,   $error_code );
         yield array( $content_random,  200 );

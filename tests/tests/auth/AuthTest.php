@@ -81,7 +81,7 @@ class AuthTest extends PHPUnit\Framework\TestCase {
      */
     public static function strings_to_hash(): \Iterator
     {
-        yield array( rand_str() );
+        yield array( 'random_string_auth' );
         yield array( 'lol .\+*?[^]$(){}=!<>|:-/' . "'" . '"' );
         yield array( 'أنا أحب النقانق' );
         yield array( '"double quotes"' );
