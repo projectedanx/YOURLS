@@ -500,3 +500,46 @@ sequenceDiagram
         ApplyFilter-->>Caller: Return modified $value (or null for actions)
     end
 ```
+
+## YOURLS API Request Lifecycle (yourls-api.php)
+
+```mermaid
+sequenceDiagram
+    participant Client
+    participant API as API Controller (yourls-api.php)
+    participant Auth as Auth & Hooks
+    participant Actions as Action Callbacks (e.g. shorturl, stats)
+    participant Output as API Output Formatter
+
+    Client->>API: HTTP Request (action, format, params)
+    API->>Auth: yourls_maybe_require_auth()
+    alt Authentication Fails
+        Auth-->>API: Halt & Return 403 Forbidden
+        API-->>Client: 403 Error Output
+    else Authentication Succeeds
+        API->>Auth: yourls_do_action('api', $action)
+        API->>API: Initialize $api_actions list
+        API->>Auth: apply_filters('api_actions', $api_actions)
+
+        loop Register API Actions
+            API->>Auth: yourls_add_filter('api_action_$action')
+        end
+
+        API->>Auth: yourls_apply_filter('api_action_$action', false)
+        alt Action Registered
+            Auth->>Actions: call_user_func(callback)
+            Actions->>Actions: Process Data (e.g. yourls_add_new_link, yourls_api_stats)
+            Actions-->>Auth: return array(Data)
+            Auth-->>API: $return Array
+        else Unknown Action
+            Auth-->>API: false
+            API->>API: Set $return = 400 Bad Request
+        end
+
+        API->>API: Determine Output Format ($format)
+        API->>Output: yourls_api_output($format, $return)
+        Output->>Output: Select Format Handler (json, jsonp, xml, simple)
+        Output->>Output: Apply HTTP Headers (Status Code & Content-Type)
+        Output-->>Client: Formatted Response Body
+    end
+```
