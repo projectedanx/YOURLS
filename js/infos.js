@@ -5,8 +5,8 @@ $(document).ready(function(){
 	
 	// Toggle tabs
 	$('ul.toggle_display li a').click(function(){
-		var target = $(this).attr('href').replace('#', ''); // 'stat_tab_location'
-		var divs = target.split('_')[1]; // 'tab'
+		const target = $(this).attr('href').replace('#', ''); // 'stat_tab_location'
+		const divs = target.split('_')[1]; // 'tab'
 		$('div.'+divs).css('display', 'none');
 		$('div#'+target).css('display', 'block');
 		$('ul.stat_'+divs+' li a').removeClass('selected');
@@ -29,7 +29,7 @@ $(document).ready(function(){
 	
 	// Toggle detail lists
 	$('a.details').click(function(){
-		var target = $(this).attr('id').replace('more_', 'details_');
+		const target = $(this).attr('id').replace('more_', 'details_');
 		$('#'+target).toggle();
 		return false;	
 	});
