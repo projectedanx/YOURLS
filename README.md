@@ -67,6 +67,30 @@ YOURLS provides a simple API that allows you to shorten URLs, get stats, and mor
 
 For more information on how to use the API, see the [API documentation](https://docs.yourls.org/api.html).
 
+
+### Model Context Protocol (MCP) Server
+
+YOURLS includes a Python FastMCP server (`mcp_server.py`) that exposes URL shortening, expansion, and statistics capabilities via the Model Context Protocol.
+
+#### Setup
+
+1. Install requirements: `pip install mcp httpx pydantic`
+2. Set environment variables:
+   * `YOURLS_API_URL` (default: `http://localhost:8000/yourls-api.php`)
+   * `YOURLS_SIGNATURE` (or `YOURLS_USERNAME` and `YOURLS_PASSWORD`)
+
+#### Usage
+
+Run the server:
+```bash
+python mcp_server.py
+```
+
+The server provides three tools:
+* `shorten_url`: Shortens a long URL using the YOURLS API.
+* `expand_url`: Expands a short URL or keyword to its original long URL.
+* `get_url_stats`: Retrieves statistics for a specific short URL.
+
 ### Bookmarklets
 
 YOURLS comes with handy bookmarklets for easier link shortening and sharing. To use them, drag and drop the links from the **Tools** page in the admin interface to your browser's toolbar.

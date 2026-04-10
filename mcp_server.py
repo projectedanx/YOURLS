@@ -16,7 +16,12 @@ YOURLS_USERNAME = os.environ.get("YOURLS_USERNAME")
 YOURLS_PASSWORD = os.environ.get("YOURLS_PASSWORD")
 
 def get_auth_params() -> Dict[str, str]:
-    """Inject identity into request context."""
+    """
+    Inject identity into request context.
+
+    Returns:
+        Dict[str, str]: A dictionary containing authentication parameters (signature or username/password).
+    """
     if YOURLS_SIGNATURE:
         return {"signature": YOURLS_SIGNATURE}
     elif YOURLS_USERNAME and YOURLS_PASSWORD:
@@ -24,7 +29,19 @@ def get_auth_params() -> Dict[str, str]:
     return {}
 
 def build_error(violation: str, category: str, detail: str, retry: bool = False, decomp: Optional[str] = None) -> dict:
-    """SERF-compliant error generator."""
+    """
+    SERF-compliant error generator.
+
+    Args:
+        violation (str): The specific violation or error code.
+        category (str): The category of the fault (e.g., SERVER_TOOL_CONFIGURATION).
+        detail (str): A detailed description of the error.
+        retry (bool, optional): Whether the operation can be retried. Defaults to False.
+        decomp (Optional[str], optional): Suggested decomposition or next steps. Defaults to None.
+
+    Returns:
+        dict: A structured dictionary representing the error in SERF-compliant format.
+    """
     return {
         "error_code": f"TOOL_FAULT_{category}",
         "fault_category": category,
@@ -37,6 +54,14 @@ def build_error(violation: str, category: str, detail: str, retry: bool = False,
     }
 
 class ShortenInput(BaseModel):
+    """
+    Input model for the shorten_url tool.
+
+    Attributes:
+        url (str): The long URL to shorten. Must be a valid HTTP/HTTPS URL.
+        keyword (Optional[str]): Optional custom keyword for the short URL.
+        title (Optional[str]): Optional custom title for the URL.
+    """
     url: str = Field(
         max_length=2048,
         description="The long URL to shorten. Must be a valid HTTP/HTTPS URL."
@@ -55,17 +80,41 @@ class ShortenInput(BaseModel):
     @field_validator("url")
     @classmethod
     def must_be_url(cls, v: str) -> str:
+        """
+        Validate that the string is a valid HTTP/HTTPS URL.
+
+        Args:
+            v (str): The URL string to validate.
+
+        Returns:
+            str: The validated URL string.
+
+        Raises:
+            ValueError: If the URL does not start with http:// or https://.
+        """
         if not re.match(r"^https?://", v, re.IGNORECASE):
             raise ValueError("URL must start with http:// or https://")
         return v
 
 class ExpandInput(BaseModel):
+    """
+    Input model for the expand_url tool.
+
+    Attributes:
+        shorturl (str): The short URL or keyword to expand.
+    """
     shorturl: str = Field(
         max_length=2048,
         description="The short URL or keyword to expand."
     )
 
 class StatsInput(BaseModel):
+    """
+    Input model for the get_url_stats tool.
+
+    Attributes:
+        shorturl (str): The short URL or keyword to fetch stats for.
+    """
     shorturl: str = Field(
         max_length=2048,
         description="The short URL or keyword to fetch stats for."
@@ -80,6 +129,17 @@ class StatsInput(BaseModel):
     )
 )
 async def shorten_url(url: str, keyword: Optional[str] = None, title: Optional[str] = None) -> dict:
+    """
+    Shorten a long URL using the YOURLS API.
+
+    Args:
+        url (str): The long URL to shorten.
+        keyword (Optional[str], optional): A custom keyword for the short URL. Defaults to None.
+        title (Optional[str], optional): A custom title for the short URL. Defaults to None.
+
+    Returns:
+        dict: The JSON response from the YOURLS API.
+    """
     try:
         validated = ShortenInput(url=url, keyword=keyword, title=title)
     except ValueError as e:
@@ -111,6 +171,15 @@ async def shorten_url(url: str, keyword: Optional[str] = None, title: Optional[s
     )
 )
 async def expand_url(shorturl: str) -> dict:
+    """
+    Expand a short URL or keyword to its original long URL.
+
+    Args:
+        shorturl (str): The short URL or keyword to expand.
+
+    Returns:
+        dict: The JSON response from the YOURLS API.
+    """
     try:
         validated = ExpandInput(shorturl=shorturl)
     except ValueError as e:
@@ -137,6 +206,15 @@ async def expand_url(shorturl: str) -> dict:
     )
 )
 async def get_url_stats(shorturl: str) -> dict:
+    """
+    Retrieve statistics for a specific short URL.
+
+    Args:
+        shorturl (str): The short URL or keyword to fetch stats for.
+
+    Returns:
+        dict: The JSON response from the YOURLS API.
+    """
     try:
         validated = StatsInput(shorturl=shorturl)
     except ValueError as e:
