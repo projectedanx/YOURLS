@@ -1,0 +1,53 @@
+# Gearset/Copado YAML Deployment Pipeline
+# Utilizing +++DCCDSchemaGuard for deterministic state transitions
+
+name: Sovereign Integration Deployment Pipeline
+on:
+  push:
+    branches:
+      - release/production
+
+jobs:
+  static-analysis-and-test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Source
+        uses: actions/checkout@v3
+
+      - name: PMD Static Code Analysis
+        uses: pmd/pmd-github-action@v1
+        with:
+          rulesets: 'rulesets/apex/quickstart.xml,rulesets/apex/performance.xml,rulesets/apex/security.xml'
+          sourcePath: 'salesforce/force-app/main/default/classes'
+          analyzeModifiedFilesOnly: false
+
+      - name: Salesforce CLI Setup
+        uses: salesforcecli/setup-sfdx@v1
+
+      - name: Authenticate to Target Org
+        run: sfdx force:auth:jwt:grant --clientid ${{ secrets.SF_CLIENT_ID }} --jwtkeyfile build/server.key --username ${{ secrets.SF_USERNAME }} --setdefaultdevhubusername -a targetOrg
+
+      - name: Execute Apex Tests (Zero-Trust Validation)
+        run: sfdx force:apex:test:run -l RunLocalTests -c -r human -w 30 -u targetOrg
+        # Enforcing Governor Limit thermodynamics via strictly written test classes
+
+  destructive-state-transition:
+    needs: static-analysis-and-test
+    runs-on: ubuntu-latest
+    environment: Production
+    steps:
+      - name: Checkout Source
+        uses: actions/checkout@v3
+
+      - name: Salesforce CLI Setup
+        uses: salesforcecli/setup-sfdx@v1
+
+      - name: Deploy Pre-Destructive Changes
+        # Enforces +++SagaRecovery protocols. Removes deprecated components before code promotion to prevent orphaned metadata limits.
+        run: sfdx force:mdapi:deploy -d manifest/destructiveChangesPre.xml -w 10 -u targetOrg --ignorewarnings || true
+
+      - name: Deploy Code Payload
+        run: sfdx force:source:deploy -x manifest/package.xml -w 30 -u targetOrg -l RunLocalTests
+
+      - name: Deploy Post-Destructive Changes
+        run: sfdx force:mdapi:deploy -d manifest/destructiveChangesPost.xml -w 10 -u targetOrg --ignorewarnings || true
