@@ -500,3 +500,32 @@ sequenceDiagram
         ApplyFilter-->>Caller: Return modified $value (or null for actions)
     end
 ```
+
+## Database Schema (Relational Topology)
+
+```mermaid
+erDiagram
+    YOURLS_URL ||--o{ YOURLS_LOG : "logs clicks"
+    YOURLS_URL {
+        varchar(100) keyword PK
+        text url
+        text title
+        timestamp timestamp
+        varchar(41) ip
+        int clicks
+    }
+    YOURLS_LOG {
+        int click_id PK
+        datetime click_time
+        varchar(100) shorturl FK
+        varchar(200) referrer
+        varchar(255) user_agent
+        varchar(41) ip_address
+        char(2) country_code
+    }
+    YOURLS_OPTIONS {
+        bigint option_id PK
+        varchar(64) option_name PK
+        longtext option_value
+    }
+```
