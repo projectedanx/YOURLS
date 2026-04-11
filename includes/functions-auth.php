@@ -208,9 +208,7 @@ function yourls_hash_passwords_now( $config_file ) {
     require $config_file;
     error_reporting( $errlevel );
 
-    $configdata = file_get_contents( $config_file );
-
-    if( $configdata == false ) {
+    if( filesize( $config_file ) === 0 ) {
         yourls_debug_log('Cannot hash passwords: file_get_contents() false with ' . $config_file);
         return 'could not read file';
     }
@@ -221,6 +219,25 @@ function yourls_hash_passwords_now( $config_file ) {
         $password ??= '';
         if ( !yourls_has_phpass_password( $user ) && !yourls_has_md5_password( $user ) ) {
             $to_hash++;
+        }
+    }
+
+    if( $to_hash == 0 ) {
+        yourls_debug_log('Cannot hash passwords: no password found in ' . $config_file);
+        return 'no password found';
+    }
+
+    $configdata = file_get_contents( $config_file );
+
+    if( $configdata == false ) {
+        yourls_debug_log('Cannot hash passwords: file_get_contents() false with ' . $config_file);
+        return 'could not read file';
+    }
+
+    foreach ( $yourls_user_passwords as $user => $password ) {
+        // avoid "deprecated" warning when password is null -- see test case in tests/data/auth/preg_replace_problem.php
+        $password ??= '';
+        if ( !yourls_has_phpass_password( $user ) && !yourls_has_md5_password( $user ) ) {
             $hash = yourls_phpass_hash( $password );
             // PHP would interpret $ as a variable, so replace it in storage.
             $hash = str_replace( '$', '!', $hash );
@@ -235,11 +252,6 @@ function yourls_hash_passwords_now( $config_file ) {
                 return 'preg_replace problem';
             }
         }
-    }
-
-    if( $to_hash == 0 ) {
-        yourls_debug_log('Cannot hash passwords: no password found in ' . $config_file);
-        return 'no password found';
     }
 
     $success = file_put_contents( $config_file, $configdata );
