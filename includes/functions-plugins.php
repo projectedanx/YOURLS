@@ -485,7 +485,7 @@ function yourls_get_plugin_data( $file ) {
     }
 
     $plugin_data = [];
-    if ( preg_match_all( '/^[ 	\*]*([^:]+):\s+(.*)$/mi', $matches[1], $lines, PREG_SET_ORDER ) ) {
+    if ( preg_match_all( '/^[ \t\*]*([^:]+):[ \t]*(.*)$/mi', $matches[1], $lines, PREG_SET_ORDER ) ) {
         foreach ( $lines as $line ) {
             $plugin_data[ trim( $line[1], " \t\n\r\0\x0B*" ) ] = yourls_esc_html(trim($line[2]));
         }
