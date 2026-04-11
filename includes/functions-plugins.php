@@ -484,19 +484,13 @@ function yourls_get_plugin_data( $file ) {
         return [];
     }
 
-    // Capture each line with "Something: some text"
-    unset( $data );
-    $lines = preg_split( "[\n|\r]", $matches[ 1 ] );
-    unset( $matches );
-
     $plugin_data = [];
-    foreach ( $lines as $line ) {
-        if ( !preg_match( '!(\s*)?\*?(\s*)?(.*?):\s+(.*)!', $line, $matches ) ) {
-            continue;
+    if ( preg_match_all( '/^[ \t\*]*([^:]+):[ \t]*(.*)$/mi', $matches[1], $lines, PREG_SET_ORDER ) ) {
+        foreach ( $lines as $line ) {
+            $plugin_data[ trim( $line[1], " \t\n\r\0\x0B*" ) ] = yourls_esc_html(trim($line[2]));
         }
-
-        $plugin_data[ trim($matches[3]) ] = yourls_esc_html(trim($matches[4]));
     }
+
 
     return $plugin_data;
 }
