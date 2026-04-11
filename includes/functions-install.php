@@ -268,9 +268,11 @@ function yourls_create_sql_tables() {
     }
 
     // Verify tables
-    $tables = $ydb->fetchCol( "SHOW TABLES" );
+    // Use SHOW TABLES LIKE instead of SHOW TABLES as table prefixes can make array matching fail
+    // or return unexpected results in CI environments where multiple databases might exist.
     foreach ( $create_tables as $table_name => $table_query ) {
-        if( in_array( $table_name, $tables ) ) {
+        $create_success = $ydb->fetchAffected( "SHOW TABLES LIKE '$table_name'" );
+        if( $create_success ) {
             $create_table_count++;
             $success_msg[] = yourls_s( "Table '%s' created.", $table_name );
         } else {
