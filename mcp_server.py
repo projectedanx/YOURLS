@@ -108,6 +108,28 @@ class ExpandInput(BaseModel):
         description="The short URL or keyword to expand."
     )
 
+class StatsListInput(BaseModel):
+    """
+    Input model for the get_stats tool.
+
+    Attributes:
+        filter (Optional[str]): Filter type: 'top', 'bottom', 'rand', or 'last'.
+        limit (Optional[int]): Number of links to retrieve.
+        start (Optional[int]): Offset for pagination.
+    """
+    filter: Optional[str] = Field(
+        default="top",
+        description="Filter type: 'top', 'bottom', 'rand', or 'last'."
+    )
+    limit: Optional[int] = Field(
+        default=10,
+        description="Number of links to retrieve."
+    )
+    start: Optional[int] = Field(
+        default=0,
+        description="Offset for pagination."
+    )
+
 class StatsInput(BaseModel):
     """
     Input model for the get_url_stats tool.
@@ -232,6 +254,49 @@ async def get_url_stats(shorturl: str) -> dict:
     except Exception as e:
         return build_error("UPSTREAM_ERROR", "SERVER_HOST_CONFIGURATION", str(e), True, "Verify YOURLS API endpoint.")
 
+
+@mcp.tool(
+    description=(
+        "PURPOSE: Retrieves general link statistics from YOURLS. "
+        "GUIDELINES: Use this to get top, bottom, recent, or random links. "
+        "PARAMETERS: filter (str, optional: 'top', 'bottom', 'rand', 'last'); limit (int, optional); start (int, optional)."
+    )
+)
+async def get_stats(filter: Optional[str] = "top", limit: Optional[int] = 10, start: Optional[int] = 0) -> dict:
+    """
+    Retrieve general link statistics from YOURLS.
+
+    Args:
+        filter (Optional[str], optional): Filter type: 'top', 'bottom', 'rand', or 'last'. Defaults to 'top'.
+        limit (Optional[int], optional): Number of links to retrieve. Defaults to 10.
+        start (Optional[int], optional): Offset for pagination. Defaults to 0.
+
+    Returns:
+        dict: The JSON response from the YOURLS API.
+    """
+    try:
+        validated = StatsListInput(filter=filter, limit=limit, start=start)
+    except ValueError as e:
+         return build_error("VALIDATION_ERROR", "SERVER_TOOL_CONFIGURATION", str(e), False, "Correct input parameters.")
+
+    params = {"action": "stats", "format": "json"}
+    if validated.filter is not None:
+        params["filter"] = validated.filter
+    if validated.limit is not None:
+        params["limit"] = validated.limit
+    if validated.start is not None:
+        params["start"] = validated.start
+
+    params.update(get_auth_params())
+
+    try:
+        async with httpx.AsyncClient() as client:
+            resp = await client.get(YOURLS_API_URL, params=params, timeout=10.0)
+            resp.raise_for_status()
+            data = resp.json()
+            return data
+    except Exception as e:
+        return build_error("UPSTREAM_ERROR", "SERVER_HOST_CONFIGURATION", str(e), True, "Verify YOURLS API endpoint.")
 
 @mcp.tool(
     description=(
