@@ -232,5 +232,53 @@ async def get_url_stats(shorturl: str) -> dict:
     except Exception as e:
         return build_error("UPSTREAM_ERROR", "SERVER_HOST_CONFIGURATION", str(e), True, "Verify YOURLS API endpoint.")
 
+
+@mcp.tool(
+    description=(
+        "PURPOSE: Retrieves global database statistics. "
+        "GUIDELINES: Use this to get total links, total clicks, etc. across the entire installation. "
+        "PARAMETERS: None required."
+    )
+)
+async def get_db_stats() -> dict:
+    """
+    Retrieve global database statistics from YOURLS.
+    """
+    params = {"action": "db-stats", "format": "json"}
+    params.update(get_auth_params())
+
+    try:
+        async with httpx.AsyncClient() as client:
+            resp = await client.get(YOURLS_API_URL, params=params, timeout=10.0)
+            resp.raise_for_status()
+            data = resp.json()
+            return data
+    except Exception as e:
+        return build_error("UPSTREAM_ERROR", "SERVER_HOST_CONFIGURATION", str(e), True, "Verify YOURLS API endpoint.")
+
+
+@mcp.tool(
+    description=(
+        "PURPOSE: Retrieves the installed YOURLS version. "
+        "GUIDELINES: Use this to check the application version. "
+        "PARAMETERS: None required."
+    )
+)
+async def get_version() -> dict:
+    """
+    Retrieve the installed YOURLS version.
+    """
+    params = {"action": "version", "format": "json"}
+    params.update(get_auth_params())
+
+    try:
+        async with httpx.AsyncClient() as client:
+            resp = await client.get(YOURLS_API_URL, params=params, timeout=10.0)
+            resp.raise_for_status()
+            data = resp.json()
+            return data
+    except Exception as e:
+        return build_error("UPSTREAM_ERROR", "SERVER_HOST_CONFIGURATION", str(e), True, "Verify YOURLS API endpoint.")
+
 if __name__ == "__main__":
     mcp.run(transport="stdio")
