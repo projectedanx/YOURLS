@@ -2,6 +2,8 @@
 
 class HtmlBodyClassTest extends PHPUnit\Framework\TestCase {
 
+    private $original_user_agent;
+
     protected function setUp(): void {
         parent::setUp();
         // Backup the current user agent
