@@ -64,7 +64,7 @@ function yourls_check_php_version() {
  * @return bool True if the server is Apache, false otherwise.
  */
 function yourls_is_apache() {
-    if( !array_key_exists( 'SERVER_SOFTWARE', $_SERVER ) )
+    if( !isset( $_SERVER['SERVER_SOFTWARE'] ) )
         return false;
     return (
        strpos( $_SERVER['SERVER_SOFTWARE'], 'Apache' ) !== false

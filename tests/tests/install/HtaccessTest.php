@@ -23,6 +23,16 @@ class HtaccessTest extends PHPUnit\Framework\TestCase {
     }
 
     /**
+     * Check yourls_is_apache() when SERVER_SOFTWARE is not set
+     */
+    public function test_is_apache_missing_server_software() {
+        if (isset($_SERVER['SERVER_SOFTWARE'])) {
+            unset($_SERVER['SERVER_SOFTWARE']);
+        }
+        $this->assertFalse(yourls_is_apache());
+    }
+
+    /**
      * Provide server signatures, wether they're Apache (true) or something else (false) and
      * the name of the redirect rule file (.htaccess or web.config)
      */
