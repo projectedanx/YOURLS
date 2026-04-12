@@ -356,6 +356,10 @@ function yourls_create_tables_for_14() {
         'KEY `shorturl` (`shorturl`)'.
         ');';
 
+    // We execute these DDL queries individually rather than concatenating them
+    // into a single multi-statement string. Although looping causes multiple roundtrips,
+    // combining DDL queries via PDO prepare() fails when emulated prepares are disabled
+    // and silently swallows errors for subsequent statements, corrupting the upgrade process.
     foreach( $queries as $query ) {
         $ydb->perform( $query ); // There's no result to be returned to check if table was created (except making another query to check table existence, which we'll avoid)
     }
