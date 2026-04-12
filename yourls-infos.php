@@ -134,11 +134,11 @@ if( yourls_do_log_redirect() ) {
 
     // Loop through all results and fill blanks
     foreach( (array)$rows as $row ) {
-        if( !array_key_exists($row->year, $dates ) )
+        if( !isset( $dates[$row->year] ) )
             $dates[$row->year] = array();
-        if( !array_key_exists( $row->month, $dates[$row->year] ) )
+        if( !isset( $dates[$row->year][$row->month] ) )
             $dates[$row->year][$row->month] = array();
-        if( !array_key_exists( $row->day, $dates[$row->year][$row->month] ) )
+        if( !isset( $dates[$row->year][$row->month][$row->day] ) )
             $dates[$row->year][$row->month][$row->day] = $row->count;
         else
             $dates[$row->year][$row->month][$row->day] += $row->count;
