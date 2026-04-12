@@ -132,4 +132,29 @@ class CRUDTest extends PHPUnit\Framework\TestCase {
         yourls_delete_link_by_keyword( $keyword );
     }
 
+    public function test_insert_link_concurrency() {
+        $keyword = rand_str();
+        $title   = rand_str();
+        $url     = 'http://' . rand_str();
+
+        // Force a mock of the DB to throw an exception
+        global $ydb;
+        $old_ydb = $ydb;
+
+        // We mock the DB so that the insert fails with an exception, simulating a concurrent insert
+        $ydb = $this->createMock(\YOURLS\Database\YDB::class);
+        // Instead of mocking the DB logic which relies on methods inside functions.php
+        // we can trigger the exception through a different mock object, or override PDO query directly
+        $ydb->method('fetchAffected')->willThrowException(new Exception('Concurrency exception simulated'));
+        $ydb->method('perform')->willThrowException(new Exception('Concurrency exception simulated'));
+
+        $fail = yourls_add_new_link( $url, $keyword, $title );
+
+        // Restore the DB
+        $ydb = $old_ydb;
+
+        $this->assertEquals( 'fail', $fail['status'] );
+        $this->assertEquals( 'error:concurrency', $fail['code'] );
+        $this->assertEquals( 'Concurrency exception simulated', $fail['message'] );
+    }
 }
