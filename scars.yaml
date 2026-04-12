@@ -1,6 +1,0 @@
-- id: SCAR-001
-  timestamp: 2024-04-05T20:45:00Z
-  rejected_approach: "Modifying core application source code to fit the VORTEX abstraction."
-  failure_mode: "Violation of theoretical framework execution directive."
-  geometric_coordinates: "[-0.842, 0.511, -0.223]"
-  alternative_applied: "Generated standalone documentation/configuration files (architecture.md, setup.sh, scars.yaml) exactly as specified by the abstract manifest, preserving core application integrity."
