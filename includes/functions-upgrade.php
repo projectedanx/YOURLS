@@ -423,9 +423,9 @@ function yourls_update_table_to_14() {
     $total = yourls_get_db_stats();
     $total = $total['total_links'];
 
-    $sql = "SELECT `keyword` FROM `$table` WHERE 1=1 ORDER BY `url` ASC LIMIT $from, $chunk ;";
+    $sql = "SELECT `keyword` FROM `$table` WHERE 1=1 ORDER BY `url` ASC LIMIT :from, :chunk ;";
 
-    $rows = $ydb->fetchObjects($sql);
+    $rows = $ydb->fetchObjects($sql, ['from' => $from, 'chunk' => $chunk]);
 
     $count = 0;
     $queries = 0;
