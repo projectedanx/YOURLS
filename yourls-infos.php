@@ -10,7 +10,6 @@
  * @since 1.0
  */
 
-// TODO: make things cleaner. This file is an awful HTML/PHP soup.
 define( 'YOURLS_INFOS', true );
 require_once( dirname( __FILE__ ).'/includes/load-yourls.php' );
 yourls_maybe_require_auth();
