@@ -10,6 +10,7 @@ class HTTPHeadersTest extends PHPUnit\Framework\TestCase {
      * Test redirect
      *
      * @runInSeparateProcess
+     * @preserveGlobalState disabled
      */
     public function test_redirect() {
         if (!function_exists("xdebug_get_headers")) {
@@ -19,10 +20,11 @@ class HTTPHeadersTest extends PHPUnit\Framework\TestCase {
         $dest = "http://example.com";
         $code = 301;
 
-        $this->assertEquals(1, yourls_redirect($dest, $code));
+        $return = yourls_redirect($dest, $code);
+        $this->assertEquals(1, $return);
 
         $headers = xdebug_get_headers();
-        $this->assertContains("Location: $dest", $headers);
+        $this->assertTrue(in_array("Location: $dest", $headers));
     }
 
     /**
