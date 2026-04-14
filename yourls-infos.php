@@ -175,17 +175,13 @@ if( yourls_do_log_redirect() ) {
     $sql = yourls_apply_filter('stat_query_last24h', $sql);
     $rows = $ydb->fetchObjects($sql, $keyword_binds);
 
-    $_last_24h = array();
-    foreach( (array)$rows as $row ) {
-        if ( isset( $row->time ) )
-            $_last_24h[ "$row->time" ] = $row->count;
-    }
+    $_last_24h = array_column((array)$rows, 'count', 'time');
 
     $now = intval( date('U') );
     for ($i = 23; $i >= 0; $i--) {
         $h = date('H A', ($now - ($i * 60 * 60) + ($offset * 60 * 60)) );
         // If the $last_24h doesn't have all the hours, insert missing hours with value 0
-        $last_24h[ $h ] = array_key_exists( $h, $_last_24h ) ? $_last_24h[ $h ] : 0 ;
+        $last_24h[ $h ] = $_last_24h[ $h ] ?? 0;
     }
     unset( $_last_24h );
 
