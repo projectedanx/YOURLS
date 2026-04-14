@@ -21,6 +21,9 @@ class HTTPHeadersTest extends PHPUnit\Framework\TestCase {
         $code = 301;
 
         $return = yourls_redirect($dest, $code);
+        if ($return === 3) {
+            $this->markTestSkipped("Redirects cannot be tested in CLI mode when headers have already been sent or blocked.");
+        }
         $this->assertEquals(1, $return);
 
         $headers = xdebug_get_headers();
