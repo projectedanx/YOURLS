@@ -6,8 +6,25 @@
 #[\PHPUnit\Framework\Attributes\Group('http')]
 class HTTPHeadersTest extends PHPUnit\Framework\TestCase {
 
-    public function todo_some_day_test_redirect() {
-        // PHP headers are a bitch to test. TODO some day.
+    /**
+     * Test redirect
+     *
+     * @runInSeparateProcess
+     * @preserveGlobalState disabled
+     */
+    public function test_redirect() {
+        if (!function_exists("xdebug_get_headers")) {
+            $this->markTestSkipped("xdebug_get_headers() is required to test headers.");
+        }
+
+        $dest = "http://example.com";
+        $code = 301;
+
+        $return = yourls_redirect($dest, $code);
+        $this->assertEquals(1, $return);
+
+        $headers = xdebug_get_headers();
+        $this->assertTrue(in_array("Location: $dest", $headers));
     }
 
     /**
