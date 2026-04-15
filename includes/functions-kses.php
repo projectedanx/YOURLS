@@ -98,7 +98,11 @@ function yourls_kses_init() {
  * @return array A list of all allowed HTML tags.
  */
 function yourls_kses_allowed_tags_all() {
-    return require __DIR__ . '/Config/KsesAllowedTagsAll.php';
+    static $array = null;
+    if ($array === null) {
+        $array = require __DIR__ . '/Config/KsesAllowedTagsAll.php';
+    }
+    return $array;
 }
 
 /**
@@ -108,7 +112,11 @@ function yourls_kses_allowed_tags_all() {
  * @return array A list of default allowed HTML tags.
  */
 function yourls_kses_allowed_tags() {
-    return require __DIR__ . '/Config/KsesAllowedTags.php';
+    static $array = null;
+    if ($array === null) {
+        $array = require __DIR__ . '/Config/KsesAllowedTags.php';
+    }
+    return $array;
 }
 
 /**
@@ -118,7 +126,11 @@ function yourls_kses_allowed_tags() {
  * @return array A list of allowed HTML entities.
  */
 function yourls_kses_allowed_entities() {
-    return require __DIR__ . '/Config/KsesAllowedEntities.php';
+    static $array = null;
+    if ($array === null) {
+        $array = require __DIR__ . '/Config/KsesAllowedEntities.php';
+    }
+    return $array;
 }
 
 /**
@@ -129,7 +141,11 @@ function yourls_kses_allowed_entities() {
  */
 function yourls_kses_allowed_protocols() {
     // More or less common stuff in links. From http://en.wikipedia.org/wiki/URI_scheme
-    return require __DIR__ . '/Config/KsesAllowedProtocols.php';
+    static $array = null;
+    if ($array === null) {
+        $array = require __DIR__ . '/Config/KsesAllowedProtocols.php';
+    }
+    return $array;
 }
 
 
