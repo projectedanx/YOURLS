@@ -175,10 +175,11 @@ function yourls_check_password_hash($user, $submitted_password ) {
     } else if( yourls_has_md5_password( $user ) ) {
         // Stored password is a salted md5 hash: "md5:<$r = rand(10000,99999)>:<md5($r.'thepassword')>"
         list( , $salt, ) = explode( ':', $yourls_user_passwords[ $user ] );
-        return( $yourls_user_passwords[ $user ] == 'md5:'.$salt.':'.md5( $salt . $submitted_password ) );
+        $expected = 'md5:'.$salt.':'.md5( $salt . $submitted_password );
+        return hash_equals( (string)$yourls_user_passwords[ $user ], (string)$expected );
     } else {
         // Password stored in clear text
-        return( $yourls_user_passwords[ $user ] === $submitted_password );
+        return hash_equals( (string)$yourls_user_passwords[ $user ], (string)$submitted_password );
     }
 }
 
@@ -331,7 +332,7 @@ function yourls_has_cleartext_passwords() {
 function yourls_has_md5_password( $user ) {
     global $yourls_user_passwords;
     return(    isset( $yourls_user_passwords[ $user ] )
-            && substr( $yourls_user_passwords[ $user ], 0, 4 ) == 'md5:'
+            && substr( $yourls_user_passwords[ $user ], 0, 4 ) === 'md5:'
             && strlen( $yourls_user_passwords[ $user ] ) == 42 // http://www.google.com/search?q=the+answer+to+life+the+universe+and+everything
            );
 }
