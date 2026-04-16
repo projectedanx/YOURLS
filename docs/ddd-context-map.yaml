@@ -1,0 +1,44 @@
+contexts:
+  - name: MCP Integration Context
+    type: Bounded Context
+    description: "Handles AI/LLM intent and translates it into executable commands."
+    aggregate_roots: []
+    entities: []
+    value_objects:
+      - ToolExecutionRequest
+      - SERFErrorResponse
+
+  - name: Core Shortening Context
+    type: Bounded Context
+    description: "Manages the lifecycle of URLs, keywords, and redirection."
+    aggregate_roots:
+      - ShortURL
+    entities:
+      - Keyword
+      - TargetURL
+    value_objects:
+      - Title
+      - Timestamp
+
+  - name: Analytics Context
+    type: Bounded Context
+    description: "Tracks clicks, user agents, and geographic data."
+    aggregate_roots:
+      - ClickLog
+    entities: []
+    value_objects:
+      - IPAddress
+      - UserAgent
+      - Referrer
+      - CountryCode
+
+relationships:
+  - upstream: Core Shortening Context
+    downstream: MCP Integration Context
+    type: "Customer-Supplier / API Integration"
+    contract: "yourls-api.php REST/JSON interface"
+
+  - upstream: Core Shortening Context
+    downstream: Analytics Context
+    type: "Shared Kernel (Implicit)"
+    contract: "YOURLS_URL.keyword -> YOURLS_LOG.shorturl FK relation"

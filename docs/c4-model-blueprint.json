@@ -1,0 +1,58 @@
+{
+  "title": "YOURLS + MCP C4 Model Blueprint",
+  "elements": [
+    {
+      "id": "1",
+      "type": "Person",
+      "name": "AI Orchestrator",
+      "description": "An LLM client interacting via the Model Context Protocol."
+    },
+    {
+      "id": "2",
+      "type": "Software System",
+      "name": "YOURLS Platform",
+      "description": "Your Own URL Shortener ecosystem."
+    },
+    {
+      "id": "3",
+      "type": "Container",
+      "name": "MCP Server",
+      "technology": "Python / mcp",
+      "description": "Translates MCP JSON-RPC to YOURLS API HTTP requests."
+    },
+    {
+      "id": "4",
+      "type": "Container",
+      "name": "YOURLS API",
+      "technology": "PHP / Nginx",
+      "description": "Core HTTP API exposing URL shortening and stats functionality."
+    },
+    {
+      "id": "5",
+      "type": "Container",
+      "name": "YOURLS Database",
+      "technology": "MySQL / MariaDB",
+      "description": "Stores URLs, logs, and configuration."
+    }
+  ],
+  "relationships": [
+    {
+      "source": "1",
+      "target": "3",
+      "description": "Sends tool execution requests via",
+      "technology": "stdio / MCP JSON-RPC"
+    },
+    {
+      "source": "3",
+      "target": "4",
+      "description": "Makes API calls via",
+      "technology": "HTTP / JSON"
+    },
+    {
+      "source": "4",
+      "target": "5",
+      "description": "Reads from and writes to",
+      "technology": "PDO / SQL"
+    }
+  ]
+}
