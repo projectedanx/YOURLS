@@ -534,3 +534,6 @@ erDiagram
 * **ADR**: See [docs/adr/001-mcp-server-architecture.md](docs/adr/001-mcp-server-architecture.md) for the MCP API-led integration decision record.
 * **C4 Model Blueprint**: See [docs/c4-model-blueprint.json](docs/c4-model-blueprint.json) for the formal System Context and Container mappings.
 * **DDD Context Map**: See [docs/ddd-context-map.yaml](docs/ddd-context-map.yaml) for bounded contexts and upstream/downstream contracts.
+
+## Retention Architect (KUT) Blueprint Integration
+The Sovereign Agent Blueprint (KUT) is documented to manage media thermodynamics protocols. See [docs/kut_blueprint.md](docs/kut_blueprint.md) for full operational constraints, schemas, and metrics.
