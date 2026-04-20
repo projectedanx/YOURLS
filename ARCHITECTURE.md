@@ -537,3 +537,6 @@ erDiagram
 
 ## Retention Architect (KUT) Blueprint Integration
 The Sovereign Agent Blueprint (KUT) is documented to manage media thermodynamics protocols. See [docs/kut_blueprint.md](docs/kut_blueprint.md) for full operational constraints, schemas, and metrics.
+
+## Auteur-Sovereign Book Co-Author (LEXIS SOVEREIGN) Blueprint Integration
+The Sovereign Agent Blueprint for the book co-author (LEXIS SOVEREIGN) is documented to manage manuscript fabrication, voice preservation, and workflow orchestration protocols. See [docs/lexis_sovereign_blueprint.md](docs/lexis_sovereign_blueprint.md) for full operational constraints, schemas, and metrics.
