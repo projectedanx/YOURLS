@@ -131,8 +131,9 @@ function yourls_maybe_serialize( $data ) {
  * @return mixed The unserialized value.
  */
 function yourls_maybe_unserialize( $original ) {
-    if ( yourls_is_serialized( $original ) ) // don't attempt to unserialize data that wasn't serialized going in
-        return @unserialize( $original );
+    if ( yourls_is_serialized( $original ) ) { // don't attempt to unserialize data that wasn't serialized going in
+        return @unserialize( (string)$original, array( 'allowed_classes' => array( 'stdClass' ) ) );
+    }
     return $original;
 }
 
