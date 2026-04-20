@@ -108,102 +108,36 @@ class Config {
             }
         }
 
-        /**
-         * The following has an awful CRAP index and it would be much shorter reduced to something like
-         * defining an array of ('YOURLS_SOMETHING' => 'default value') and then a simple loop over the
-         * array, checking if $current is defined as a constant and otherwise define said constant with
-         * its default value. I did not wrote it that way because that would make it difficult for code
-         * parsers to identify which constants are defined and where. So, here it is, that long list of
-         * if (!defined) define(). Ho and by the way, such beautiful comment, much right aligned, wow !
-         */
+        $defaults = array(
+            'YOURLS_ABSPATH'             => $this->root,
+            'YOURLS_INC'                 => function() { return YOURLS_ABSPATH . '/includes'; },
+            'YOURLS_USERDIR'             => function() { return YOURLS_ABSPATH . '/user'; },
+            'YOURLS_USERURL'             => function() { return trim( YOURLS_SITE, '/' ) . '/user'; },
+            'YOURLS_ASSETDIR'            => function() { return YOURLS_ABSPATH . '/assets'; },
+            'YOURLS_ASSETURL'            => function() { return trim( YOURLS_SITE, '/' ) . '/assets'; },
+            'YOURLS_LANG_DIR'            => function() { return YOURLS_USERDIR . '/languages'; },
+            'YOURLS_PLUGINDIR'           => function() { return YOURLS_USERDIR . '/plugins'; },
+            'YOURLS_PLUGINURL'           => function() { return YOURLS_USERURL . '/plugins'; },
+            'YOURLS_THEMEDIR'            => function() { return YOURLS_USERDIR . '/themes'; },
+            'YOURLS_THEMEURL'            => function() { return YOURLS_USERURL . '/themes'; },
+            'YOURLS_PAGEDIR'             => function() { return YOURLS_USERDIR . '/pages'; },
+            'YOURLS_DB_TABLE_URL'        => function() { return YOURLS_DB_PREFIX . 'url'; },
+            'YOURLS_DB_TABLE_OPTIONS'    => function() { return YOURLS_DB_PREFIX . 'options'; },
+            'YOURLS_DB_TABLE_LOG'        => function() { return YOURLS_DB_PREFIX . 'log'; },
+            'YOURLS_FLOOD_DELAY_SECONDS' => 15,
+            'YOURLS_FLOOD_IP_WHITELIST'  => '',
+            'YOURLS_COOKIE_LIFE'         => 60 * 60 * 24 * 7,
+            'YOURLS_NONCE_LIFE'          => 43200,
+            'YOURLS_NOSTATS'             => false,
+            'YOURLS_ADMIN_SSL'           => false,
+            'YOURLS_DEBUG'               => false,
+        );
 
-        // physical path of YOURLS root
-        if (!defined( 'YOURLS_ABSPATH' ))
-            define('YOURLS_ABSPATH', $this->root);
-
-        // physical path of includes directory
-        if (!defined( 'YOURLS_INC' ))
-            define('YOURLS_INC', YOURLS_ABSPATH.'/includes');
-
-        // physical path of user directory
-        if (!defined( 'YOURLS_USERDIR' ))
-            define( 'YOURLS_USERDIR', YOURLS_ABSPATH.'/user' );
-
-        // URL of user directory
-        if (!defined( 'YOURLS_USERURL' ))
-            define( 'YOURLS_USERURL', trim(YOURLS_SITE, '/').'/user' );
-
-        // physical path of asset directory
-        if( !defined( 'YOURLS_ASSETDIR' ) )
-            define( 'YOURLS_ASSETDIR', YOURLS_ABSPATH.'/assets' );
-
-        // URL of asset directory
-        if( !defined( 'YOURLS_ASSETURL' ) )
-            define( 'YOURLS_ASSETURL', trim(YOURLS_SITE, '/').'/assets' );
-
-        // physical path of translations directory
-        if (!defined( 'YOURLS_LANG_DIR' ))
-            define( 'YOURLS_LANG_DIR', YOURLS_USERDIR.'/languages' );
-
-        // physical path of plugins directory
-        if (!defined( 'YOURLS_PLUGINDIR' ))
-            define( 'YOURLS_PLUGINDIR', YOURLS_USERDIR.'/plugins' );
-
-        // URL of plugins directory
-        if (!defined( 'YOURLS_PLUGINURL' ))
-            define( 'YOURLS_PLUGINURL', YOURLS_USERURL.'/plugins' );
-
-        // physical path of themes directory
-        if( !defined( 'YOURLS_THEMEDIR' ) )
-            define( 'YOURLS_THEMEDIR', YOURLS_USERDIR.'/themes' );
-
-        // URL of themes directory
-        if( !defined( 'YOURLS_THEMEURL' ) )
-            define( 'YOURLS_THEMEURL', YOURLS_USERURL.'/themes' );
-
-        // physical path of pages directory
-        if (!defined( 'YOURLS_PAGEDIR' ))
-            define('YOURLS_PAGEDIR', YOURLS_USERDIR.'/pages' );
-
-        // table to store URLs
-        if (!defined( 'YOURLS_DB_TABLE_URL' ))
-            define( 'YOURLS_DB_TABLE_URL', YOURLS_DB_PREFIX.'url' );
-
-        // table to store options
-        if (!defined( 'YOURLS_DB_TABLE_OPTIONS' ))
-            define( 'YOURLS_DB_TABLE_OPTIONS', YOURLS_DB_PREFIX.'options' );
-
-        // table to store hits, for stats
-        if (!defined( 'YOURLS_DB_TABLE_LOG' ))
-            define( 'YOURLS_DB_TABLE_LOG', YOURLS_DB_PREFIX.'log' );
-
-        // minimum delay in sec before a same IP can add another URL. Note: logged in users are not throttled down.
-        if (!defined( 'YOURLS_FLOOD_DELAY_SECONDS' ))
-            define( 'YOURLS_FLOOD_DELAY_SECONDS', 15 );
-
-        // comma separated list of IPs that can bypass flood check.
-        if (!defined( 'YOURLS_FLOOD_IP_WHITELIST' ))
-            define( 'YOURLS_FLOOD_IP_WHITELIST', '' );
-
-        // life span of an auth cookie in seconds (60*60*24*7 = 7 days)
-        if (!defined( 'YOURLS_COOKIE_LIFE' ))
-            define( 'YOURLS_COOKIE_LIFE', 60*60*24*7 );
-
-        // life span of a nonce in seconds
-        if (!defined( 'YOURLS_NONCE_LIFE' ))
-            define( 'YOURLS_NONCE_LIFE', 43200 ); // 3600 * 12
-
-        // if set to true, disable stat logging (no use for it, too busy servers, ...)
-        if (!defined( 'YOURLS_NOSTATS' ))
-            define( 'YOURLS_NOSTATS', false );
-
-        // if set to true, force https:// in the admin area
-        if (!defined( 'YOURLS_ADMIN_SSL' ))
-            define( 'YOURLS_ADMIN_SSL', false );
-
-        // if set to true, verbose debug infos. Will break things. Don't enable.
-        if (!defined( 'YOURLS_DEBUG' ))
-            define( 'YOURLS_DEBUG', false );
+        foreach ( $defaults as $name => $value ) {
+            if ( !defined( $name ) ) {
+                define( $name, is_callable( $value ) ? $value() : $value );
+            }
+        }
 
         // Error reporting
         if (defined( 'YOURLS_DEBUG' ) && YOURLS_DEBUG == true ) {
