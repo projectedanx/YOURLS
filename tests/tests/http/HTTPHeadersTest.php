@@ -34,6 +34,9 @@ class HTTPHeadersTest extends PHPUnit\Framework\TestCase {
 
     /**
      * Test that we have some javascript redirection output
+     *
+     * @runInSeparateProcess
+     * @preserveGlobalState disabled
      */
     public function test_javascript_redirect() {
         $regexp = '!<script type="text/javascript">\s*window.location="http://somewhere";!m';
