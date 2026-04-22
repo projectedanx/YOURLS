@@ -168,9 +168,15 @@ function yourls_get_stats($filter = 'top', $limit = 10, $start = 0) {
         $return = [];
         $i = 1;
 
+        $base = yourls_get_yourls_site();
+
         foreach ( (array)$results as $res ) {
+            $keyword = yourls_sanitize_keyword($res->keyword);
+            $link = $base . '/' . $keyword;
+            $shorturl = yourls_apply_filter( 'yourls_link', $link, $keyword );
+
             $return['links']['link_'.$i++] = [
-                'shorturl' => yourls_link($res->keyword),
+                'shorturl' => $shorturl,
                 'url'      => $res->url,
                 'title'    => $res->title,
                 'timestamp'=> $res->timestamp,
