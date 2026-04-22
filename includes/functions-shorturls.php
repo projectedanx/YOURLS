@@ -655,7 +655,8 @@ function yourls_get_longurl_keywords( $longurl, $order = 'ASC' ) {
     $table   = YOURLS_DB_TABLE_URL;
     $sql     = "SELECT `keyword` FROM `$table` WHERE `url` = :url";
 
-    if (in_array($order, array('ASC','DESC'))) {
+    if (is_string($order) && in_array(strtoupper($order), array('ASC', 'DESC'), true)) {
+        $order = strtoupper($order);
         $sql .= " ORDER BY `keyword` ".$order;
     }
 
