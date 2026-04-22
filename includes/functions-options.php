@@ -132,7 +132,11 @@ function yourls_maybe_serialize( $data ) {
  */
 function yourls_maybe_unserialize( $original ) {
     if ( yourls_is_serialized( $original ) ) { // don't attempt to unserialize data that wasn't serialized going in
-        return @unserialize( (string)$original, array( 'allowed_classes' => array( 'stdClass' ) ) );
+        $allowed = array( 'stdClass' );
+        if ( function_exists( 'yourls_apply_filter' ) ) {
+            $allowed = yourls_apply_filter( 'yourls_maybe_unserialize_allowed_classes', $allowed );
+        }
+        return @unserialize( (string)$original, array( 'allowed_classes' => $allowed ) );
     }
     return $original;
 }
