@@ -126,10 +126,21 @@ class FormatTest extends PHPUnit\Framework\TestCase {
            Cool to know :)
 
            We're testing it as used in yourls_sanitize_keyword()
-           TODO: more random char strings to test?
         */
 
         $this->assertNotFalse( preg_match( '![^' . $pattern . ']!', '' ) );
+
+        for ( $i = 0; $i < 10; $i++ ) {
+            $this->assertNotFalse( preg_match( '![^' . $pattern . ']!', rand_str() ) );
+        }
+
+        for ( $i = 0; $i < 10; $i++ ) {
+            $string = '';
+            for( $j = 0; $j < 10; $j++ ) {
+                $string .= chr( mt_rand( 32, 126 ) );
+            }
+            $this->assertNotFalse( preg_match( '![^' . $pattern . ']!', $string ) );
+        }
     }
 
     /**
