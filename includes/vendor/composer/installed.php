@@ -3,7 +3,7 @@
         'name' => 'yourls/yourls',
         'pretty_version' => 'dev-master',
         'version' => 'dev-master',
-        'reference' => 'fce0e34be0eb3cf93503b63443cd1da48ae384a5',
+        'reference' => 'cb8f7a9752e6238512a69c66b3d09103544f9409',
         'type' => 'project',
         'install_path' => __DIR__ . '/../../../',
         'aliases' => array(),
@@ -139,7 +139,7 @@
         'yourls/yourls' => array(
             'pretty_version' => 'dev-master',
             'version' => 'dev-master',
-            'reference' => 'fce0e34be0eb3cf93503b63443cd1da48ae384a5',
+            'reference' => 'cb8f7a9752e6238512a69c66b3d09103544f9409',
             'type' => 'project',
             'install_path' => __DIR__ . '/../../../',
             'aliases' => array(),

@@ -132,6 +132,24 @@ class CRUDTest extends PHPUnit\Framework\TestCase {
         yourls_delete_link_by_keyword( $keyword );
     }
 
+
+    #[\PHPUnit\Framework\Attributes\Depends('test_add_url')]
+    public function test_update_hits_concurrency( $keyword ) {
+        // Force a mock of the DB to throw an exception
+        global $ydb;
+        $old_ydb = $ydb;
+
+        // We mock the DB so that the update fails with an exception, simulating a concurrent update
+        $ydb = $this->createMock(\YOURLS\Database\YDB::class);
+        $ydb->method('fetchAffected')->willThrowException(new Exception('Concurrency exception simulated'));
+
+        $result = yourls_update_clicks( $keyword );
+
+        // Restore the DB
+        $ydb = $old_ydb;
+
+        $this->assertEquals( 0, $result );
+    }
     public function test_insert_link_concurrency() {
         $keyword = rand_str();
         $title   = rand_str();
