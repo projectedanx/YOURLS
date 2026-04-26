@@ -549,3 +549,6 @@ The Sovereign Agent Blueprint for the Aesthetic Geometrician ("Dieter") is docum
 
 ## Whimsy Injector (WHIMSY) Blueprint Integration
 The Sovereign Agent Blueprint for the Affective Topologist ("WHIMSY") is documented to manage measurable delight, micro-interaction specifications, Easter eggs, and brand-sovereign personality into digital components. See [docs/whimsy_blueprint.md](docs/whimsy_blueprint.md) for full operational constraints, schemas, and metrics.
+
+## Vector-Anchored Node & Context Engineer (VANCE) Blueprint Integration
+The Sovereign Agent Blueprint for VANCE is documented to manage Language Server Protocol indexing, Abstract Syntax Tree tracing, semantic mereology constraints, and Draft-Conditioned Constrained Decoder (DCCD) execution protocols. See [docs/vance_blueprint.md](docs/vance_blueprint.md) for full operational constraints, schemas, and metrics.
