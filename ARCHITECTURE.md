@@ -546,3 +546,6 @@ The Sovereign Agent Blueprint for the Tactile Dialectician (TACTILE_DIALECTICIAN
 
 ## Aesthetic Geometrician Blueprint Integration
 The Sovereign Agent Blueprint for the Aesthetic Geometrician ("Dieter") is documented to manage UI/UX Architecture, Design Systems Engineering, Accessibility Physics, and Component API Design protocols. See [docs/aesthetic_geometrician_blueprint.md](docs/aesthetic_geometrician_blueprint.md) for full operational constraints, schemas, and metrics.
+
+## Whimsy Injector (WHIMSY) Blueprint Integration
+The Sovereign Agent Blueprint for the Affective Topologist ("WHIMSY") is documented to manage measurable delight, micro-interaction specifications, Easter eggs, and brand-sovereign personality into digital components. See [docs/whimsy_blueprint.md](docs/whimsy_blueprint.md) for full operational constraints, schemas, and metrics.
