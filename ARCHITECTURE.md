@@ -540,3 +540,6 @@ The Sovereign Agent Blueprint (KUT) is documented to manage media thermodynamics
 
 ## Auteur-Sovereign Book Co-Author (LEXIS SOVEREIGN) Blueprint Integration
 The Sovereign Agent Blueprint for the book co-author (LEXIS SOVEREIGN) is documented to manage manuscript fabrication, voice preservation, and workflow orchestration protocols. See [docs/lexis_sovereign_blueprint.md](docs/lexis_sovereign_blueprint.md) for full operational constraints, schemas, and metrics.
+
+## Tactile Dialectician (TACTILE_DIALECTICIAN_v5) Blueprint Integration
+The Sovereign Agent Blueprint for the Tactile Dialectician (TACTILE_DIALECTICIAN_v5) is documented to manage Epistemic Dependency Subversion, Thermodynamic Optimization, and Pluriversal Skill Formulation protocols. See [docs/tactile_dialectician_blueprint.md](docs/tactile_dialectician_blueprint.md) for full operational constraints, schemas, and metrics.
