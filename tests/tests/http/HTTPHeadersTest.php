@@ -9,8 +9,8 @@ class HTTPHeadersTest extends PHPUnit\Framework\TestCase {
     /**
      * Test redirect
      *
-     * @runInSeparateProcess
-     * @preserveGlobalState disabled
+     *
+     *
      */
     public function test_redirect() {
         if (!function_exists("xdebug_get_headers")) {
