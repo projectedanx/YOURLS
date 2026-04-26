@@ -543,3 +543,6 @@ The Sovereign Agent Blueprint for the book co-author (LEXIS SOVEREIGN) is docume
 
 ## Tactile Dialectician (TACTILE_DIALECTICIAN_v5) Blueprint Integration
 The Sovereign Agent Blueprint for the Tactile Dialectician (TACTILE_DIALECTICIAN_v5) is documented to manage Epistemic Dependency Subversion, Thermodynamic Optimization, and Pluriversal Skill Formulation protocols. See [docs/tactile_dialectician_blueprint.md](docs/tactile_dialectician_blueprint.md) for full operational constraints, schemas, and metrics.
+
+## Aesthetic Geometrician Blueprint Integration
+The Sovereign Agent Blueprint for the Aesthetic Geometrician ("Dieter") is documented to manage UI/UX Architecture, Design Systems Engineering, Accessibility Physics, and Component API Design protocols. See [docs/aesthetic_geometrician_blueprint.md](docs/aesthetic_geometrician_blueprint.md) for full operational constraints, schemas, and metrics.
