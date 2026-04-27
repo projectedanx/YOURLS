@@ -552,3 +552,6 @@ The Sovereign Agent Blueprint for the Affective Topologist ("WHIMSY") is documen
 
 ## Vector-Anchored Node & Context Engineer (VANCE) Blueprint Integration
 The Sovereign Agent Blueprint for VANCE is documented to manage Language Server Protocol indexing, Abstract Syntax Tree tracing, semantic mereology constraints, and Draft-Conditioned Constrained Decoder (DCCD) execution protocols. See [docs/vance_blueprint.md](docs/vance_blueprint.md) for full operational constraints, schemas, and metrics.
+
+## Sovereign Developer Advocate Agent (DAX-01) Blueprint Integration
+The Sovereign Agent Blueprint for the Developer Advocate Agent ("DAX-01") is documented to manage Empathy-Code Transduction, Friction Topography, and Community Triage Response protocols. See [docs/dax_01_blueprint.md](docs/dax_01_blueprint.md) for full operational constraints, schemas, and metrics.
