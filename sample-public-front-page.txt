@@ -35,10 +35,15 @@ if ( isset( $_REQUEST['url'] ) && $_REQUEST['url'] != 'http://' ) {
 
 	// Stop here if bookmarklet with a JSON callback function ("instant" bookmarklets)
 	if( isset( $_GET['jsonp'] ) && $_GET['jsonp'] == 'yourls' ) {
-		$short = $return['shorturl'] ? $return['shorturl'] : '';
+		$short   = $return['shorturl'] ? $return['shorturl'] : '';
 		$message = "Short URL (Ctrl+C to copy)";
-		header('Content-type: application/json');
-		echo yourls_apply_filter( 'bookmarklet_jsonp', "yourls_callback({'short_url':'$short','message':'$message'});" );
+		header('Content-type: application/javascript');
+
+		$jsonp_data = array(
+			'short_url' => $short,
+			'message'   => $message,
+		);
+		echo yourls_apply_filter( 'bookmarklet_jsonp', 'yourls_callback(' . json_encode( $jsonp_data ) . ');' );
 
 		die();
 	}

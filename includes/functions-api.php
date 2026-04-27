@@ -122,6 +122,7 @@ function yourls_api_output( $mode, $output, $send_headers = true, $echo = true )
                 yourls_content_type_header( 'application/javascript' );
 
             $callback = $output['callback'] ?? '';
+            $callback = preg_replace( '/[^a-zA-Z0-9_.]/', '', $callback );
             $result =  $callback . '(' . json_encode( $output ) . ')';
             break;
 
