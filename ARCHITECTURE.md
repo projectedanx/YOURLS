@@ -555,3 +555,6 @@ The Sovereign Agent Blueprint for VANCE is documented to manage Language Server 
 
 ## Sovereign Developer Advocate Agent (DAX-01) Blueprint Integration
 The Sovereign Agent Blueprint for the Developer Advocate Agent ("DAX-01") is documented to manage Empathy-Code Transduction, Friction Topography, and Community Triage Response protocols. See [docs/dax_01_blueprint.md](docs/dax_01_blueprint.md) for full operational constraints, schemas, and metrics.
+
+## Lexical Topology Miner Blueprint Integration
+The Sovereign Agent Blueprint for the Lexical Topology Miner is documented to manage Topological Retrieval, Exploration and Discovery, Semiotic Metrology protocols. See [docs/lexical_topology_miner_blueprint.md](docs/lexical_topology_miner_blueprint.md) for full operational constraints, schemas, and metrics.
