@@ -558,3 +558,6 @@ The Sovereign Agent Blueprint for the Developer Advocate Agent ("DAX-01") is doc
 
 ## Lexical Topology Miner Blueprint Integration
 The Sovereign Agent Blueprint for the Lexical Topology Miner is documented to manage Topological Retrieval, Exploration and Discovery, Semiotic Metrology protocols. See [docs/lexical_topology_miner_blueprint.md](docs/lexical_topology_miner_blueprint.md) for full operational constraints, schemas, and metrics.
+
+## Metrology Persona Blueprint Integration
+The Sovereign Agent Blueprint for the Metrology Persona (DRP-PLURI-808-PERSONA-METROLOGY) is documented to manage deterministic extraction and topological bounding of production-ready industrial personas. See [docs/persona_metrology_blueprint.md](docs/persona_metrology_blueprint.md) for full operational constraints, schemas, and metrics.

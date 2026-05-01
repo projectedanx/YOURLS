@@ -242,3 +242,70 @@ function yourls_api_expand( $shorturl ) {
 
     return yourls_apply_filter( 'api_expand', $return, $shorturl );
 }
+
+
+/**
+ * Deletes a short URL.
+ *
+ * @since 1.6
+ * @return array An array containing the result of the API call.
+ */
+function yourls_api_action_delete() {
+    $shorturl = $_REQUEST['shorturl'] ?? '';
+    $keyword = str_replace( yourls_get_yourls_site() . '/' , '', $shorturl ); // accept either 'http://ozh.in/abc' or 'abc'
+    $keyword = yourls_sanitize_keyword( $keyword );
+
+    $return = array();
+    if( yourls_is_shorturl( $keyword ) ) {
+        $delete = yourls_delete_link_by_keyword( $keyword );
+        if( $delete ) {
+            $return['statusCode'] = 200;
+            $return['message'] = 'success';
+            $return['simple'] = 'success';
+        } else {
+            $return['errorCode'] = 500;
+            $return['message'] = 'Error: could not delete short URL';
+            $return['simple'] = 'Error: could not delete short URL';
+        }
+    } else {
+        $return['errorCode'] = 404;
+        $return['message'] = 'Error: short URL not found';
+        $return['simple'] = 'Error: short URL not found';
+    }
+
+    return yourls_apply_filter( 'api_result_delete', $return );
+}
+
+/**
+ * Edits a short URL.
+ *
+ * @since 1.6
+ * @return array An array containing the result of the API call.
+ */
+function yourls_api_action_edit() {
+    $shorturl = $_REQUEST['shorturl'] ?? '';
+    $keyword = str_replace( yourls_get_yourls_site() . '/' , '', $shorturl ); // accept either 'http://ozh.in/abc' or 'abc'
+    $keyword = yourls_sanitize_keyword( $keyword );
+
+    $newkeyword = $_REQUEST['newkeyword'] ?? '';
+    $title = $_REQUEST['title'] ?? '';
+    $url = $_REQUEST['url'] ?? '';
+
+    $return = array();
+    if( yourls_is_shorturl( $keyword ) ) {
+        $return = yourls_edit_link( $url, $keyword, $newkeyword, $title );
+        if( isset($return['status']) && $return['status'] == 'success' ) {
+            $return['statusCode'] = 200;
+            $return['simple'] = 'success';
+        } else {
+            $return['errorCode'] = 500;
+            $return['simple'] = $return['message'] ?? 'Error: could not edit short URL';
+        }
+    } else {
+        $return['errorCode'] = 404;
+        $return['message'] = 'Error: short URL not found';
+        $return['simple'] = 'Error: short URL not found';
+    }
+
+    return yourls_apply_filter( 'api_result_edit', $return );
+}

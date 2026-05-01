@@ -25,6 +25,8 @@ $api_actions = array(
     'url-stats' => 'yourls_api_action_url_stats',
     'expand'    => 'yourls_api_action_expand',
     'version'   => 'yourls_api_action_version',
+    'delete'    => 'yourls_api_action_delete',
+    'edit'      => 'yourls_api_action_edit',
 );
 $api_actions = yourls_apply_filter( 'api_actions', $api_actions );
 
