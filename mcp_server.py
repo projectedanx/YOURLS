@@ -96,6 +96,49 @@ class ShortenInput(BaseModel):
             raise ValueError("URL must start with http:// or https://")
         return v
 
+
+class DeleteInput(BaseModel):
+    """
+    Input model for the delete_url tool.
+
+    Attributes:
+        shorturl (str): The short URL or keyword to delete.
+    """
+    shorturl: str = Field(
+        max_length=2048,
+        description="The short URL or keyword to delete."
+    )
+
+class EditInput(BaseModel):
+    """
+    Input model for the edit_url tool.
+
+    Attributes:
+        shorturl (str): The short URL or keyword to edit.
+        url (Optional[str]): The new long URL.
+        newkeyword (Optional[str]): The new keyword.
+        title (Optional[str]): The new title.
+    """
+    shorturl: str = Field(
+        max_length=2048,
+        description="The short URL or keyword to edit."
+    )
+    url: Optional[str] = Field(
+        default=None,
+        max_length=2048,
+        description="The new long URL."
+    )
+    newkeyword: Optional[str] = Field(
+        default=None,
+        max_length=200,
+        description="The new keyword."
+    )
+    title: Optional[str] = Field(
+        default=None,
+        max_length=200,
+        description="The new title."
+    )
+
 class ExpandInput(BaseModel):
     """
     Input model for the expand_url tool.
@@ -141,6 +184,86 @@ class StatsInput(BaseModel):
         max_length=2048,
         description="The short URL or keyword to fetch stats for."
     )
+
+@mcp.tool(
+    description=(
+        "PURPOSE: Deletes a short URL. "
+        "GUIDELINES: Use this to permanently delete a shortened link. "
+        "LIMITATIONS: Input max 2048 chars. "
+        "PARAMETERS: shorturl (str, required: the short URL or keyword)."
+    )
+)
+async def delete_url(shorturl: str) -> dict:
+    """
+    Delete a short URL using the YOURLS API.
+
+    Args:
+        shorturl (str): The short URL or keyword to delete.
+
+    Returns:
+        dict: The JSON response from the YOURLS API.
+    """
+    try:
+        validated = DeleteInput(shorturl=shorturl)
+    except ValueError as e:
+         return build_error("VALIDATION_ERROR", "SERVER_TOOL_CONFIGURATION", str(e), False, "Correct input parameters.")
+
+    params = {"action": "delete", "shorturl": validated.shorturl, "format": "json"}
+    params.update(get_auth_params())
+
+    try:
+        async with httpx.AsyncClient() as client:
+            resp = await client.post(YOURLS_API_URL, data=params, timeout=10.0)
+            resp.raise_for_status()
+            data = resp.json()
+            return data
+    except Exception as e:
+        return build_error("UPSTREAM_ERROR", "SERVER_HOST_CONFIGURATION", str(e), True, "Verify YOURLS API endpoint.")
+
+@mcp.tool(
+    description=(
+        "PURPOSE: Edits an existing short URL. "
+        "GUIDELINES: Use this to update the destination URL, keyword, or title of a shortened link. "
+        "LIMITATIONS: URLs max 2048 chars. Keywords max 200 chars. "
+        "PARAMETERS: shorturl (str, required), url (str, optional), newkeyword (str, optional), title (str, optional)."
+    )
+)
+async def edit_url(shorturl: str, url: Optional[str] = None, newkeyword: Optional[str] = None, title: Optional[str] = None) -> dict:
+    """
+    Edit a short URL using the YOURLS API.
+
+    Args:
+        shorturl (str): The short URL or keyword to edit.
+        url (Optional[str], optional): The new long URL. Defaults to None.
+        newkeyword (Optional[str], optional): The new keyword. Defaults to None.
+        title (Optional[str], optional): The new title. Defaults to None.
+
+    Returns:
+        dict: The JSON response from the YOURLS API.
+    """
+    try:
+        validated = EditInput(shorturl=shorturl, url=url, newkeyword=newkeyword, title=title)
+    except ValueError as e:
+         return build_error("VALIDATION_ERROR", "SERVER_TOOL_CONFIGURATION", str(e), False, "Correct input parameters.")
+
+    params = {"action": "edit", "shorturl": validated.shorturl, "format": "json"}
+    if validated.url:
+        params["url"] = validated.url
+    if validated.newkeyword:
+        params["newkeyword"] = validated.newkeyword
+    if validated.title:
+        params["title"] = validated.title
+
+    params.update(get_auth_params())
+
+    try:
+        async with httpx.AsyncClient() as client:
+            resp = await client.post(YOURLS_API_URL, data=params, timeout=10.0)
+            resp.raise_for_status()
+            data = resp.json()
+            return data
+    except Exception as e:
+        return build_error("UPSTREAM_ERROR", "SERVER_HOST_CONFIGURATION", str(e), True, "Verify YOURLS API endpoint.")
 
 @mcp.tool(
     description=(
