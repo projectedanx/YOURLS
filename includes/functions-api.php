@@ -309,3 +309,73 @@ function yourls_api_action_edit() {
 
     return yourls_apply_filter( 'api_result_edit', $return );
 }
+
+/**
+ * Searches for short URLs.
+ *
+ * @since 1.9.3
+ * @return array An array containing the result of the API call.
+ */
+function yourls_api_action_search() {
+    global $ydb;
+
+    $search = $_REQUEST['search'] ?? '';
+    $limit = $_REQUEST['limit'] ?? 10;
+    $start = $_REQUEST['start'] ?? 0;
+
+    $return = array();
+
+    if ( empty( $search ) ) {
+        $return['errorCode'] = 400;
+        $return['message'] = 'Error: missing search keyword';
+        $return['simple'] = 'Error: missing search keyword';
+        return yourls_apply_filter( 'api_result_search', $return );
+    }
+
+    $table_url = YOURLS_DB_TABLE_URL;
+
+    // Using PDO parameter binding with wildcards for safe LIKE queries
+    $search_term = '%' . $search . '%';
+
+    $sql = "SELECT keyword, url, title, timestamp, ip, clicks FROM $table_url WHERE keyword LIKE :search OR url LIKE :search OR title LIKE :search ORDER BY timestamp DESC LIMIT :start, :limit";
+    $binds = array(
+        'search' => $search_term,
+        'start'  => (int) $start,
+        'limit'  => (int) $limit
+    );
+
+    try {
+        // Important: aura sql / pdo binds limit / offset strictly as ints
+        $results = $ydb->fetchObjects( $sql, $binds );
+    } catch ( Exception $e ) {
+        $return['errorCode'] = 500;
+        $return['message'] = 'Database error: ' . $e->getMessage();
+        $return['simple'] = 'Error: database error';
+        return yourls_apply_filter( 'api_result_search', $return );
+    }
+
+    if ( $results ) {
+        $return['statusCode'] = 200;
+        $return['message'] = 'success';
+
+        $links = array();
+        foreach ( $results as $res ) {
+            $link = array(
+                'shorturl' => yourls_link( $res->keyword ),
+                'url'      => $res->url,
+                'title'    => $res->title,
+                'timestamp'=> $res->timestamp,
+                'ip'       => $res->ip,
+                'clicks'   => $res->clicks,
+            );
+            $links[$res->keyword] = $link;
+        }
+        $return['links'] = $links;
+    } else {
+        $return['statusCode'] = 404;
+        $return['message'] = 'No links found';
+        $return['simple'] = 'No links found';
+    }
+
+    return yourls_apply_filter( 'api_result_search', $return );
+}

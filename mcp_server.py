@@ -173,6 +173,29 @@ class StatsListInput(BaseModel):
         description="Offset for pagination."
     )
 
+
+class SearchInput(BaseModel):
+    """
+    Input model for the search_urls tool.
+
+    Attributes:
+        search (str): The search keyword.
+        limit (Optional[int]): Number of links to retrieve.
+        start (Optional[int]): Offset for pagination.
+    """
+    search: str = Field(
+        max_length=200,
+        description="The search keyword."
+    )
+    limit: Optional[int] = Field(
+        default=10,
+        description="Number of links to retrieve."
+    )
+    start: Optional[int] = Field(
+        default=0,
+        description="Offset for pagination."
+    )
+
 class StatsInput(BaseModel):
     """
     Input model for the get_url_stats tool.
@@ -467,6 +490,49 @@ async def get_version() -> dict:
             return data
     except Exception as e:
         return build_error("UPSTREAM_ERROR", "SERVER_HOST_CONFIGURATION", str(e), True, "Verify YOURLS API endpoint.")
+
+
+@mcp.tool(
+    description=(
+        "PURPOSE: Searches for short URLs. "
+        "GUIDELINES: Use this to find links by keyword, long URL, or title. "
+        "PARAMETERS: search (str, required); limit (int, optional); start (int, optional)."
+    )
+)
+async def search_urls(search: str, limit: Optional[int] = 10, start: Optional[int] = 0) -> dict:
+    """
+    Search for short URLs using the YOURLS API.
+
+    Args:
+        search (str): The search keyword.
+        limit (Optional[int], optional): Number of links to retrieve. Defaults to 10.
+        start (Optional[int], optional): Offset for pagination. Defaults to 0.
+
+    Returns:
+        dict: The JSON response from the YOURLS API.
+    """
+    try:
+        validated = SearchInput(search=search, limit=limit, start=start)
+    except ValueError as e:
+         return build_error("VALIDATION_ERROR", "SERVER_TOOL_CONFIGURATION", str(e), False, "Correct input parameters.")
+
+    params = {"action": "search", "search": validated.search, "format": "json"}
+    if validated.limit is not None:
+        params["limit"] = validated.limit
+    if validated.start is not None:
+        params["start"] = validated.start
+
+    params.update(get_auth_params())
+
+    try:
+        async with httpx.AsyncClient() as client:
+            resp = await client.get(YOURLS_API_URL, params=params, timeout=10.0)
+            resp.raise_for_status()
+            data = resp.json()
+            return data
+    except Exception as e:
+        return build_error("UPSTREAM_ERROR", "SERVER_HOST_CONFIGURATION", str(e), True, "Verify YOURLS API endpoint.")
+
 
 if __name__ == "__main__":
     mcp.run(transport="stdio")

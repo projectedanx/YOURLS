@@ -129,3 +129,8 @@ The strictly formatted YAML PDT_SPECIFICATION_BLOCK mapping the Jules vs Kaggle 
 A concrete JSON matrix of the Top 5 "Must-Have" cross-architecture packages (e.g., orjson, polars, uvloop, safetensors, bitsandbytes custom compiled).
 
 The exact Python and Bash boilerplate code required to execute the runtime base-image pruning and offline wheel mounting, ready to be pasted into the first cell of a Kaggle notebook.
+
+
+14) SCOS ACTIVE - TOPOLOGICAL SEARCH INTEGRATION
+During the implementation of the `search` API action, we successfully subverted the CRUD ontology constraint by enabling semantic mapping.
+We observed and held the tension between PHP's synchronous execution and the MCP's asynchronous async/await model, relying on robust parameter binding and SERF-compliant error handling to maintain the boundary.
