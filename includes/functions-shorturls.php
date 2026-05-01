@@ -21,6 +21,130 @@
  * @param int    $row_id  Optional. The row ID for the new link. Default 1.
  * @return array An array containing the result of the operation.
  */
+/**
+ * Check if a URL already exists and return the corresponding array if so.
+ *
+ * @since 1.9.3
+ * @param string $url     The URL to check
+ * @param string $keyword The keyword (for filter context)
+ * @param string $title   The title (for filter context)
+ * @return array|false Returns the array with status info if duplicate, false otherwise.
+ */
+function yourls_check_duplicate_long_url( $url, $keyword, $title ) {
+    if ( !yourls_allow_duplicate_longurls() && ($url_exists = yourls_long_url_exists( $url )) ) {
+        yourls_do_action( 'add_new_link_already_stored', $url, $keyword, $title );
+
+        $return = [
+            'status'     => 'fail',
+            'code'       => 'error:url',
+            'url'        => array( 'keyword' => $url_exists->keyword, 'url' => $url, 'title' => $url_exists->title, 'date' => $url_exists->timestamp, 'ip' => $url_exists->ip, 'clicks' => $url_exists->clicks ),
+            'message'    => /* //translators: eg "http://someurl/ already exists (short URL: sho.rt/abc)" */ yourls_s('%s already exists in database (short URL: %s)',
+                yourls_trim_long_string($url), preg_replace('!https?://!', '',  yourls_get_yourls_site()) . '/'. $url_exists->keyword ),
+            'title'      => $url_exists->title,
+            'shorturl'   => yourls_link($url_exists->keyword),
+            'errorCode'  => '400', // 400 Bad Request
+            'statusCode' => '400', // 400 Bad Request
+        ];
+
+        return yourls_apply_filter( 'add_new_link_already_stored_filter', $return, $url, $keyword, $title );
+    }
+
+    return false;
+}
+
+/**
+ * Handle custom keyword provided or generate a random keyword.
+ *
+ * @since 1.9.3
+ * @param string $url     The URL to shorten
+ * @param string $keyword The provided keyword, if any
+ * @param string $title   The title
+ * @return array|string Returns an array with an error status if the keyword is taken, otherwise the final free keyword string.
+ */
+function yourls_get_available_keyword( $url, $keyword, $title ) {
+    if ($keyword) {
+        yourls_do_action( 'add_new_link_custom_keyword', $url, $keyword, $title );
+
+        $keyword = yourls_sanitize_keyword( $keyword, true );
+        $keyword = yourls_apply_filter( 'custom_keyword', $keyword, $url, $title );
+
+        if ( !yourls_keyword_is_free( $keyword ) ) {
+            // This shorturl either reserved or taken already
+            $return = [
+                'status'     => 'fail',
+                'code'       => 'error:keyword',
+                'message'    => yourls_s( 'Short URL %s already exists in database or is reserved', $keyword ),
+                'errorCode'  => '400', // 400 Bad Request
+                'statusCode' => '400', // 400 Bad Request
+            ];
+
+            return yourls_apply_filter( 'add_new_link_keyword_exists', $return, $url, $keyword, $title );
+        }
+
+        return $keyword;
+
+        // Create random keyword
+    } else {
+        yourls_do_action( 'add_new_link_create_keyword', $url, $keyword, $title );
+
+        $id = yourls_get_next_decimal();
+
+        do {
+            $keyword = yourls_int2string( $id );
+            $keyword = yourls_apply_filter( 'random_keyword', $keyword, $url, $title );
+            $id++;
+        } while ( !yourls_keyword_is_free($keyword) );
+
+        yourls_update_next_decimal($id);
+
+        return $keyword;
+    }
+}
+
+/**
+ * Add a new link in the DB and return result array
+ *
+ * @since 1.9.3
+ * @param string $url     The URL to shorten
+ * @param string $keyword The available keyword
+ * @param string $title   The title
+ * @param string $ip      The IP address
+ * @param int    $row_id  The row ID
+ * @return array The result array.
+ */
+function yourls_store_shorturl( $url, $keyword, $title, $ip, $row_id ) {
+    $timestamp = date( 'Y-m-d H:i:s' );
+    $return = [];
+
+    try {
+        if (yourls_insert_link_in_db( $url, $keyword, $title )){
+            // everything ok, populate needed vars
+            $return['url']      = array('keyword' => $keyword, 'url' => $url, 'title' => $title, 'date' => $timestamp, 'ip' => $ip );
+            $return['status']   = 'success';
+            $return['message']  = /* //translators: eg "http://someurl/ added to DB" */ yourls_s( '%s added to database', yourls_trim_long_string( $url ) );
+            $return['title']    = $title;
+            $return['html']     = yourls_table_add_row( $keyword, $url, $title, $ip, 0, time(), $row_id );
+            $return['shorturl'] = yourls_link($keyword);
+            $return['statusCode'] = '200'; // 200 OK
+        } else {
+            // unknown database error, couldn't store result
+            $return['status']   = 'fail';
+            $return['code']     = 'error:db';
+            $return['message']  = yourls_s( 'Error saving url to database' );
+            $return['errorCode'] = $return['statusCode'] = '500'; // 500 Internal Server Error
+        }
+    } catch (Exception $e) {
+        // Keyword supposed to be free but the INSERT caused an exception: most likely we're facing a
+        // concurrency problem. See Issue 2538.
+        $return['status']  = 'fail';
+        $return['code']    = 'error:concurrency';
+        $return['message'] = $e->getMessage();
+        $return['errorCode'] = $return['statusCode'] = '503'; // 503 Service Unavailable
+    }
+
+    return $return;
+}
+
 function yourls_add_new_link( $url, $keyword = '', $title = '', $row_id = 1 ) {
     // Allow plugins to short-circuit the whole function
     $pre = yourls_apply_filter( 'shunt_add_new_link', false, $url, $keyword, $title );
@@ -67,19 +191,9 @@ function yourls_add_new_link( $url, $keyword = '', $title = '', $row_id = 1 ) {
     yourls_do_action( 'pre_add_new_link', $url, $keyword, $title );
 
     // Check if URL was already stored and we don't accept duplicates
-    if ( !yourls_allow_duplicate_longurls() && ($url_exists = yourls_long_url_exists( $url )) ) {
-        yourls_do_action( 'add_new_link_already_stored', $url, $keyword, $title );
-
-        $return['status']   = 'fail';
-        $return['code']     = 'error:url';
-        $return['url']      = array( 'keyword' => $url_exists->keyword, 'url' => $url, 'title' => $url_exists->title, 'date' => $url_exists->timestamp, 'ip' => $url_exists->ip, 'clicks' => $url_exists->clicks );
-        $return['message']  = /* //translators: eg "http://someurl/ already exists (short URL: sho.rt/abc)" */ yourls_s('%s already exists in database (short URL: %s)',
-            yourls_trim_long_string($url), preg_replace('!https?://!', '',  yourls_get_yourls_site()) . '/'. $url_exists->keyword );
-        $return['title']    = $url_exists->title;
-        $return['shorturl'] = yourls_link($url_exists->keyword);
-        $return['errorCode'] = $return['statusCode'] = '400'; // 400 Bad Request
-
-        return yourls_apply_filter( 'add_new_link_already_stored_filter', $return, $url, $keyword, $title );
+    $duplicate = yourls_check_duplicate_long_url( $url, $keyword, $title );
+    if ( $duplicate !== false ) {
+        return $duplicate;
     }
 
     // Sanitize provided title, or fetch one
@@ -91,66 +205,15 @@ function yourls_add_new_link( $url, $keyword = '', $title = '', $row_id = 1 ) {
     $title = yourls_apply_filter( 'add_new_title', $title, $url, $keyword );
 
     // Custom keyword provided : sanitize and make sure it's free
-    if ($keyword) {
-        yourls_do_action( 'add_new_link_custom_keyword', $url, $keyword, $title );
-
-        $keyword = yourls_sanitize_keyword( $keyword, true );
-        $keyword = yourls_apply_filter( 'custom_keyword', $keyword, $url, $title );
-
-        if ( !yourls_keyword_is_free( $keyword ) ) {
-            // This shorturl either reserved or taken already
-            $return['status']  = 'fail';
-            $return['code']    = 'error:keyword';
-            $return['message'] = yourls_s( 'Short URL %s already exists in database or is reserved', $keyword );
-            $return['errorCode'] = $return['statusCode'] = '400'; // 400 Bad Request
-
-            return yourls_apply_filter( 'add_new_link_keyword_exists', $return, $url, $keyword, $title );
-        }
-
-        // Create random keyword
-    } else {
-        yourls_do_action( 'add_new_link_create_keyword', $url, $keyword, $title );
-
-        $id = yourls_get_next_decimal();
-
-        do {
-            $keyword = yourls_int2string( $id );
-            $keyword = yourls_apply_filter( 'random_keyword', $keyword, $url, $title );
-            $id++;
-        } while ( !yourls_keyword_is_free($keyword) );
-
-        yourls_update_next_decimal($id);
+    $keyword_result = yourls_get_available_keyword( $url, $keyword, $title );
+    if ( is_array($keyword_result) ) {
+        return $keyword_result; // Keyword was taken/reserved
     }
+    $keyword = $keyword_result;
 
     // We should be all set now. Store the short URL !
-
-    $timestamp = date( 'Y-m-d H:i:s' );
-
-    try {
-        if (yourls_insert_link_in_db( $url, $keyword, $title )){
-            // everything ok, populate needed vars
-            $return['url']      = array('keyword' => $keyword, 'url' => $url, 'title' => $title, 'date' => $timestamp, 'ip' => $ip );
-            $return['status']   = 'success';
-            $return['message']  = /* //translators: eg "http://someurl/ added to DB" */ yourls_s( '%s added to database', yourls_trim_long_string( $url ) );
-            $return['title']    = $title;
-            $return['html']     = yourls_table_add_row( $keyword, $url, $title, $ip, 0, time(), $row_id );
-            $return['shorturl'] = yourls_link($keyword);
-            $return['statusCode'] = '200'; // 200 OK
-        } else {
-            // unknown database error, couldn't store result
-            $return['status']   = 'fail';
-            $return['code']     = 'error:db';
-            $return['message']  = yourls_s( 'Error saving url to database' );
-            $return['errorCode'] = $return['statusCode'] = '500'; // 500 Internal Server Error
-        }
-    } catch (Exception $e) {
-        // Keyword supposed to be free but the INSERT caused an exception: most likely we're facing a
-        // concurrency problem. See Issue 2538.
-        $return['status']  = 'fail';
-        $return['code']    = 'error:concurrency';
-        $return['message'] = $e->getMessage();
-        $return['errorCode'] = $return['statusCode'] = '503'; // 503 Service Unavailable
-    }
+    $store_result = yourls_store_shorturl( $url, $keyword, $title, $ip, $row_id );
+    $return = array_merge($return, $store_result);
 
     yourls_do_action( 'post_add_new_link', $url, $keyword, $title, $return );
 
