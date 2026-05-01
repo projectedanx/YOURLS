@@ -27,6 +27,7 @@ $api_actions = array(
     'version'   => 'yourls_api_action_version',
     'delete'    => 'yourls_api_action_delete',
     'edit'      => 'yourls_api_action_edit',
+    'search'    => 'yourls_api_action_search',
 );
 $api_actions = yourls_apply_filter( 'api_actions', $api_actions );
 

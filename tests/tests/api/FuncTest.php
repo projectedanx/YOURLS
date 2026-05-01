@@ -16,6 +16,9 @@ class FuncTest extends PHPUnit\Framework\TestCase {
         yield array( 'url-stats', 'url_stats' );
         yield array( 'expand', '' );
         yield array( 'version', '' );
+        yield array( 'delete', '' );
+        yield array( 'edit', '' );
+        yield array( 'search', '' );
     }
 
     /**
