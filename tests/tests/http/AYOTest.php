@@ -504,6 +504,9 @@ class AYOTest extends PHPUnit\Framework\TestCase {
      */
     static function get_api_yourls_core(): \Iterator
     {
+        if (!defined('YOURLS_CORE_VERSION_API')) {
+            require_once dirname(__DIR__, 3) . '/includes/version.php';
+        }
         yield [YOURLS_CORE_VERSION_API];
         yield [str_replace('http://', 'https://', YOURLS_CORE_VERSION_API)];
     }
