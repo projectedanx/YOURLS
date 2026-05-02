@@ -29,3 +29,9 @@ define( 'YOURLS_VERSION', '1.10.3-dev' );
  *
  */
 define( 'YOURLS_DB_VERSION', '506' );
+
+/**
+ * YOURLS core API version endpoint.
+ *
+ */
+define( 'YOURLS_CORE_VERSION_API', 'http://api.yourls.org/core/version/1.1/' );
