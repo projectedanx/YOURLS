@@ -504,15 +504,17 @@ class AYOTest extends PHPUnit\Framework\TestCase {
      */
     static function get_api_yourls_core(): \Iterator
     {
-        yield ['https://api.yourls.org/core/version/1.1/'];
-        yield ['http://api.yourls.org/core/version/1.0/'];
+        if (!defined('YOURLS_CORE_VERSION_API')) {
+            require_once dirname(__DIR__, 3) . '/includes/version.php';
+        }
+        yield [YOURLS_CORE_VERSION_API];
+        yield [str_replace('http://', 'https://', YOURLS_CORE_VERSION_API)];
     }
 
     /**
-     * Make sure https://api.yourls.org/core/version/1.[0/1]/ returns a valid JSON response
+     * Make sure the core version API returns a valid JSON response
      *
-     * This test may fail is the server is unreachable or the API is down.
-     * TODO: make this test evolve as the API evolves
+     * This test may fail if the server is unreachable or the API is down.
      */
     #[\PHPUnit\Framework\Attributes\DataProvider('get_api_yourls_core')]
     function test_yourls_get_core_version_json($url) {

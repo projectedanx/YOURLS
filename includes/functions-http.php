@@ -338,7 +338,7 @@ function yourls_check_core_version() {
     $stuff = yourls_apply_filter( 'version_check_stuff', $stuff );
 
     // Send it in
-    $url = 'http://api.yourls.org/core/version/1.1/';
+    $url = YOURLS_CORE_VERSION_API;
     if( yourls_can_http_over_ssl() ) {
         $url = yourls_set_url_scheme($url, 'https');
     }
