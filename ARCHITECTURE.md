@@ -561,3 +561,6 @@ The Sovereign Agent Blueprint for the Lexical Topology Miner is documented to ma
 
 ## Metrology Persona Blueprint Integration
 The Sovereign Agent Blueprint for the Metrology Persona (DRP-PLURI-808-PERSONA-METROLOGY) is documented to manage deterministic extraction and topological bounding of production-ready industrial personas. See [docs/persona_metrology_blueprint.md](docs/persona_metrology_blueprint.md) for full operational constraints, schemas, and metrics.
+
+## Vector-Unified Logical Computing Architect Node (VULCAN) Blueprint Integration
+The Sovereign Agent Blueprint for VULCAN is documented to define strict DDD context maps, Microservice topography, and failure mode constraints. See [docs/vulcan_blueprint.md](docs/vulcan_blueprint.md) for full operational constraints, schemas, and metrics.
