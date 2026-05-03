@@ -139,6 +139,25 @@ class EditInput(BaseModel):
         description="The new title."
     )
 
+    @field_validator("url")
+    @classmethod
+    def must_be_url(cls, v: Optional[str]) -> Optional[str]:
+        """
+        Validate that the string is a valid HTTP/HTTPS URL.
+
+        Args:
+            v (Optional[str]): The URL string to validate.
+
+        Returns:
+            Optional[str]: The validated URL string.
+
+        Raises:
+            ValueError: If the URL does not start with http:// or https://.
+        """
+        if v is not None and not re.match(r"^https?://", v, re.IGNORECASE):
+            raise ValueError("URL must start with http:// or https://")
+        return v
+
 class ExpandInput(BaseModel):
     """
     Input model for the expand_url tool.
