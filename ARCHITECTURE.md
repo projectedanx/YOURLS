@@ -532,6 +532,7 @@ erDiagram
 
 ## Structural References
 * **ADR**: See [docs/adr/001-mcp-server-architecture.md](docs/adr/001-mcp-server-architecture.md) for the MCP API-led integration decision record.
+* **ADR**: See [docs/mycelial_nexus_blueprint.md](docs/mycelial_nexus_blueprint.md) for the Sovereign Agent Mycelial Nexus Blueprint.
 * **C4 Model Blueprint**: See [docs/c4-model-blueprint.json](docs/c4-model-blueprint.json) for the formal System Context and Container mappings.
 * **DDD Context Map**: See [docs/ddd-context-map.yaml](docs/ddd-context-map.yaml) for bounded contexts and upstream/downstream contracts.
 
