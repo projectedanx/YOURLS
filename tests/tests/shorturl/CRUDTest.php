@@ -175,4 +175,68 @@ class CRUDTest extends PHPUnit\Framework\TestCase {
         $this->assertEquals( 'error:concurrency', $fail['code'] );
         $this->assertEquals( 'Concurrency exception simulated', $fail['message'] );
     }
+
+    /**
+     * Test yourls_store_shorturl success path
+     */
+    public function test_store_shorturl() {
+        $keyword = rand_str();
+        $title   = rand_str();
+        $url     = 'http://' . rand_str();
+        $ip      = '127.0.0.1';
+        $row_id  = 1;
+
+        $result = yourls_store_shorturl( $url, $keyword, $title, $ip, $row_id );
+
+        $this->assertEquals( 'success', $result['status'] );
+        $this->assertEquals( $keyword, $result['url']['keyword'] );
+        $this->assertEquals( $url, $result['url']['url'] );
+        $this->assertEquals( $title, $result['url']['title'] );
+        $this->assertEquals( $ip, $result['url']['ip'] );
+        $this->assertEquals( '200', $result['statusCode'] );
+
+        // Clean up
+        yourls_delete_link_by_keyword( $keyword );
+    }
+
+    /**
+     * Test yourls_store_shorturl failure path
+     */
+    public function test_store_shorturl_failure() {
+        // We need to make yourls_insert_link_in_db return false.
+        // yourls_insert_link_in_db calls yourls_get_db()->fetchAffected(...)
+        global $ydb;
+        $old_ydb = $ydb;
+
+        $ydb = $this->createMock(\YOURLS\Database\YDB::class);
+        $ydb->method('fetchAffected')->willReturn(0);
+
+        $result = yourls_store_shorturl( 'http://error.com', 'error', 'Error', '127.0.0.1', 1 );
+
+        $ydb = $old_ydb;
+
+        $this->assertEquals( 'fail', $result['status'] );
+        $this->assertEquals( 'error:db', $result['code'] );
+        $this->assertEquals( '500', $result['statusCode'] );
+    }
+
+    /**
+     * Test yourls_store_shorturl concurrency exception path
+     */
+    public function test_store_shorturl_concurrency() {
+        global $ydb;
+        $old_ydb = $ydb;
+
+        $ydb = $this->createMock(\YOURLS\Database\YDB::class);
+        $ydb->method('fetchAffected')->willThrowException(new Exception('Concurrency exception simulated'));
+
+        $result = yourls_store_shorturl( 'http://concurrency.com', 'concurrency', 'Concurrency', '127.0.0.1', 1 );
+
+        $ydb = $old_ydb;
+
+        $this->assertEquals( 'fail', $result['status'] );
+        $this->assertEquals( 'error:concurrency', $result['code'] );
+        $this->assertEquals( '503', $result['statusCode'] );
+        $this->assertEquals( 'Concurrency exception simulated', $result['message'] );
+    }
 }
