@@ -529,7 +529,16 @@ function yourls_share_box( $longurl, $shorturl, $title = '', $text='', $shortlin
     // Allow plugins to filter all data
     $data = compact( 'longurl', 'shorturl', 'title', 'text', 'shortlink_title', 'share_title', 'share', 'count', 'hidden' );
     $data = yourls_apply_filter( 'share_box_data', $data );
-    extract( $data );
+
+    $longurl         = $data['longurl']         ?? $longurl;
+    $shorturl        = $data['shorturl']        ?? $shorturl;
+    $title           = $data['title']           ?? $title;
+    $text            = $data['text']            ?? $text;
+    $shortlink_title = $data['shortlink_title'] ?? $shortlink_title;
+    $share_title     = $data['share_title']     ?? $share_title;
+    $share           = $data['share']           ?? $share;
+    $count           = $data['count']           ?? $count;
+    $hidden          = $data['hidden']          ?? $hidden;
 
     $_share = rawurlencode( $share );
     $_url   = rawurlencode( $shorturl );
