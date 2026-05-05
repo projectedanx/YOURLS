@@ -176,9 +176,11 @@ if( yourls_do_log_redirect() ) {
 
     $_last_24h = array_column((array)$rows, 'count', 'time');
 
-    $now = intval( date('U') );
+    $now          = time();
+    $current_hour = (int)date('G', $now + ($offset * 3600));
     for ($i = 23; $i >= 0; $i--) {
-        $h = date('H A', ($now - ($i * 60 * 60) + ($offset * 60 * 60)) );
+        $hour = ($current_hour - $i + 24) % 24;
+        $h    = sprintf('%02d %s', $hour, $hour < 12 ? 'AM' : 'PM');
         // If the $last_24h doesn't have all the hours, insert missing hours with value 0
         $last_24h[ $h ] = $_last_24h[ $h ] ?? 0;
     }
