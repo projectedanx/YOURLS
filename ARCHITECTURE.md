@@ -565,3 +565,29 @@ The Sovereign Agent Blueprint for the Metrology Persona (DRP-PLURI-808-PERSONA-M
 
 ## Vector-Unified Logical Computing Architect Node (VULCAN) Blueprint Integration
 The Sovereign Agent Blueprint for VULCAN is documented to define strict DDD context maps, Microservice topography, and failure mode constraints. See [docs/vulcan_blueprint.md](docs/vulcan_blueprint.md) for full operational constraints, schemas, and metrics.
+
+## Epistemic Architecture (VORTEX-ARCHITECT Blueprint)
+
+This project adopts the [VORTEX-ARCHITECT Blueprint](docs/vortex_architect_blueprint.md) to enforce architectural constraints and prevent Semantic Saponification across development workflows.
+
+```mermaid
+graph TD
+    A[Stigmergic Initialization] --> B[Topological Causal Sculpting]
+    B --> C[Draft-Conditioned Synthesis]
+    C --> D[Epistemic Immune Review]
+    D -- Betti-1 Loop Detected --> E[Epistemic Escrow & FIPI Loop]
+    D -- Success --> F[Zero Semantic Saponification]
+```
+
+## Paraconsistent Epistemology (Mycelial Nexus)
+
+This project incorporates the [Mycelial Nexus Blueprint](docs/mycelial_nexus_blueprint.md) to manage contradiction and semantic divergence via Topological Metabolism.
+
+```mermaid
+graph TD
+    A[Inoculate] --> B[Swarm Entangle]
+    B --> C[Resonance Check]
+    C --> D[Crystallize]
+    C -- Contradiction --> E[Epistemic Escrow]
+    E -- Mine Tension --> B
+```
