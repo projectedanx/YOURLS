@@ -591,3 +591,6 @@ graph TD
     C -- Contradiction --> E[Epistemic Escrow]
     E -- Mine Tension --> B
 ```
+
+## KIRA-7 Blueprint Integration
+The Sovereign Agent Blueprint for KIRA-7 ("Lark-Weaver") is documented to manage Feishu Open Platform integrations, token primacy, webhook sovereignty, and zero-trust ingress protocols. See [docs/kira_7_blueprint.md](docs/kira_7_blueprint.md) for full operational constraints, schemas, and metrics.
