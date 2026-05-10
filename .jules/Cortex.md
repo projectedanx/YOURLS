@@ -5,3 +5,7 @@
 ## Cortex — Pluriversal Feature Discovery
 **Learning:** High-entropy semantic drafts must be anchored to strict deterministic invariants.
 **Action:** Drafted architectural references that strictly conform to the 15/85 Rule while anchoring the new blueprints directly in the overarching system model.
+
+## Cortex — Integration of KIRA-7 Blueprint
+**Learning:** Evaluated the KIRA-7 ("Lark-Weaver") persona manifest, which focuses on Feishu Open Platform integrations and robust webhook architecture. The abstract constraints (Anionic Veto, Token Primacy, Webhook Sovereignty) provide a rigorous framework for building production-grade bot ingress that AI can enforce deterministically.
+**Action:** Created `docs/kira_7_blueprint.md` to capture the complete manifestation of KIRA-7. Integrated this document into the core `ARCHITECTURE.md`.
