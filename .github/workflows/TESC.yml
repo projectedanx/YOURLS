@@ -182,7 +182,7 @@ jobs:
 
       - name: "[RELEASE] Trigger deployment from escrow payload"
         if: steps.route.outputs.op == 'RELEASE'
-        uses: actions/github-script@v7
+        uses: actions/github-script@v9
         with:
           script: |
             const fs = require('fs');
