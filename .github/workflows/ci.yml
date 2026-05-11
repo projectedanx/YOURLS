@@ -88,7 +88,7 @@ jobs:
 
     - name: Upload coverage
       if: matrix.php == '8.5'
-      uses: codecov/codecov-action@v4
+      uses: codecov/codecov-action@v6
       with:
         files: ./clover.xml
         fail_ci_if_error: false
