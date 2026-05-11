@@ -134,7 +134,7 @@ jobs:
         run: pip install hypothesis pytest pytest-json-report
 
       - name: Download Rust fuzz corpus (cross-ecosystem bridge)
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           name: rust-fuzz-corpus
 
@@ -203,7 +203,7 @@ jobs:
     runs-on: ubuntu-24.04
     if: always()
     steps:
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v8
         with:
           pattern: "ptr-results-*"
           merge-multiple: true
