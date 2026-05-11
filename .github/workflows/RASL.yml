@@ -1,0 +1,251 @@
+# +++PetzoldSequence[DRP-GHA-RASL-003]
+# Architecture: Recursive Autopoietic Security Loop
+# Topology Class: State Reader (CodeQL) → Emission Node (Issue) → LLM Transform → Emission Node (PR)
+# Autopoiesis: Closed-loop self-healing; requires human gate at iteration_count > threshold
+
+name: "RASL — Recursive Autopoietic Security Loop"
+
+on:
+  push:
+    branches: [main, develop]
+  schedule:
+    - cron: "0 3 * * *"  # Nightly security heartbeat
+  issues:
+    types: [opened, labeled]  # IssueOps re-entry point
+
+permissions:
+  contents: write
+  security-events: read
+  issues: write
+  pull-requests: write
+
+env:
+  RASL_MAX_DEPTH: "3"
+  LLM_MODEL: "claude-opus-4-6"  # Q2 2026 Standard
+  PATCH_BRANCH_PREFIX: "rasl/auto-patch"
+
+jobs:
+  # GATE: Determine if this is a scan trigger or an IssueOps re-entry
+  rasl-router:
+    runs-on: ubuntu-24.04
+    outputs:
+      mode: ${{ steps.route.outputs.mode }}
+      issue_number: ${{ steps.route.outputs.issue_number }}
+      iteration: ${{ steps.route.outputs.iteration }}
+    steps:
+      - name: Route RASL entry point
+        id: route
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const event = context.eventName;
+            if (event === 'push' || event === 'schedule') {
+              core.setOutput('mode', 'scan');
+              core.setOutput('issue_number', '');
+              core.setOutput('iteration', '0');
+            } else if (event === 'issues') {
+              const labels = context.payload.issue.labels.map(l => l.name);
+              if (labels.includes('rasl-auto-patch')) {
+                const body = context.payload.issue.body || '';
+                const iterMatch = body.match(/RASL_ITERATION:\s*(\d+)/);
+                const iter = iterMatch ? parseInt(iterMatch[1]) : 0;
+                if (iter >= parseInt(process.env.RASL_MAX_DEPTH)) {
+                  core.warning(`RASL max depth ${process.env.RASL_MAX_DEPTH} reached. Halting autopoietic loop.`);
+                  core.setOutput('mode', 'halt');
+                } else {
+                  core.setOutput('mode', 'patch');
+                  core.setOutput('issue_number', String(context.payload.issue.number));
+                  core.setOutput('iteration', String(iter + 1));
+                }
+              } else {
+                core.setOutput('mode', 'skip');
+              }
+            }
+
+  # PHASE 1: CodeQL Security Scan
+  security-scan:
+    needs: [rasl-router]
+    if: needs.rasl-router.outputs.mode == 'scan'
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@v3
+        with:
+          languages: "javascript,python"
+          queries: "security-and-quality"
+
+      - name: Autobuild
+        uses: github/codeql-action/autobuild@v3
+
+      - name: Perform CodeQL Analysis
+        uses: github/codeql-action/analyze@v3
+        with:
+          output: codeql-results
+          upload: false  # We handle upload ourselves for RASL processing
+
+      - name: Parse SARIF and extract actionable vulnerabilities
+        id: parse-sarif
+        run: |
+          python3 << 'EOF'
+          import json, glob, os
+
+          sarif_files = glob.glob('codeql-results/**/*.sarif', recursive=True)
+          vulnerabilities = []
+
+          for sarif_path in sarif_files:
+              with open(sarif_path) as f:
+                  sarif = json.load(f)
+              for run in sarif.get('runs', []):
+                  for result in run.get('results', []):
+                      sev = result.get('properties', {}).get('problem.severity', 'warning')
+                      if sev in ['error', 'warning']:
+                          loc = result.get('locations', [{}])[0]
+                          phys = loc.get('physicalLocation', {})
+                          vulnerabilities.append({
+                              "rule_id": result.get('ruleId', 'unknown'),
+                              "message": result.get('message', {}).get('text', ''),
+                              "severity": sev,
+                              "file": phys.get('artifactLocation', {}).get('uri', ''),
+                              "line": phys.get('region', {}).get('startLine', 0),
+                              "snippet": phys.get('contextRegion', {}).get('snippet', {}).get('text', '')
+                          })
+
+          with open('vulnerabilities.json', 'w') as f:
+              json.dump(vulnerabilities, f, indent=2)
+          print(f"Extracted {len(vulnerabilities)} actionable vulnerabilities")
+          with open(os.environ['GITHUB_OUTPUT'], 'a') as gh:
+              gh.write(f"vuln_count={len(vulnerabilities)}\n")
+          EOF
+
+      - name: Create RASL autopoietic issue for each critical vulnerability
+        if: steps.parse-sarif.outputs.vuln_count != '0'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const vulns = JSON.parse(fs.readFileSync('vulnerabilities.json'));
+            const critical = vulns.filter(v => v.severity === 'error').slice(0, 3); // Cap at 3 to prevent storm
+
+            for (const vuln of critical) {
+              await github.rest.issues.create({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                title: `[RASL-AUTO] ${vuln.rule_id} in ${vuln.file}:${vuln.line}`,
+                body: `## Autopoietic Security Patch Request\n\n` +
+                  `**Rule**: \`${vuln.rule_id}\`\n` +
+                  `**Severity**: ${vuln.severity}\n` +
+                  `**File**: \`${vuln.file}\`\n` +
+                  `**Line**: ${vuln.line}\n\n` +
+                  `### Vulnerable Code Snippet\n\`\`\`\n${vuln.snippet}\n\`\`\`\n\n` +
+                  `### Message\n${vuln.message}\n\n` +
+                  `---\n<!-- RASL_METADATA -->\nRASL_ITERATION: 0\nRASL_RULE: ${vuln.rule_id}`,
+                labels: ['rasl-auto-patch', 'security']
+              });
+            }
+
+  # PHASE 2: LLM Patch Generation (IssueOps re-entry)
+  llm-patch-generator:
+    needs: [rasl-router]
+    if: needs.rasl-router.outputs.mode == 'patch'
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Fetch issue details and extract vulnerability context
+        id: fetch-issue
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const issue = await github.rest.issues.get({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: parseInt('${{ needs.rasl-router.outputs.issue_number }}')
+            });
+            const body = issue.data.body;
+            const fileMatch = body.match(/\*\*File\*\*: `([^`]+)`/);
+            const lineMatch = body.match(/\*\*Line\*\*: (\d+)/);
+            const snippetMatch = body.match(/```\n([\s\S]*?)\n```/);
+            const ruleMatch = body.match(/RASL_RULE: (.+)/);
+
+            core.setOutput('file_path', fileMatch ? fileMatch[1] : '');
+            core.setOutput('line_number', lineMatch ? lineMatch[1] : '0');
+            core.setOutput('snippet', snippetMatch ? snippetMatch[1] : '');
+            core.setOutput('rule', ruleMatch ? ruleMatch[1] : '');
+
+      - name: Call LLM for patch generation (Claude Opus 4.6 / 2026 Standard)
+        id: llm-patch
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          VULNERABLE_FILE: ${{ steps.fetch-issue.outputs.file_path }}
+          VULNERABLE_LINE: ${{ steps.fetch-issue.outputs.line_number }}
+          VULN_SNIPPET: ${{ steps.fetch-issue.outputs.snippet }}
+          CODEQL_RULE: ${{ steps.fetch-issue.outputs.rule }}
+        run: |
+          python3 << 'EOF'
+          import anthropic, json, os
+
+          client = anthropic.Anthropic(api_key=os.environ['ANTHROPIC_API_KEY'])
+
+          file_path = os.environ.get('VULNERABLE_FILE', '')
+          file_content = ""
+          if file_path and os.path.exists(file_path):
+              with open(file_path) as f:
+                  file_content = f.read()
+
+          message = client.messages.create(
+              model="claude-opus-4-6",
+              max_tokens=4096,
+              messages=[{
+                  "role": "user",
+                  "content": f"""You are a security patch engineer. Generate a minimal, correct patch for the following vulnerability.
+
+          CodeQL Rule: {os.environ['CODEQL_RULE']}
+          File: {file_path}
+          Line: {os.environ['VULNERABLE_LINE']}
+          Vulnerable Snippet:
+          ```
+          {os.environ['VULN_SNIPPET']}
+          ```
+
+          Full File Content:
+          ```
+          {file_content[:8000]}
+          ```
+
+          Return ONLY a unified diff patch in standard diff format. No explanation. No markdown. Just the diff."""
+              }]
+          )
+
+          patch_text = message.content[0].text
+          with open('security_patch.diff', 'w') as f:
+              f.write(patch_text)
+          print(f"LLM patch generated: {len(patch_text)} chars")
+          EOF
+
+      - name: Apply patch and create PR
+        run: |
+          git config user.name "RASL-Autopoietic-Bot"
+          git config user.email "rasl@autopoietic.noreply.github.com"
+          BRANCH="${{ env.PATCH_BRANCH_PREFIX }}-${{ needs.rasl-router.outputs.issue_number }}-iter${{ needs.rasl-router.outputs.iteration }}"
+          git checkout -b "$BRANCH"
+          git apply --reject --whitespace=fix security_patch.diff || echo "Patch applied with warnings"
+          git add -A
+          git commit -m "RASL[iter=${{ needs.rasl-router.outputs.iteration }}]: Auto-patch ${{ steps.fetch-issue.outputs.rule }}" || echo "Nothing to commit"
+          git push origin "$BRANCH"
+
+      - name: Create patch PR with RASL metadata
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const branch = `${{ env.PATCH_BRANCH_PREFIX }}-${{ needs.rasl-router.outputs.issue_number }}-iter${{ needs.rasl-router.outputs.iteration }}`;
+            await github.rest.pulls.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              title: `[RASL-iter-${{ needs.rasl-router.outputs.iteration }}] Auto-patch for issue #${{ needs.rasl-router.outputs.issue_number }}`,
+              body: `## Autopoietic Patch\n\nGenerated by RASL at iteration ${{ needs.rasl-router.outputs.iteration }}/${process.env.RASL_MAX_DEPTH}.\n\nCloses #${{ needs.rasl-router.outputs.issue_number }}\n\n> ⚠️ Review required before merge. LLM-generated patches may require human validation.`,
+              head: branch,
+              base: 'main',
+              draft: true  // Human gate: always draft until manually reviewed
+            });
