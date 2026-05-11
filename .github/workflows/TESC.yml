@@ -85,7 +85,7 @@ jobs:
 
       - name: "[DEPOSIT] Upload escrow to temporal artifact store"
         if: steps.route.outputs.op == 'DEPOSIT'
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: ${{ env.ESCROW_ARTIFACT_NAME }}
           path: escrow_manifest.json

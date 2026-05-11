@@ -55,7 +55,7 @@ jobs:
           echo "STATE_HASH=$HASH" >> initial_state.json
 
       - name: Upload initial state as message bus artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: "fsm-state-init-${{ env.STATE_VERSION }}"
           path: initial_state.json
@@ -126,7 +126,7 @@ jobs:
           EOF
 
       - name: Upload shard result to message bus
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: "fsm-shard-result-${{ matrix.shard }}-${{ env.STATE_VERSION }}"
           path: shard_result.json
@@ -175,7 +175,7 @@ jobs:
           EOF
 
       - name: Upload final converged state
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: "fsm-final-state-${{ env.STATE_VERSION }}"
           path: final_state.json
