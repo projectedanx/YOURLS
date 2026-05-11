@@ -1,0 +1,344 @@
+# +++PetzoldSequence[DRP-GHA-MDS-005]
+# Architecture: Metacognitive Drift Sentinel
+# Topology Class: State Reader (codebase) × Transformation (LLM) × Emission (Issue/PR)
+# Metacognition: Repository observes and critiques its own structural coherence
+
+name: "MDS — Metacognitive Drift Sentinel"
+
+on:
+  schedule:
+    - cron: "0 4 * * 0"  # Weekly metacognitive audit
+  push:
+    paths:
+      - "src/**"
+      - "lib/**"
+      - "*.toml"
+      - "*.json"
+      - "package.json"
+      - "Cargo.toml"
+      - "pyproject.toml"
+    branches: [main]
+
+permissions:
+  contents: read
+  issues: write
+
+env:
+  DRIFT_THRESHOLD: "0.25"  # Normalized drift score above which an issue is filed
+  LLM_MODEL: "claude-opus-4-6"
+
+jobs:
+  # PHASE 1: Structural Topology Extraction
+  extract-topology:
+    runs-on: ubuntu-24.04
+    outputs:
+      topology_hash: ${{ steps.hash.outputs.hash }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Full history for drift velocity calculation
+
+      - name: Install topology analysis tools (polyglot)
+        run: |
+          pip install lizard radon networkx graphviz 2>/dev/null || true
+          npm install -g madge 2>/dev/null || true
+          cargo install cargo-depgraph 2>/dev/null || true
+          sudo apt-get install -y cloc
+
+      - name: Compute structural topology metrics
+        run: |
+          python3 << 'EOF'
+          import subprocess, json, os, re
+          from pathlib import Path
+
+          topology = {
+              "computed_at": os.popen("date -u +%Y%m%dT%H%M%SZ").read().strip(),
+              "commit": os.popen("git rev-parse HEAD").read().strip(),
+              "language_distribution": {},
+              "complexity_metrics": {},
+              "coupling_metrics": {},
+              "dependency_depth": {},
+              "architectural_modules": []
+          }
+
+          # Language distribution via cloc
+          cloc_result = subprocess.run(['cloc', '--json', '.', '--exclude-dir=node_modules,.git,target,dist'],
+                                       capture_output=True, text=True)
+          if cloc_result.returncode == 0:
+              try:
+                  cloc_data = json.loads(cloc_result.stdout)
+                  topology['language_distribution'] = {
+                      k: {"files": v.get("nFiles", 0), "code_lines": v.get("code", 0)}
+                      for k, v in cloc_data.items()
+                      if k not in ('header', 'SUM')
+                  }
+              except: pass
+
+          # Cyclomatic complexity via lizard (Python/JS/C/Go/Rust)
+          try:
+              import lizard
+              results = lizard.analyze(['.'])
+              functions = [(f.name, f.cyclomatic_complexity, f.filename)
+                          for r in results for f in r.function_list
+                          if f.cyclomatic_complexity > 5]
+              topology['complexity_metrics'] = {
+                  "high_complexity_functions": [{"name": n, "cc": cc, "file": fn} for n, cc, fn in functions[:20]],
+                  "function_count": sum(len(r.function_list) for r in lizard.analyze(['.']))
+              }
+          except Exception as e:
+              topology['complexity_metrics']['error'] = str(e)
+
+          # Module boundary detection from directory structure
+          src_dirs = [str(p) for p in Path('.').glob('src/*') if p.is_dir()]
+          lib_dirs = [str(p) for p in Path('.').glob('lib/*') if p.is_dir()]
+          topology['architectural_modules'] = src_dirs + lib_dirs
+
+          # Dependency depth from package manifests
+          for manifest in ['package.json', 'Cargo.toml', 'pyproject.toml', 'go.mod']:
+              if Path(manifest).exists():
+                  content = Path(manifest).read_text()
+                  topology['dependency_depth'][manifest] = content.count('\n')
+
+          with open('codebase_topology.json', 'w') as f:
+              json.dump(topology, f, indent=2)
+          print(f"Topology extracted: {len(topology['architectural_modules'])} modules detected")
+          EOF
+
+      - name: Hash topology for drift velocity tracking
+        id: hash
+        run: |
+          HASH=$(sha256sum codebase_topology.json | cut -d' ' -f1)
+          echo "hash=$HASH" >> $GITHUB_OUTPUT
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: codebase-topology
+          path: codebase_topology.json
+          retention-days: 30
+
+  # PHASE 2: Intent State Extraction (ARCHITECTURE.md → structured intent)
+  extract-intent:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Parse architectural intent document
+        run: |
+          python3 << 'EOF'
+          import os, json
+          from pathlib import Path
+
+          # Search for architectural intent documents
+          intent_sources = ['ARCHITECTURE.md', 'docs/ARCHITECTURE.md', 'docs/architecture.json',
+                           'ADR.md', 'docs/adr/', 'DESIGN.md']
+          intent_content = []
+
+          for source in intent_sources:
+              p = Path(source)
+              if p.exists():
+                  if p.is_file():
+                      intent_content.append({"source": source, "content": p.read_text()[:10000]})
+                  elif p.is_dir():
+                      for f in p.glob('*.md'):
+                          intent_content.append({"source": str(f), "content": f.read_text()[:5000]})
+
+          if not intent_content:
+              # Generate synthetic intent from README
+              readme = Path('README.md')
+              if readme.exists():
+                  intent_content = [{"source": "README.md", "content": readme.read_text()[:8000]}]
+              else:
+                  intent_content = [{"source": "synthetic", "content": "No architectural intent document found. Using empty baseline."}]
+
+          with open('architectural_intent.json', 'w') as f:
+              json.dump({"sources": intent_content, "intent_count": len(intent_content)}, f, indent=2)
+          print(f"Intent extracted from {len(intent_content)} source(s)")
+          EOF
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: architectural-intent
+          path: architectural_intent.json
+          retention-days: 1
+
+  # PHASE 3: LLM Drift Computation
+  compute-drift:
+    needs: [extract-topology, extract-intent]
+    runs-on: ubuntu-24.04
+    outputs:
+      drift_score: ${{ steps.drift.outputs.drift_score }}
+      drift_report: ${{ steps.drift.outputs.drift_report_path }}
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: codebase-topology
+          path: ./artifacts
+      - uses: actions/download-artifact@v4
+        with:
+          name: architectural-intent
+          path: ./artifacts
+
+      - name: Compute metacognitive drift via LLM analysis
+        id: drift
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+        run: |
+          python3 << 'EOF'
+          import anthropic, json, os, re
+
+          with open('./artifacts/codebase_topology.json') as f:
+              topology = json.load(f)
+          with open('./artifacts/architectural_intent.json') as f:
+              intent = json.load(f)
+
+          client = anthropic.Anthropic(api_key=os.environ['ANTHROPIC_API_KEY'])
+
+          intent_text = "\n\n".join([f"### {s['source']}\n{s['content']}" for s in intent['sources']])
+          topology_summary = json.dumps({
+              "languages": topology.get('language_distribution', {}),
+              "high_complexity_functions": topology.get('complexity_metrics', {}).get('high_complexity_functions', [])[:5],
+              "modules": topology.get('architectural_modules', []),
+              "commit": topology.get('commit', '')
+          }, indent=2)
+
+          message = client.messages.create(
+              model="claude-opus-4-6",
+              max_tokens=3000,
+              messages=[{
+                  "role": "user",
+                  "content": f"""You are a metacognitive architecture sentinel. Analyze the drift between declared architectural intent and actual codebase topology.
+
+          ## DECLARED ARCHITECTURAL INTENT
+          {intent_text[:6000]}
+
+          ## ACTUAL CODEBASE TOPOLOGY (extracted metrics)
+          ```json
+          {topology_summary}
+          ```
+
+          Provide your analysis as JSON with these exact fields:
+          {{
+            "drift_score": <float 0.0-1.0, where 0=perfect alignment, 1=complete divergence>,
+            "projection_tax": <string: estimated cost of this drift in developer-days>,
+            "drift_dimensions": [
+              {{"dimension": "coupling|cohesion|naming|responsibility|dependency", "score": <0-1>, "evidence": "specific observation"}}
+            ],
+            "critical_violations": ["specific violation 1", "specific violation 2"],
+            "recommended_actions": [
+              {{"priority": "HIGH|MEDIUM|LOW", "action": "specific refactoring action", "file_hint": "path if known"}}
+            ],
+            "architectural_health_grade": "A|B|C|D|F"
+          }}
+
+          Return ONLY valid JSON. No markdown, no explanation."""
+              }]
+          )
+
+          try:
+              drift_analysis = json.loads(message.content[0].text)
+          except json.JSONDecodeError:
+              # Fallback structure if LLM returns malformed JSON
+              drift_analysis = {
+                  "drift_score": 0.5,
+                  "projection_tax": "Unknown",
+                  "drift_dimensions": [],
+                  "critical_violations": ["LLM response parsing error"],
+                  "recommended_actions": [],
+                  "architectural_health_grade": "C"
+              }
+
+          drift_analysis['topology_hash'] = "${{ needs.extract-topology.outputs.topology_hash }}"
+          drift_analysis['commit'] = topology.get('commit', '')
+
+          with open('drift_report.json', 'w') as f:
+              json.dump(drift_analysis, f, indent=2)
+
+          score = drift_analysis.get('drift_score', 0)
+          print(f"Drift score: {score:.2f} | Grade: {drift_analysis.get('architectural_health_grade')}")
+          print(f"Projection tax: {drift_analysis.get('projection_tax')}")
+
+          with open(os.environ['GITHUB_OUTPUT'], 'a') as gh:
+              gh.write(f"drift_score={score}\n")
+              gh.write("drift_report_path=drift_report.json\n")
+          EOF
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: drift-report
+          path: drift_report.json
+          retention-days: 30
+
+  # PHASE 4: Conditional Issue Filing Based on Drift Threshold
+  file-drift-issue:
+    needs: [compute-drift]
+    runs-on: ubuntu-24.04
+    if: |
+      needs.compute-drift.outputs.drift_score != '' &&
+      (needs.compute-drift.outputs.drift_score > 0.25)
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: drift-report
+          path: ./drift
+
+      - name: File metacognitive drift issue
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const report = JSON.parse(fs.readFileSync('./drift/drift_report.json'));
+
+            const violationsList = report.critical_violations.map(v => `- ${v}`).join('\n');
+            const actionsList = report.recommended_actions.map(a =>
+              `- **[${a.priority}]** ${a.action}${a.file_hint ? ` (\`${a.file_hint}\`)` : ''}`
+            ).join('\n');
+            const dimensionTable = report.drift_dimensions.map(d =>
+              `| ${d.dimension} | ${(d.score * 100).toFixed(0)}% | ${d.evidence} |`
+            ).join('\n');
+
+            const body = `## 🧠 Metacognitive Drift Report
+
+            **Drift Score**: ${(report.drift_score * 100).toFixed(1)}% | **Health Grade**: ${report.architectural_health_grade} | **Projection Tax**: ${report.projection_tax}
+
+            > This issue was auto-generated by the MDS (Metacognitive Drift Sentinel). It represents the computed divergence between declared architectural intent and actual codebase topology.
+
+            ### Drift Dimensions
+            | Dimension | Drift % | Evidence |
+            |---|---|---|
+            ${dimensionTable}
+
+            ### Critical Violations
+            ${violationsList}
+
+            ### Recommended Actions
+            ${actionsList}
+
+            ---
+            *Commit*: \`${report.commit}\` | *Topology Hash*: \`${report.topology_hash?.slice(0,16)}\``;
+
+            // Check for existing open drift issue to avoid duplicates
+            const existing = await github.rest.issues.listForRepo({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              labels: 'mds-drift-report',
+              state: 'open'
+            });
+
+            if (existing.data.length > 0) {
+              // Update existing issue
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: existing.data[0].number,
+                body: `## Updated Drift Analysis\n\n${body}`
+              });
+            } else {
+              // Create new drift issue
+              await github.rest.issues.create({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                title: `[MDS] Architectural Drift Alert — Score: ${(report.drift_score * 100).toFixed(1)}% (Grade: ${report.architectural_health_grade})`,
+                body,
+                labels: ['mds-drift-report', 'architecture', 'technical-debt']
+              });
+            }
