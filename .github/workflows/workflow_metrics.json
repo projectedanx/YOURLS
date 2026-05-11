@@ -1,0 +1,145 @@
+{
+  "workflow_metrics": {
+    "schema_version": "DRP-GHA-2026",
+    "generated_at": "2026-05-11T03:58:00Z",
+    "architectures": [
+      {
+        "id": "DRP-GHA-DASM-001",
+        "name": "Distributed Asynchronous State Machine",
+        "execution_guardrails": {
+          "timeout_minutes": 45,
+          "max_shard_count": 16,
+          "artifact_retention_days": 1,
+          "fail_fast": false,
+          "coherence_threshold": 0.95
+        },
+        "dynamic_baselines": {
+          "shard_count": "Dynamically computed from input; bounded [2, 16]",
+          "timeout_per_node": "5 + (shard_count * 2) minutes",
+          "state_size_limit": "500MB per artifact (empirical runner limit)"
+        },
+        "failure_modes": [
+          {"mode": "Partial Matrix Execution", "trigger": "Runner quota exceeded mid-matrix", "mitigation": "fail-fast: false + coherence threshold check in aggregator"},
+          {"mode": "Artifact Name Collision", "trigger": "Two shards write same artifact name", "mitigation": "Shard ID appended to all artifact names"},
+          {"mode": "State Coherence Violation", "trigger": "SHA-256 mismatch between init and shard download", "mitigation": "Abort with explicit error; manual re-trigger required"},
+          {"mode": "Retention Expiry", "trigger": "Artifact deleted after 1 day; workflow re-triggered after expiry", "mitigation": "Increase retention_days or redesign for ephemeral state"}
+        ],
+        "projection_tax": "~15 developer-minutes/run to diagnose coherence failures",
+        "category_span": ["Deployment", "Code Quality", "Utilities"],
+        "self_test_pass": {"disparate_categories": true, "dynamic_baselines": true, "failure_modes_documented": true}
+      },
+      {
+        "id": "DRP-GHA-PTR-002",
+        "name": "Polyglot Test Resonator",
+        "execution_guardrails": {
+          "timeout_minutes": 30,
+          "fuzz_duration_cap_seconds": 300,
+          "max_fixtures_injected": 1000,
+          "artifact_retention_days": 7
+        },
+        "dynamic_baselines": {
+          "fuzz_duration": "Configurable [30, 300] seconds; default 120",
+          "fixture_count": "Dynamic based on fuzz corpus; minimum 3 synthetic fixtures guaranteed"
+        },
+        "failure_modes": [
+          {"mode": "Ontological Shear", "trigger": "Rust i64 > 2^53 causes Python float truncation", "mitigation": "Schema bridge checks overflow_risk flag; failing fixtures isolated"},
+          {"mode": "Container Image Pull Failure", "trigger": "rust:1.78-slim unavailable", "mitigation": "Fallback to ubuntu-24.04 with rustup install"},
+          {"mode": "Hypothesis Database Corruption", "trigger": "Malformed Rust fixture corrupts .hypothesis/", "mitigation": "Delete .hypothesis/ if hypothesis.errors.Flaky raised"},
+          {"mode": "Cross-Version Float Semantics", "trigger": "Python 3.11 vs 3.12 JSON float parsing differences", "mitigation": "Matrix strategy captures both; failures are version-specific, not systemic"}
+        ],
+        "projection_tax": "~40 developer-minutes to debug cross-language ontological shear failures",
+        "category_span": ["Security", "Code Quality", "Testing"],
+        "self_test_pass": {"disparate_categories": true, "dynamic_baselines": true, "failure_modes_documented": true}
+      },
+      {
+        "id": "DRP-GHA-RASL-003",
+        "name": "Recursive Autopoietic Security Loop",
+        "execution_guardrails": {
+          "max_recursion_depth": 3,
+          "max_issues_per_scan": 3,
+          "pr_always_draft": true,
+          "timeout_minutes": 60
+        },
+        "dynamic_baselines": {
+          "iteration_cap": "RASL_MAX_DEPTH env var; dynamically checked per issue",
+          "llm_max_tokens": 4096,
+          "vulnerability_filter": "Only 'error' severity CodeQL findings trigger loop"
+        },
+        "failure_modes": [
+          {"mode": "Issue Storm", "trigger": "CodeQL finds >50 vulnerabilities triggering 50 parallel issues", "mitigation": "Hard cap of 3 issues per scan cycle"},
+          {"mode": "LLM Hallucinated Patch", "trigger": "Claude generates syntactically invalid diff", "mitigation": "git apply --reject captures partial applies; PR created as draft for human review"},
+          {"mode": "Infinite Loop Prevention Failure", "trigger": "RASL_ITERATION counter corrupted in issue body", "mitigation": "Regex match with fallback to iter=0; max_depth always checked before execution"},
+          {"mode": "Permission Escalation", "trigger": "Auto-merged PR introduces security regression", "mitigation": "all PRs created as draft: true; requires human promotion to ready"},
+          {"mode": "Secret Exposure", "trigger": "LLM logs API key in output", "mitigation": "ANTHROPIC_API_KEY passed via env secret; never interpolated in run: blocks"}
+        ],
+        "projection_tax": "~2 developer-hours/week review of RASL-generated PRs in active repositories",
+        "category_span": ["Security", "Code Quality", "Deployment"],
+        "self_test_pass": {"disparate_categories": true, "dynamic_baselines": true, "failure_modes_documented": true}
+      },
+      {
+        "id": "DRP-GHA-TESC-004",
+        "name": "Temporal Escrow Smart Contract",
+        "execution_guardrails": {
+          "max_lock_duration_hours": 720,
+          "heartbeat_interval_hours": 6,
+          "artifact_retention_days": 30,
+          "oracle_timeout_seconds": 10
+        },
+        "dynamic_baselines": {
+          "lock_duration": "Configurable per DEPOSIT operation; bounded by retention policy",
+          "hmac_algorithm": "SHA-256; upgrade to SHA-3 for higher security requirements"
+        },
+        "failure_modes": [
+          {"mode": "Artifact Expiry Before Release", "trigger": "30-day retention expires before unlock condition met", "mitigation": "Heartbeat job re-uploads artifact to reset retention; monitor expiry in heartbeat"},
+          {"mode": "Oracle Unavailability", "trigger": "External oracle URL returns 5xx or times out", "mitigation": "Oracle unreachable = escrow remains locked; explicit error logged"},
+          {"mode": "Key Rotation Mid-Escrow", "trigger": "TESC_SIGNING_KEY rotated while escrow is active", "mitigation": "Do not rotate key during active escrow windows; document in ops runbook"},
+          {"mode": "HMAC Replay Attack", "trigger": "Unlock token intercepted and replayed", "mitigation": "Include timestamp in HMAC computation for time-bounded tokens in production deployments"},
+          {"mode": "Concurrent DEPOSIT Collision", "trigger": "Two actors deposit simultaneously, overwriting artifact", "mitigation": "Artifact names should include UUID; implement one-active-escrow-per-repo policy"}
+        ],
+        "projection_tax": "~30 developer-minutes to debug failed oracle conditions",
+        "category_span": ["Security", "Deployment", "Utilities"],
+        "self_test_pass": {"disparate_categories": true, "dynamic_baselines": true, "failure_modes_documented": true}
+      },
+      {
+        "id": "DRP-GHA-MDS-005",
+        "name": "Metacognitive Drift Sentinel",
+        "execution_guardrails": {
+          "drift_threshold": 0.25,
+          "max_issues_open_simultaneously": 1,
+          "llm_token_budget": 3000,
+          "timeout_minutes": 30,
+          "max_intent_document_chars": 10000
+        },
+        "dynamic_baselines": {
+          "drift_threshold": "Configurable DRIFT_THRESHOLD env var; default 0.25",
+          "lint_scope": "Path-filtered on push events; full scan on weekly schedule",
+          "llm_context_window": "6000 chars intent + 2000 chars topology summary = within 8K effective context"
+        },
+        "failure_modes": [
+          {"mode": "Missing Architectural Intent Document", "trigger": "No ARCHITECTURE.md, ADR, or DESIGN.md found", "mitigation": "Graceful fallback to README.md; synthetic baseline generated"},
+          {"mode": "LLM JSON Malformation", "trigger": "Claude returns explanation instead of pure JSON", "mitigation": "Fallback drift_analysis struct with score=0.5 and grade='C'"},
+          {"mode": "Infinite Drift Issue Creation", "trigger": "Drift never resolved; new issue filed weekly", "mitigation": "Check for existing open 'mds-drift-report' label; append comment instead of creating new issue"},
+          {"mode": "Self-Reference Recursion", "trigger": "MDS analyzes its own workflow YAML as architectural drift", "mitigation": "Exclude .github/ directory from topology extraction"},
+          {"mode": "False Positive Drift", "trigger": "LLM misinterprets intentional polyglot architecture as drift", "mitigation": "Include polyglot intent declaration in ARCHITECTURE.md; lower threshold for multi-language repos"}
+        ],
+        "projection_tax": "~1 developer-hour/month to triage and resolve MDS-filed issues",
+        "category_span": ["Code Quality", "Security", "Utilities"],
+        "self_test_pass": {"disparate_categories": true, "dynamic_baselines": true, "failure_modes_documented": true}
+      }
+    ],
+    "reflexive_check_summary": {
+      "bit_rot_risk": "HIGH for PTR (cargo-fuzz API stability) and RASL (CodeQL action v3 schema changes)",
+      "star_count_trap": "Avoided: No action selected based on star count; selected on geometric operation class",
+      "falsification_conditions": [
+        "If GitHub runner artifact isolation prevents cross-job artifact reads within the same run: DASM is falsified",
+        "If GitHub deprecates actions/upload-artifact@v4 artifact naming scheme: All 5 architectures require update",
+        "If LLM API rate limits prevent synchronous patch generation in RASL: RASL must be redesigned as async queue"
+      ],
+      "mcp_extension_surface": "Each architecture maps to an MCP tool boundary: DASM→file_manager, RASL→code_runner+issue_tracker, TESC→secure_vault, MDS→codebase_reader. Local IDE MCP servers can consume artifact outputs directly.",
+      "pluriversal_extensions": {
+        "gitlab_ci": "DASM maps to GitLab's DAG pipeline with artifacts:reports; TESC maps to GitLab Environments with deployment gates",
+        "bitbucket_pipelines": "PTR maps to Bitbucket Pipe container actions; RASL requires Bitbucket Code Insights API for issue filing"
+      }
+    }
+  }
+}
