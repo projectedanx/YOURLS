@@ -34,7 +34,7 @@ jobs:
     outputs:
       topology_hash: ${{ steps.hash.outputs.hash }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
         with:
           fetch-depth: 0  # Full history for drift velocity calculation
 
@@ -120,7 +120,7 @@ jobs:
   extract-intent:
     runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
       - name: Parse architectural intent document
         run: |
