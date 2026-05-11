@@ -94,7 +94,7 @@ jobs:
       # === VERIFY: Heartbeat integrity check (cron-triggered) ===
       - name: "[VERIFY] Download escrow artifact"
         if: steps.route.outputs.op == 'VERIFY'
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           name: ${{ env.ESCROW_ARTIFACT_NAME }}
           path: ./escrow
@@ -175,7 +175,7 @@ jobs:
 
       - name: "[RELEASE] Execute escrowed deployment payload"
         if: steps.route.outputs.op == 'RELEASE' && steps.verify-oracle.outputs.release_authorized == 'true'
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           name: ${{ env.ESCROW_ARTIFACT_NAME }}
           path: ./escrow-release
