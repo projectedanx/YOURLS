@@ -2,13 +2,22 @@ name: CI
 
 on:
   push:
+    branches: [ master, develop ]
   pull_request:
     branches: [ master ]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   test:
     name: PHP ${{ matrix.php }}
     runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    permissions:
+      contents: read
 
     strategy:
       fail-fast: false
@@ -32,36 +41,35 @@ jobs:
         options: --health-cmd="healthcheck.sh --su-mysql --connect --innodb_initialized" --health-interval=10s --health-timeout=5s --health-retries=3
 
     steps:
-    - uses: actions/checkout@v6
+    - uses: actions/checkout@6d0aea3d0fbbcf2d91b4e1626c27f0c56e7c9a5b  # v6
 
     - name: Use PHP ${{ matrix.php }}
-      uses: shivammathur/setup-php@2.37.0
+      uses: shivammathur/setup-php@dbd5229d35997b387a27315c1a6e9b3c2f237288  # v2.37.0
       with:
         php-version: ${{ matrix.php }}
         extensions: mbstring, curl, zip, dom, simplexml, intl, pdo_mysql
         tools: phpunit
         coverage: ${{ matrix.coverage }}
 
-    # - name: Validate composer.json and composer.lock
-    #   run: composer validate
+    - name: Cache Composer packages
+      id: composer-cache
+      uses: actions/cache@704facf57e6136b1bc63b828d79afa649  # v4
+      with:
+        path: vendor
+        key: ${{ runner.os }}-php-${{ matrix.php }}-${{ hashFiles('**/composer.lock') }}
+        restore-keys: |
+          ${{ runner.os }}-php-${{ matrix.php }}-
 
-    # - name: Cache Composer packages
-    #   id: composer-cache
-    #   uses: actions/cache@v2
-    #   with:
-    #     path: vendor
-    #     key: ${{ runner.os }}-php-${{ hashFiles('**/composer.lock') }}
-    #     restore-keys: |
-    #       ${{ runner.os }}-php-
+    - name: Install dependencies
+      run: composer install --prefer-dist --no-progress
+      env:
+        APP_ENV: testing
 
-    # - name: Install dependencies
-    #   if: steps.composer-cache.outputs.cache-hit != 'true'
-    #   run: composer install --prefer-dist --no-progress --no-suggest
-    #   env:
-    #     APP_ENV: testing
-
-    # - name: Lint
-    #   run: composer run-script lint
+    - name: Cache YOURLS language packs
+      uses: actions/cache@704facf57e6136b1bc63b828d79afa649  # v4
+      with:
+        path: user/languages
+        key: ${{ runner.os }}-languages-fr-${{ hashFiles('tests/data/config/**') }}
 
     - name: Prepare the application
       run: |
@@ -77,3 +85,10 @@ jobs:
         YOURLS_DB_PASS: ''
         YOURLS_DB_NAME: yourls_tests
         YOURLS_DB_HOST: 127.0.0.1
+
+    - name: Upload coverage
+      if: matrix.php == '8.5'
+      uses: codecov/codecov-action@v4
+      with:
+        files: ./clover.xml
+        fail_ci_if_error: false
