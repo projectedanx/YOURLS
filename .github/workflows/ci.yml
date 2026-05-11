@@ -41,7 +41,7 @@ jobs:
         options: --health-cmd="healthcheck.sh --su-mysql --connect --innodb_initialized" --health-interval=10s --health-timeout=5s --health-retries=3
 
     steps:
-    - uses: actions/checkout@6d0aea3d0fbbcf2d91b4e1626c27f0c56e7c9a5b  # v6
+    - uses: actions/checkout@900f2210b1d28bbbd0bd22d17926b9e224e8f231  # v6
 
     - name: Use PHP ${{ matrix.php }}
       uses: shivammathur/setup-php@dbd5229d35997b387a27315c1a6e9b3c2f237288  # v2.37.0
