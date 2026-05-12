@@ -72,7 +72,7 @@ jobs:
       shard_result_hash: ${{ steps.process.outputs.result_hash }}
     steps:
       - name: Download initial state from message bus
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           name: "fsm-state-init-${{ env.STATE_VERSION }}"
           path: ./state-in
@@ -138,7 +138,7 @@ jobs:
     runs-on: ubuntu-24.04
     steps:
       - name: Download all shard results from message bus
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           pattern: "fsm-shard-result-*-${{ env.STATE_VERSION }}"
           merge-multiple: true
