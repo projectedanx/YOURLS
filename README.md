@@ -111,6 +111,60 @@ The YOURLS application is structured as follows:
 * Engage users and ask for help in our [community discussions](https://github.com/YOURLS/YOURLS/discussions)
 * Keep track of development: "Star" and "Watch" this project, follow [commit messages](https://github.com/YOURLS/YOURLS/commits/master)
 
+
+## Developer Guide
+
+If you are a new developer looking to contribute to YOURLS, welcome! The following guide will help you set up your development and testing environment.
+
+### Development Prerequisites
+* PHP 7.4+ (8.x recommended)
+* Composer
+* MySQL or MariaDB
+* Xdebug (optional, for coverage and header testing)
+
+### Testing Environment Setup
+
+To run the PHPUnit test suite, you need a dedicated test database:
+
+1. **Install and Configure Database**:
+   Install MariaDB/MySQL and start the service. Create an empty database named `yourls_tests`:
+   ```bash
+   mysql -u root -e "CREATE DATABASE yourls_tests;"
+   mysql -u root -e "GRANT ALL PRIVILEGES ON *.* TO 'root'@'localhost' IDENTIFIED BY ''; FLUSH PRIVILEGES;"
+   ```
+
+2. **Configure Test Credentials**:
+   Copy the sample test configuration:
+   ```bash
+   cp tests/data/config/yourls-tests-config-sample.php tests/yourls-tests-config.php
+   ```
+   Edit `tests/yourls-tests-config.php`:
+   - Set the database username to `root` and password to an empty string `''`.
+   - Set the database name to `yourls_tests`.
+   - Update `YOURLS_ABSPATH` to your local repository directory path (e.g., `'/app'`). Do not use global sed replacements as they can break configurations.
+
+3. **Install Dependencies**:
+   Navigate to the `tests/` directory and install PHPUnit via Composer. If you encounter platform check issues with newer PHP versions, use the `--ignore-platform-reqs` flag:
+   ```bash
+   cd tests/
+   composer install --ignore-platform-reqs
+   cd ..
+   ```
+
+4. **Run Tests**:
+   Execute the test suite from the repository root:
+   ```bash
+   php tests/vendor/bin/phpunit -c phpunit.xml.dist
+   ```
+
+### Codebase Organization
+* `includes/`: Core functions, classes, and logic. Database interactions use `YDB` (which extends Aura SQL).
+* `admin/`: Admin interface pages and AJAX handlers.
+* `tests/`: PHPUnit test suite.
+* `yourls-api.php` / `includes/functions-api.php`: The API surface.
+
+*Note on modifications*: When adding new API actions, register them in `$api_actions` in `yourls-api.php`, define the callback in `includes/functions-api.php`, and update `tests/tests/api/FuncTest.php` to maintain adequate test coverage.
+
 ## Contributing
 
 Feature suggestion? Bug to report?
