@@ -110,7 +110,7 @@ jobs:
           print(f"Schema bridge: {len(fixtures)} adversarial fixtures serialized")
           EOF
 
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           name: rust-fuzz-corpus
           path: rust_fuzz_corpus.json
@@ -134,7 +134,7 @@ jobs:
         run: pip install hypothesis pytest pytest-json-report
 
       - name: Download Rust fuzz corpus (cross-ecosystem bridge)
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           name: rust-fuzz-corpus
 
@@ -188,7 +188,7 @@ jobs:
           print("Property resonance: PASSED across Rust→Python fuzz bridge")
           EOF
 
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         if: always()
         with:
           name: "ptr-results-py${{ matrix.python-version }}"
@@ -203,7 +203,7 @@ jobs:
     runs-on: ubuntu-24.04
     if: always()
     steps:
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v8
         with:
           pattern: "ptr-results-*"
           merge-multiple: true

@@ -40,8 +40,6 @@ function yourls_html_head( $context = 'index', $title = '' ) {
 
     yourls_do_action( 'pre_html_head', $context, $title );
 
-    $components = yourls_get_html_components( $context );
-
     // Force no cache for all admin pages
     if( yourls_is_admin() && !headers_sent() ) {
         yourls_no_cache_headers();
@@ -59,7 +57,7 @@ function yourls_html_head( $context = 'index', $title = '' ) {
     // Page title
     $title = yourls_get_html_title( $context, $title );
 
-    yourls_html_head_output( $context, $title, $bodyclass, $components );
+    yourls_html_head_output( $context, $title, $bodyclass, yourls_get_html_components( $context ) );
 }
 
 /**
