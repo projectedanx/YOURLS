@@ -57,14 +57,17 @@ if( yourls_do_log_redirect() ) {
 
     if( yourls_allow_duplicate_longurls() )
         $keyword_list = yourls_get_longurl_keywords( $longurl );
+
+    $offset = (int)yourls_get_time_offset();
+
     // Define keyword query range : either a single keyword or a list of keywords
     if( isset($aggregate) && $aggregate ) {
         $keyword_range = 'IN ( :list )';
-        $keyword_binds = array('list' => $keyword_list);
+        $keyword_binds = array('list' => $keyword_list, 'offset' => $offset);
     } else {
         $aggregate = false;
         $keyword_range = '= :keyword';
-        $keyword_binds = array('keyword' => $keyword);
+        $keyword_binds = array('keyword' => $keyword, 'offset' => $offset);
     }
 
 
@@ -162,14 +165,12 @@ if( yourls_do_log_redirect() ) {
         unset($_lists);
     }
 
-    $offset = yourls_get_time_offset();
-
     // *** Last 24 hours : array of $last_24h[ $hour ] = number of click ***
     $sql = "SELECT
-        DATE_FORMAT(DATE_ADD(`click_time`, INTERVAL " . $offset . " HOUR), '%H %p') AS `time`,
+        DATE_FORMAT(DATE_ADD(`click_time`, INTERVAL :offset HOUR), '%H %p') AS `time`,
         COUNT(*) AS `count`
     FROM `$table`
-    WHERE `shorturl` $keyword_range AND DATE_ADD(`click_time`, INTERVAL " . $offset . " HOUR) > (DATE_ADD(CURRENT_TIMESTAMP, INTERVAL " . $offset . " HOUR) - INTERVAL 1 DAY)
+    WHERE `shorturl` $keyword_range AND DATE_ADD(`click_time`, INTERVAL :offset HOUR) > (DATE_ADD(CURRENT_TIMESTAMP, INTERVAL :offset HOUR) - INTERVAL 1 DAY)
     GROUP BY `time`;";
     $sql = yourls_apply_filter('stat_query_last24h', $sql);
     $rows = $ydb->fetchObjects($sql, $keyword_binds);
