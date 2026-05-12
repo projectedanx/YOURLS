@@ -110,7 +110,7 @@ jobs:
           HASH=$(sha256sum codebase_topology.json | cut -d' ' -f1)
           echo "hash=$HASH" >> $GITHUB_OUTPUT
 
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           name: codebase-topology
           path: codebase_topology.json
@@ -155,7 +155,7 @@ jobs:
           print(f"Intent extracted from {len(intent_content)} source(s)")
           EOF
 
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           name: architectural-intent
           path: architectural_intent.json
@@ -169,11 +169,11 @@ jobs:
       drift_score: ${{ steps.drift.outputs.drift_score }}
       drift_report: ${{ steps.drift.outputs.drift_report_path }}
     steps:
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v8
         with:
           name: codebase-topology
           path: ./artifacts
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v8
         with:
           name: architectural-intent
           path: ./artifacts
@@ -262,7 +262,7 @@ jobs:
               gh.write("drift_report_path=drift_report.json\n")
           EOF
 
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           name: drift-report
           path: drift_report.json
@@ -276,7 +276,7 @@ jobs:
       needs.compute-drift.outputs.drift_score != '' &&
       (needs.compute-drift.outputs.drift_score > 0.25)
     steps:
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v8
         with:
           name: drift-report
           path: ./drift
