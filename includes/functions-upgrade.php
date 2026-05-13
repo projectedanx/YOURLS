@@ -434,19 +434,20 @@ function yourls_update_table_to_14() {
         $sql = "UPDATE `$table` SET `keyword` = CASE `keyword` ";
         $binds = [];
         $keyword_binds = [];
+        $cases = [];
 
         foreach( $rows as $i => $row ) {
             $keyword = $row->keyword;
             $newkeyword = yourls_int2string( $keyword );
 
-            $sql .= "WHEN :oldkeyword_$i THEN :newkeyword_$i ";
+            $cases[] = "WHEN :oldkeyword_$i THEN :newkeyword_$i";
             $binds["oldkeyword_$i"] = $keyword;
             $binds["newkeyword_$i"] = $newkeyword;
             $keyword_binds[] = ":oldkeyword_$i";
 
             $count++;
         }
-        $sql .= "END WHERE `keyword` IN (" . implode( ', ', $keyword_binds ) . ")";
+        $sql .= implode( ' ', $cases ) . " END WHERE `keyword` IN (" . implode( ', ', $keyword_binds ) . ")";
 
         if ($ydb->perform($sql, $binds)) {
             $queries = $count;
