@@ -203,7 +203,10 @@ function yourls_get_stats($filter = 'top', $limit = 10, $start = 0) {
 function yourls_get_db_stats( $where = [ 'sql' => '', 'binds' => [] ] ) {
     $table_url = YOURLS_DB_TABLE_URL;
 
-    $totals = yourls_get_db()->fetchObject( "SELECT COUNT(keyword) as count, SUM(clicks) as sum FROM `$table_url` WHERE 1=1 " . $where['sql'] , $where['binds'] );
+    $sql   = ( is_array( $where ) && isset( $where['sql'] ) && is_string( $where['sql'] ) ) ? $where['sql'] : '';
+    $binds = ( is_array( $where ) && isset( $where['binds'] ) && is_array( $where['binds'] ) ) ? $where['binds'] : [];
+
+    $totals = yourls_get_db()->fetchObject( "SELECT COUNT(keyword) as count, SUM(clicks) as sum FROM `$table_url` WHERE 1=1 " . $sql , $binds );
     $return = [ 'total_links' => $totals->count, 'total_clicks' => $totals->sum ];
 
     return yourls_apply_filter( 'get_db_stats', $return, $where );
