@@ -1054,7 +1054,7 @@ function yourls_fix_request_uri() {
     // Make $_REQUEST with only $_GET and $_POST, not $_COOKIE. See #3383.
     $_REQUEST = array_merge( $_GET, $_POST );
 
-    // Fix for IIS when running with PHP ISAPI
+    // Workaround for IIS when running with PHP ISAPI
     if ( empty( $_SERVER[ 'REQUEST_URI' ] ) || ( php_sapi_name() != 'cgi-fcgi' && preg_match( '/^Microsoft-IIS\//', $_SERVER[ 'SERVER_SOFTWARE' ] ) ) ) {
 
         // IIS Mod-Rewrite
