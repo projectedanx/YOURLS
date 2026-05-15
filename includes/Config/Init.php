@@ -37,7 +37,7 @@ class Init {
             yourls_check_maintenance_mode();
         }
 
-        // Fix REQUEST_URI for IIS
+        // Compatibility: REQUEST_URI for IIS
         if ($actions->fix_request_uri === true) {
             yourls_fix_request_uri();
         }
