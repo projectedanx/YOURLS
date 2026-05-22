@@ -77,7 +77,7 @@ function trim_long_string( string, length = 60 ) {
 	return newstring;
 }
 
-// Get the var=xxx from a query string
+// Get the var=value from a query string
 function get_var_from_query( url, varname, default_val ) {
 	if( varname === undefined ) {
 		varname = 'nonce';
