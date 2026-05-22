@@ -576,10 +576,10 @@ class YOURLS_Locale_Formats {
     /**
      * Stores the translated strings for the one character weekday names.
      *
-     * There is a hack to make sure that Tuesday and Thursday, as well
+     * There is a workaround to make sure that Tuesday and Thursday, as well
      * as Sunday and Saturday, don't conflict. See init() method for more.
      *
-     * @see YOURLS_Locale_Formats::init() for how to handle the hack.
+     * @see YOURLS_Locale_Formats::init() for how to handle the workaround.
      *
      * @since 1.6
      * @var array
