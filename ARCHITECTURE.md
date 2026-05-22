@@ -597,3 +597,7 @@ The Sovereign Agent Blueprint for KIRA-7 ("Lark-Weaver") is documented to manage
 
 ## Next.js Frontend RAG Agent Blueprint Integration
 The Sovereign Agent Blueprint for the Next.js Frontend RAG Agent is documented to manage retrieval-augmented generation, real-time document search, and on-demand synthesis. See [docs/nextjs_frontend_rag_agent_blueprint.md](docs/nextjs_frontend_rag_agent_blueprint.md) for full operational constraints, schemas, and metrics.
+
+
+## Cognitive Bytecode and Pattern Definitions (PDL v1.0)
+This project integrates the Progressive Disclosure Level 2 schema from [LEXICON.md](LEXICON.md) (DRP-LEXICON-992). This standard defines core pattern definitions such as Isomorphic Bridges, Paraconsistent Scarring, and Topological Orthogonality Hypotheses. It provides PDL decorators to mitigate pathological decays (like Semantic Saponification and Polyglot Hallucination Resonance) and emergent use cases at orthogonal domain intersections.
