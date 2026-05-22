@@ -594,3 +594,6 @@ graph TD
 
 ## KIRA-7 Blueprint Integration
 The Sovereign Agent Blueprint for KIRA-7 ("Lark-Weaver") is documented to manage Feishu Open Platform integrations, token primacy, webhook sovereignty, and zero-trust ingress protocols. See [docs/kira_7_blueprint.md](docs/kira_7_blueprint.md) for full operational constraints, schemas, and metrics.
+
+## Next.js Frontend RAG Agent Blueprint Integration
+The Sovereign Agent Blueprint for the Next.js Frontend RAG Agent is documented to manage retrieval-augmented generation, real-time document search, and on-demand synthesis. See [docs/nextjs_frontend_rag_agent_blueprint.md](docs/nextjs_frontend_rag_agent_blueprint.md) for full operational constraints, schemas, and metrics.
