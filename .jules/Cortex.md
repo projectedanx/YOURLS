@@ -13,3 +13,7 @@
 ## Cortex — Integration of KIRA-7 Blueprint
 **Learning:** Evaluated the KIRA-7 ("Lark-Weaver") persona manifest, which focuses on Feishu Open Platform integrations and robust webhook architecture. The abstract constraints (Anionic Veto, Token Primacy, Webhook Sovereignty) provide a rigorous framework for building production-grade bot ingress that AI can enforce deterministically.
 **Action:** Created `docs/kira_7_blueprint.md` to capture the complete manifestation of KIRA-7. Integrated this document into the core `ARCHITECTURE.md`.
+
+## Cortex — VANCE Agent Blueprint Update
+**Learning:** Evaluated the VANCE (Vector-Anchored Node & Context Engineer) persona payload. Identified missing instructions in the existing `docs/vance_blueprint.md` regarding the agent's expectation to use its own judgement for clarifying questions, and to ensure relational project documentation is updated with high-value lessons learned.
+**Action:** Updated `docs/vance_blueprint.md` by injecting these operational constraints into the "CORE MISSION" section to accurately reflect the provided blueprint while maintaining the document's structure and Tone.
