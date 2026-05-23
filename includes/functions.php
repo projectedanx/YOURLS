@@ -895,8 +895,6 @@ function yourls_get_remote_title( $url ) {
         return $url;
     }
 
-    $title = $charset = false;
-
     $max_bytes = yourls_apply_filter( 'get_remote_title_max_byte', 32768 ); // limit data fetching to 32K in order to find a <title> tag
 
     $response = yourls_http_get( $url, [], [], [ 'max_bytes' => $max_bytes ] ); // can be a Request object or an error string
@@ -910,45 +908,13 @@ function yourls_get_remote_title( $url ) {
         return $url;
     }
 
-    // look for <title>. No title found? Return the URL
-    if ( preg_match( '/<title>(.*?)<\/title>/is', $content, $found ) ) {
-        $title = $found[ 1 ];
-        unset( $found );
-    }
-
-    // Trim and check if empty. If so, return the URL
-    if ( !$title || !trim($title) ) {
+    $title = yourls_extract_title_from_html( $content );
+    if ( !$title ) {
         return $url;
     }
 
-    // Now we have a title. We'll try to get proper utf8 from it.
-
-    // Get charset as (and if) defined by the HTML meta tag. We should match
-    // <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-    // or <meta charset='utf-8'> and all possible variations: see https://gist.github.com/ozh/7951236
-    if ( preg_match( '/<meta[^>]*charset\s*=["\' ]*([a-zA-Z0-9\-_]+)/is', $content, $found ) ) {
-        $charset = $found[ 1 ];
-        unset( $found );
-    }
-    else {
-        // No charset found in HTML. Get charset as (and if) defined by the server response
-        $_charset = current( $response->headers->getValues( 'content-type' ) );
-        if ( preg_match( '/charset=(\S+)/', $_charset, $found ) ) {
-            $charset = trim( $found[ 1 ], ';' );
-            unset( $found );
-        }
-    }
-
-    // Conversion to utf-8 if what we have is not utf8 already
-    if ( strtolower( $charset ) != 'utf-8' && function_exists( 'mb_convert_encoding' ) ) {
-        // We use @ to remove warnings because mb_ functions are easily bitching about illegal chars
-        if ( $charset ) {
-            $title = @mb_convert_encoding( $title, 'UTF-8', $charset );
-        }
-        else {
-            $title = @mb_convert_encoding( $title, 'UTF-8' );
-        }
-    }
+    $charset = yourls_extract_charset_from_html( $content, $response->headers );
+    $title = yourls_convert_title_to_utf8( $title, $charset );
 
     // Remove HTML entities
     $title = html_entity_decode( $title, ENT_QUOTES, 'UTF-8' );
@@ -957,6 +923,66 @@ function yourls_get_remote_title( $url ) {
     $title = yourls_sanitize_title( $title, $url );
 
     return (string)yourls_apply_filter( 'get_remote_title', $title, $url );
+}
+
+/**
+ * Helper to extract title from HTML
+ *
+ * @since 1.9.3
+ * @param string $content HTML content
+ * @return string|bool Extracted title or false
+ */
+function yourls_extract_title_from_html( $content ) {
+    if ( preg_match( '/<title>(.*?)<\/title>/is', $content, $found ) ) {
+        $title = $found[ 1 ];
+        if ( $title && trim( $title ) ) {
+            return $title;
+        }
+    }
+    return false;
+}
+
+/**
+ * Helper to extract charset from HTML meta tag or response headers
+ *
+ * @since 1.9.3
+ * @param string $content HTML content
+ * @param array|\WpOrg\Requests\Response\Headers $headers Response headers
+ * @return string|bool Extracted charset or false
+ */
+function yourls_extract_charset_from_html( $content, $headers ) {
+    if ( preg_match( '/<meta[^>]*charset\s*=["\' ]*([a-zA-Z0-9\-_]+)/is', $content, $found ) ) {
+        return $found[ 1 ];
+    }
+
+    if ( $headers ) {
+        $_charset = current( $headers->getValues( 'content-type' ) );
+        if ( $_charset && preg_match( '/charset=(\S+)/', $_charset, $found ) ) {
+            return trim( $found[ 1 ], ';' );
+        }
+    }
+
+    return false;
+}
+
+/**
+ * Helper to convert title to UTF-8
+ *
+ * @since 1.9.3
+ * @param string $title Title string
+ * @param string|bool $charset Charset
+ * @return string Converted title
+ */
+function yourls_convert_title_to_utf8( $title, $charset ) {
+    if ( strtolower( (string)$charset ) != 'utf-8' && function_exists( 'mb_convert_encoding' ) ) {
+        if ( $charset ) {
+            $title = @mb_convert_encoding( $title, 'UTF-8', $charset );
+        }
+        else {
+            $title = @mb_convert_encoding( $title, 'UTF-8' );
+        }
+    }
+    return $title;
 }
 
 /**
