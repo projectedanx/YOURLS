@@ -237,3 +237,10 @@ Does your company use YOURLS? Ask your manager or marketing team if your company
 
 Free software. Do whatever the hell you want with it.
 YOURLS is released under the [MIT license](LICENSE).
+
+## Empirical Documentation Framework
+This repository utilizes a deterministic AI-Human orchestration framework to eliminate semantic ambiguity. Key artifacts include:
+*   **`AGENTS.md`**: Embedded Project Management persona constrained by Feature Control Frames (FCF).
+*   **`DOMAIN_GLOSSARY.md`**: Strict bounded vocabulary definitions.
+*   **`CONSTRAINTS.md`**: Hard epistemic limits and architectural rules.
+*   **`docs/adr/`**: Architecture Decision Records capturing historical context.
