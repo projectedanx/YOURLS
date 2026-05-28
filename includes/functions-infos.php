@@ -253,11 +253,12 @@ function yourls_days_in_month($month, $year) {
  * @return array An array containing the 'day' and 'max' value.
  */
 function yourls_stats_get_best_day($list_of_days) {
-    $max = max( $list_of_days );
-    foreach( $list_of_days as $k=>$v ) {
-        if ( $v == $max )
-            return array( 'day' => $k, 'max' => $max );
+    if (!$list_of_days) {
+        return array('day' => '', 'max' => 0);
     }
+    $max = max( $list_of_days );
+    $day = array_keys( $list_of_days, $max )[0];
+    return array( 'day' => $day, 'max' => $max );
 }
 
 /**
