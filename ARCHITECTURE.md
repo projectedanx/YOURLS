@@ -603,4 +603,7 @@ The Sovereign Agent Blueprint for the Next.js Frontend RAG Agent is documented t
 This project integrates the Progressive Disclosure Level 2 schema from [LEXICON.md](LEXICON.md) (DRP-LEXICON-992). This standard defines core pattern definitions such as Isomorphic Bridges, Paraconsistent Scarring, and Topological Orthogonality Hypotheses. It provides PDL decorators to mitigate pathological decays (like Semantic Saponification and Polyglot Hallucination Resonance) and emergent use cases at orthogonal domain intersections.
 
 ## Metrological Conformance
-The operational workflow incorporates Draft-Conditioned Constrained Decoding and Semantic Metrology via `validate_pdt_specification.py`, ensuring `AGENTS.md` mathematically bounds execution paths and prevents logical deviations during autonomous recursive loops.
+The operational workflow incorporates Draft-Conditioned Constrained Decoding and Semantic Metrology via `scripts/validate_pdt_specification.py`, ensuring `AGENTS.md` mathematically bounds execution paths and prevents logical deviations during autonomous recursive loops.
+
+## Infrastructure and Tooling
+- `scripts/`: Centralized directory for utility scripts.
