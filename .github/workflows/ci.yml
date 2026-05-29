@@ -43,14 +43,6 @@ jobs:
     steps:
     - uses: actions/checkout@900f2210b1d28bbbd0bd22d17926b9e224e8f231  # v6
 
-    - name: Use PHP ${{ matrix.php }}
-      uses: shivammathur/setup-php@dbd5229d35997b387a27315c1a6e9b3c2f237288  # v2.37.0
-      with:
-        php-version: ${{ matrix.php }}
-        extensions: mbstring, curl, zip, dom, simplexml, intl, pdo_mysql
-        tools: phpunit
-        coverage: ${{ matrix.coverage }}
-
     - name: Cache Composer packages
       id: composer-cache
       uses: actions/cache@704facf57e6136b1bc63b828d79afa649  # v4
