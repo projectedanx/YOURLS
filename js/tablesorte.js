@@ -30,7 +30,7 @@ $(document).ready(function(){
 // Get query string
 function query_string( key ) {
 	default_="";
-	key = key.replace(/[\[]/,"\\\[").replace(/[\]]/,"\\\]");
+	key = key.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 	var regex = new RegExp("[\\?&]"+key+"=([^&#]*)");
 	var qs = regex.exec(window.location.href);
 	if(qs == null)
