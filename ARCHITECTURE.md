@@ -607,3 +607,21 @@ The operational workflow incorporates Draft-Conditioned Constrained Decoding and
 
 ## Infrastructure and Tooling
 - `scripts/`: Centralized directory for utility scripts.
+
+## AI-Human Infomorphism Architecture
+
+This project integrates the concept of AI-Human Infomorphisms (see `docs/adr/003-ai-human-infomorphism-refactor.md`), restructuring the relationship between autonomous execution and human intent.
+
+```mermaid
+graph TD
+    A[Human Contextual Intent] -->|Inverse Safety State| B(AI-Human Infomorphism Engine)
+    C[Deterministic AI Schema] -->|Rigid Execution Bounds| B
+    B --> D{S5-Modal Attention Router}
+    D -- Resolution Collapse Detected --> E[Inject Friction]
+    E --> B
+    D -- Successful Synthesis --> F[High-Surprisal Emergent Features]
+```
+
+## Emergent Hypotheses (Paraconsistency & Stakeholder Dissonance)
+
+The Sovereign Cognitive Operating System (SCOS) now formally tracks emergent hypotheses derived from the collision of human probabilistic semantics and agentic deterministic bounds. See `docs/hypothesis/emergent_hypotheses.md` for definitions on the Topological Derivative of Stakeholder Dissonance and the Epsilon-Tolerance Paraconsistency of Technical Debt.
