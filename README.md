@@ -112,6 +112,12 @@ The YOURLS application is structured as follows:
 * Keep track of development: "Star" and "Watch" this project, follow [commit messages](https://github.com/YOURLS/YOURLS/commits/master)
 
 
+
+## 0xCARTO Pluriversal Repository Cartographer
+This repository has been mapped and analyzed using the 0xCARTO engine (DRP-2026-CARTO-0.0.1).
+The complete synthesis, including Architectural Topology, CI/CD Cartograph, and Dependency Matrix, can be found in `docs/0xCARTO_blueprint.md`.
+The documentation is extruded using the Mycelial Ingestion Protocol and PhronesisGuard to ensure zero-entropy synthesis and preserve local cultural logic.
+
 ## Developer Guide
 
 If you are a new developer looking to contribute to YOURLS, welcome! The following guide will help you set up your development and testing environment.
