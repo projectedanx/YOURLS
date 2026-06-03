@@ -263,9 +263,8 @@ function yourls_create_sql_tables() {
     yourls_debug_mode(true);
 
     // Create tables
-    foreach ( $create_tables as $table_name => $table_query ) {
-        $ydb->perform( $table_query );
-    }
+    $query = implode( "\n", $create_tables );
+    $ydb->perform( $query );
 
     // Verify tables. We fetch all table names once to avoid multiple database roundtrips.
     $tables = (array)$ydb->fetchCol( "SHOW TABLES" );
