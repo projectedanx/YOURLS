@@ -363,10 +363,10 @@ function yourls_google_array_to_data_table($data){
         }
         $str .= "\t['$label',";
         foreach( $values as $value ){
-            if( !is_numeric( $value ) && strpos( $value, '[' ) !== 0 && strpos( $value, '{' ) !== 0 ) {
+            if( !is_numeric( $value ) && ( !isset($value[0]) || ( $value[0] !== '[' && $value[0] !== '{' ) ) ) {
                 $value = "'$value'";
             }
-            $str .= "$value";
+            $str .= "$value,";
         }
         $str .= "],\n";
     }
@@ -394,7 +394,7 @@ function yourls_google_viz_code($graph_type, $data, $options, $id ) {
 
     $code .= "var options = {\n";
     foreach( $options as $field => $value ) {
-        if( !is_numeric( $value ) && strpos( $value, '[' ) !== 0 && strpos( $value, '{' ) !== 0 ) {
+        if( !is_numeric( $value ) && ( !isset($value[0]) || ( $value[0] !== '[' && $value[0] !== '{' ) ) ) {
             $value = "\"$value\"";
         }
         $code .= "\t'$field': $value,\n";
