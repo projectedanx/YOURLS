@@ -39,17 +39,13 @@ function multi_user_add_page() {
     yourls_register_plugin_page( 'multi-user', 'Multi-User Management', 'multi_user_display_page' );
 }
 
-// Display the admin page
-function multi_user_display_page() {
+yourls_add_action( 'load-multi-user', 'multi_user_process_actions' );
+
+function multi_user_process_actions() {
     global $yourls_user_passwords;
 
     // Make sure we have the latest stored users merged
     $stored_users = yourls_get_option( YOURLS_MULTI_USER_OPTION, array() );
-    if ( is_array( $stored_users ) ) {
-        $yourls_user_passwords = array_merge( $yourls_user_passwords, $stored_users );
-    }
-
-    echo '<h2>Multi-User Management</h2>';
 
     // Process form submission for adding a user
     if ( isset( $_POST['action'] ) && $_POST['action'] == 'add_user' ) {
@@ -62,7 +58,7 @@ function multi_user_display_page() {
         if ( !empty($username) && !empty($password) ) {
             // Check if user already exists
             if ( isset( $yourls_user_passwords[$username] ) ) {
-                 echo '<div class="notice notice-error"><p>User already exists.</p></div>';
+                 yourls_add_notice( 'User already exists.', 'notice notice-error' );
             } else {
                  // Save the user to our custom option array
                  $stored_users[$username] = yourls_hash_password($password);
@@ -71,10 +67,10 @@ function multi_user_display_page() {
                  // Update the global array for immediate display
                  $yourls_user_passwords[$username] = $stored_users[$username];
 
-                 echo '<div class="notice notice-success"><p>User ' . multi_user_esc_html( $username ) . ' added successfully.</p></div>';
+                 yourls_add_notice( 'User ' . multi_user_esc_html( $username ) . ' added successfully.', 'notice notice-success' );
             }
         } else {
-             echo '<div class="notice notice-error"><p>Username and password are required.</p></div>';
+             yourls_add_notice( 'Username and password are required.', 'notice notice-error' );
         }
     }
 
@@ -95,11 +91,24 @@ function multi_user_display_page() {
              unset( $stored_users[$username] );
              yourls_update_option( YOURLS_MULTI_USER_OPTION, $stored_users );
              unset( $yourls_user_passwords[$username] );
-             echo '<div class="notice notice-success"><p>User ' . multi_user_esc_html( $username ) . ' deleted.</p></div>';
+             yourls_add_notice( 'User ' . multi_user_esc_html( $username ) . ' deleted.', 'notice notice-success' );
         } else if ( isset( $yourls_user_passwords[$username] ) ) {
-             echo '<div class="notice notice-error"><p>Cannot delete a user defined in the configuration file.</p></div>';
+             yourls_add_notice( 'Cannot delete a user defined in the configuration file.', 'notice notice-error' );
         }
     }
+}
+
+// Display the admin page
+function multi_user_display_page() {
+    global $yourls_user_passwords;
+
+    // Make sure we have the latest stored users merged
+    $stored_users = yourls_get_option( YOURLS_MULTI_USER_OPTION, array() );
+    if ( is_array( $stored_users ) ) {
+        $yourls_user_passwords = array_merge( $yourls_user_passwords, $stored_users );
+    }
+
+    echo '<h2>Multi-User Management</h2>';
 
     // Add User Form
     echo '<h3>Add New User</h3>';
