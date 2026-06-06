@@ -102,7 +102,13 @@ function yourls_upgrade($step, $oldver, $newver, $oldsql, $newsql ) {
 function yourls_upgrade_505_to_506() {
     echo "<p>Updating DB. Please wait...</p>";
     // Fix collation which was wrongly set at first to utf8mb4_unicode_ci
-    $query = sprintf('ALTER TABLE `%s` CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_bin;', YOURLS_DB_TABLE_URL);
+    $query = sprintf(
+        "ALTER TABLE `%s` " .
+        "CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_bin, " .
+        "CHANGE `title` `title` TEXT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci, " .
+        "CHANGE `ip` `ip` VARCHAR(41) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL;",
+        YOURLS_DB_TABLE_URL
+    );
 
     try {
         yourls_get_db()->perform($query);
@@ -137,10 +143,9 @@ function yourls_upgrade_to_506() {
         'options charset'      => sprintf('ALTER TABLE `%s` CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;', YOURLS_DB_TABLE_OPTIONS),
         'short URL table'      => sprintf(
             "ALTER TABLE `%s` " .
-            "CHANGE `keyword` `keyword` VARCHAR(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL DEFAULT '', " .
-            "CHANGE `url` `url` TEXT CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL, " .
+            "CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_bin, " .
             "CHANGE `title` `title` TEXT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci, " .
-            "CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_bin;",
+            "CHANGE `ip` `ip` VARCHAR(41) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL;",
             YOURLS_DB_TABLE_URL
         ),
     );
