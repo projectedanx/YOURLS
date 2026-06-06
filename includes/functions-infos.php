@@ -294,7 +294,11 @@ function yourls_get_domain($url, $include_scheme = false) {
  * @return string The favicon URL.
  */
 function yourls_get_favicon_url($url) {
-    return yourls_match_current_protocol( '//www.google.com/s2/favicons?domain=' . yourls_get_domain( $url, false ) );
+    static $cache = array();
+    if ( ! isset( $cache[$url] ) ) {
+        $cache[$url] = yourls_match_current_protocol( '//www.google.com/s2/favicons?domain=' . yourls_get_domain( $url, false ) );
+    }
+    return $cache[$url];
 }
 
 /**
