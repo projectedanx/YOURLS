@@ -1,3 +1,3 @@
-## Modernizer — [Optimize table creation queries during install]
-**Learning:** Found an N+1 query issue in `includes/functions-install.php` during the installation sequence, where table creation queries were executed in a loop. By batching them together using `implode` and sending a single `$ydb->perform` call, we significantly reduce execution time (observed ~83% reduction in local SQLite benchmark).
-**Action:** Updated `yourls_create_sql_tables` in `includes/functions-install.php` to implode `$create_tables` array and perform a single batched SQL query execution, while keeping the return array logic intact.
+## Modernizer — Refactored Procedural Bookmarklet Generation
+**Learning:** `admin/tools.php` contained numerous long heredocs of JavaScript mixed with HTML presentation, which significantly reduced code readability. Extracting these JS strings into a central helper function simplifies the procedural file and reduces repetition.
+**Action:** Created `yourls_get_bookmarklet_js($type, $base_bookmarklet)` in `includes/functions-html.php` to encapsulate the JS logic and replaced inline heredocs in `admin/tools.php` with concise function calls.

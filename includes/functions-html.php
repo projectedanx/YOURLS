@@ -1238,3 +1238,214 @@ function yourls_table_add_row_cell_array( $keyword, $shorturl, $url, $title, $ip
     );
     return yourls_apply_filter( 'table_add_row_cell_array', $cells, $keyword, $url, $title, $ip, $clicks, $timestamp );
 }
+
+
+/**
+ * Get javascript code for bookmarklet
+ *
+ * @param string $type Type of bookmarklet
+ * @param string $base_bookmarklet Base URL
+ * @return string Javascript code
+ */
+function yourls_get_bookmarklet_js( $type, $base_bookmarklet ) {
+    switch ( $type ) {
+        case 'STANDARD_SIMPLE':
+            return <<<STANDARD_SIMPLE
+                // Simple Standard Bookmarklet (new page, no keyword asked)
+                var d   = document,
+                    w   = window,
+                    enc = encodeURIComponent,
+                    e   = w.getSelection,
+                    k   = d.getSelection,
+                    x   = d.selection,
+                    s   = (e ? e() : (k) ? k() : (x ? x.createRange().text : 0)),
+                    s2  = ((s.toString() == '') ? s : enc(s)),
+                    f   = '$base_bookmarklet',
+                    l   = d.location.href,
+                    ups = l.match( /^[a-zA-Z0-9\+\.-]+:(\/\/)?/ )[0],
+                    ur  = l.split(new RegExp(ups))[1],
+                    ups = ups.split(/\:/),
+                    p   = '?up='+enc(ups[0]+':')+'&us='+enc(ups[1])+'&ur='+enc(ur)+'&t='+enc(d.title)+'&s='+s2,
+                    u   = f + p;
+                try {
+                    throw ('ozhismygod');
+                } catch (z) {
+                    a = function () {
+                        if (!w.open(u)) l.href = u;
+                    };
+                    if (/Firefox/.test(navigator.userAgent)) setTimeout(a, 0);
+                    else a();
+                }
+                void(0);
+STANDARD_SIMPLE;
+
+        case 'POPUP_SIMPLE':
+            return <<<POPUP_SIMPLE
+                // Simple Popup (in-page popup dialog, no keyword asked)
+                var d   = document,
+                    sc  = d.createElement('script'),
+                    l   = d.location.href,
+                    enc = encodeURIComponent,
+                    ups = l.match( /^[a-zA-Z0-9\+\.-]+:(\/\/)?/ )[0],
+                    ur  = l.split(new RegExp(ups))[1],
+                    ups = ups.split(/\:/),
+                    p   = '?up='+enc(ups[0]+':')+'&us='+enc(ups[1])+'&ur='+enc(ur)+'&t='+enc(d.title);
+                window.yourls_callback = function (r) {
+                    if (r.short_url) {
+                        prompt(r.message, r.short_url);
+                    } else {
+                        alert('An error occurred: ' + r.message);
+                    }
+                };
+                sc.src = '$base_bookmarklet' + p + '&jsonp=yourls';
+                void(d.body.appendChild(sc));
+POPUP_SIMPLE;
+
+        case 'CUSTOM_STANDARD':
+            return <<<CUSTOM_STANDARD
+                // Custom Standard (new page, prompt for a keyword)
+                var d   = document,
+                    enc = encodeURIComponent,
+                    w   = window,
+                    e   = w.getSelection,
+                    k   = d.getSelection,
+                    x   = d.selection,
+                    s   = (e ? e() : (k) ? k() : (x ? x.createRange().text : 0)),
+                    s2  = ((s.toString() == '') ? s : enc(s)),
+                    f   = '$base_bookmarklet',
+                    l   = d.location.href,
+                    ups = l.match( /^[a-zA-Z0-9\+\.-]+:(\/\/)?/ )[0],
+                    ur  = l.split(new RegExp(ups))[1],
+                    ups = ups.split(/\:/),
+                    k   = prompt("Custom URL"),
+                    k2  = (k ? '&k=' + k : ""),
+                    p   = '?up='+enc(ups[0]+':')+'&us='+enc(ups[1])+'&ur='+enc(ur)+'&t='+enc(d.title)+'&s='+s2 + k2,
+                    u   = f + p;
+                if (k != null) {
+                    try {
+                        throw ('ozhismygod');
+                    } catch (z) {
+                        a = function () {
+                            if (!w.open(u)) l = u;
+                        };
+                        if (/Firefox/.test(navigator.userAgent)) setTimeout(a, 0);
+                        else a();
+                    }
+                    void(0)
+                }
+CUSTOM_STANDARD;
+
+        case 'CUSTOM_POPUP':
+            return <<<CUSTOM_POPUP
+                // Custom Popup (prompt for a keyword + on-page popup)
+                var d   = document,
+                    l   = d.location.href,
+                    k   = prompt('Custom URL'),
+                    enc = encodeURIComponent,
+                    ups = l.match( /^[a-zA-Z0-9\+\.-]+:(\/\/)?/ )[0],
+                    ur  = l.split(new RegExp(ups))[1],
+                    ups = ups.split(/\:/),
+                    p   = '?up='+enc(ups[0]+':')+'&us='+enc(ups[1])+'&ur='+enc(ur)+'&t='+enc(d.title);
+                    sc  = d.createElement('script');
+                if (k != null) {
+                    window.yourls_callback = function (r) {
+                        if (r.short_url) {
+                            prompt(r.message, r.short_url);
+                        } else {
+                            alert('An error occurred: ' + r.message);
+                        }
+                    };
+                    sc.src = '$base_bookmarklet' + p + '&k=' + k + '&jsonp=yourls';
+                    void(d.body.appendChild(sc));
+                }
+CUSTOM_POPUP;
+
+        case 'FACEBOOK':
+            return <<<FACEBOOK
+        // Share on Facebook
+        var d   = document,
+            enc = encodeURIComponent,
+            f   = '$base_bookmarklet',
+            l   = d.location.href,
+            ups = l.match( /^[a-zA-Z0-9\+\.-]+:(\/\/)?/ )[0],
+            ur  = l.split(new RegExp(ups))[1],
+            ups = ups.split(/\:/),
+            p   = '?up=' + enc(ups[0]+':') + '&us=' + enc(ups[1]) + '&ur=' + enc(ur) + '&t=' + enc(d.title) + '&share=facebook',
+            u   = f + p;
+        try {
+            throw ('ozhismygod');
+        } catch (z) {
+            a = function () {
+                if (!window.open(u,'Share','width=500,height=340,left=100','_blank')) l.href = u;
+            };
+            if (/Firefox/.test(navigator.userAgent)) setTimeout(a, 0);
+            else a();
+        }
+        void(0);
+FACEBOOK;
+
+        case 'TWITTER':
+            return <<<TWITTER
+        // Share on Twitter
+        var d = document,
+            w = window,
+            enc = encodeURIComponent,
+            e = w.getSelection,
+            k = d.getSelection,
+            x = d.selection,
+            s = (e ? e() : (k) ? k() : (x ? x.createRange().text : 0)),
+            s2 = ((s.toString() == '') ? s : '%20%22' + enc(s) + '%22'),
+            f = '$base_bookmarklet',
+            l = d.location.href,
+            ups = l.match( /^[a-zA-Z0-9\+\.-]+:(\/\/)?/ )[0],
+            ur = l.split(new RegExp(ups))[1],
+            ups = ups.split(/\:/),
+            p = '?up=' + enc(ups[0]+':') + '&us=' + enc(ups[1]) + '&ur='+enc(ur) + '&t=' + enc(d.title) + s2 + '&share=twitter',
+            u = f + p;
+        try {
+            throw ('ozhismygod');
+        } catch (z) {
+            a = function () {
+                if (!w.open(u,'Share','width=780,height=265,left=100','_blank')) l = u;
+            };
+            if (/Firefox/.test(navigator.userAgent)) setTimeout(a, 0);
+            else a();
+        }
+        void(0);
+TWITTER;
+
+        case 'TUMBLR':
+            return <<<TUMBLR
+        // Share on Tumblr
+        var d = document,
+            w = window,
+            enc = encodeURIComponent,
+            share = 'tumblr',
+            e = w.getSelection,
+            k = d.getSelection,
+            x = d.selection,
+            s = (e ? e() : (k) ? k() : (x ? x.createRange().text : 0)),
+            s2 = ((s.toString() == '') ? s : '%20%22' + enc(s) + '%22'),
+            f = '$base_bookmarklet',
+            l = d.location.href,
+            ups = l.match( /^[a-zA-Z0-9\+\.-]+:(\/\/)?/ )[0],
+            ur = l.split(new RegExp(ups))[1],
+            ups = ups.split(/\:/),
+            p = '?up=' + enc(ups[0]+':') + '&us=' + enc(ups[1]) + '&ur='+enc(ur) + '&t=' + enc(d.title) + '&s=' + s2 + '&share=tumblr',
+            u = f + p;
+        try {
+            throw ('ozhismygod');
+        } catch (z) {
+            a = function () {
+                if (!w.open(u,'Share','width=450,height=450,left=430','_blank')) l = u;
+            };
+            if (/Firefox/.test(navigator.userAgent)) setTimeout(a, 0);
+            else a();
+        }
+        void(0);
+TUMBLR;
+
+        default:
+            return '';
+    }
+}
