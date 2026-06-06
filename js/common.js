@@ -41,18 +41,6 @@ function feedback(msg, type, delay) {
 	return true;
 }
 
-// Unused for now
-function logout() {
-	$.ajax({
-		type: "POST",
-		url: ajaxurl,
-		data: {action:'logout'},
-		success: function() {
-			window.parent.location.href = window.parent.location.href;
-		}
-	});
-}
-
 // Begin the spinning animation & disable a button
 function add_loading(el) {
 	$(el).attr("disabled", "disabled").addClass('disabled').addClass('loading');
