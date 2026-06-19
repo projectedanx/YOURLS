@@ -68,7 +68,7 @@ jobs:
     if: needs.rasl-router.outputs.mode == 'scan'
     runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
 
       - name: Initialize CodeQL
         uses: github/codeql-action/init@v4
@@ -151,7 +151,7 @@ jobs:
     if: needs.rasl-router.outputs.mode == 'patch'
     runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
 
       - name: Fetch issue details and extract vulnerability context
         id: fetch-issue
