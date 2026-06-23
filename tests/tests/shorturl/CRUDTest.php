@@ -134,7 +134,7 @@ class CRUDTest extends PHPUnit\Framework\TestCase {
 
 
     #[\PHPUnit\Framework\Attributes\Depends('test_add_url')]
-    public function test_update_hits_concurrency( $keyword ) {
+    public function test_yourls_update_clicks_catch_block( $keyword ) {
         // Force a mock of the DB to throw an exception
         global $ydb;
         $old_ydb = $ydb;
