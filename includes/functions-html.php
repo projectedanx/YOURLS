@@ -696,7 +696,26 @@ function yourls_table_add_row( $keyword, $url, $title, $ip, $clicks, $timestamp,
     $row = "<tr id=\"id-$id\">";
     foreach( $cells as $cell_id => $elements ) {
         $row .= sprintf( '<td class="%s" id="%s">', $cell_id, $cell_id . '-' . $id );
-        $row .= preg_replace_callback( '/%([^%]+)?%/', function( $match ) use ( $elements ) { return $elements[ $match[1] ]; }, $elements['template'] );
+        $template = $elements['template'];
+        unset($elements['template']);
+
+        $search = array();
+        foreach (array_keys($elements) as $k) {
+            $search[] = "%$k%";
+        }
+
+        // Replace known elements
+        $replaced = str_replace($search, array_values($elements), $template);
+
+        // If there are still %...% tags (e.g. from a plugin filter missing an element),
+        // fallback to preg_replace to strip them or mimic the original behavior
+        if (strpos($replaced, '%') !== false) {
+            $replaced = preg_replace_callback('/%([^%]+)?%/', function($match) use ($elements) {
+                return isset($elements[$match[1]]) ? $elements[$match[1]] : '';
+            }, $replaced);
+        }
+
+        $row .= $replaced;
         $row .= '</td>';
     }
     $row .= "</tr>";
