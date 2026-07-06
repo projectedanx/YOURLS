@@ -1,13 +1,18 @@
-⚡ [Performance] Optimize preg_replace_callback in Table Rendering Loop
+🧹 [Code Health] Modernize functions and mitigate vulnerabilities
 
-💡 **What:**
-Replaced the `preg_replace_callback` function call within `yourls_table_add_row`'s inner loop with a faster implementation. It builds an array of known elements and uses `str_replace` for them, and only falls back to a much simpler `preg_replace_callback` (only to replace potentially unmatched items safely) if the resulting string still contains a `%` character.
+🎯 **What:**
+- Resolved `max()` errors in `yourls_scale_data` and `yourls_array_granularity` by explicitly checking for empty arrays before calculation.
+- Addressed variable overriding risk by removing `extract()` from `yourls_html_head_output` and implementing explicit null coalescing assignment.
+- Improved XSS protection in JSONP response generation within `admin/index.php` by correctly setting `Content-Type: application/javascript` before echoing payload.
+- Enhanced `yourls_maybe_unserialize` to allow plugins to extend `allowed_classes` via the `yourls_maybe_unserialize_allowed_classes` filter, preventing object injection vulnerabilities while maintaining compatibility.
+- Centralized stray utility scripts to `scripts/` following the Prune-First Protocol.
+- Generated `docs/0xCARTO_blueprint.md` utilizing the 5-Tier Markdown Documentation Schema.
 
-🎯 **Why:**
-Regular expressions in tight loops are a well-known performance bottleneck. `yourls_table_add_row` iterates over each cell on a table row, invoking the regex replacement. Profiling showed that using `str_replace` sequentially or as an array provides a significant boost to performance while still generating identical output safely.
+💡 **Why:**
+These changes address multiple PHP 8 compatibility issues, structural security vulnerabilities, and code hygiene requirements according to SCOS constraints and Agentic specifications. Explicit type checks, early headers, and centralized tools create a more deterministic, reliable, and secure environment without compromising backward compatibility or Golden Scars.
 
-📊 **Measured Improvement:**
-We ran iterations 100,000 times for each variant:
-- **Baseline (Preg Replace Callback):** ~0.6465 seconds
-- **Optimized (Str Replace with safe fallback check):** ~0.4682 seconds
-- **Change over baseline:** A performance improvement of ~27.57% for the inner cell evaluation loop.
+✅ **Verification:**
+Executed the PHPUnit test suite with PHP 8.3, confirming all tests pass without failures or errors. Checked all modified files manually for accurate code replacement.
+
+✨ **Result:**
+A more robust and secure core that handles edge cases safely, fully compatible with PHP 8, and compliant with required security and structural paradigms.
