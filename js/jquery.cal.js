@@ -85,9 +85,9 @@
 			
 				// month select field
 				var monthselect = jQuery('<select name="month"></select>');
-				for (var i in l10n_cal_month) {
-					monthselect.append(jQuery('<option></option>').val(i).text(l10n_cal_month[i]));
-				}
+				jQuery.each(l10n_cal_month, function(i, monthName) {
+					monthselect.append(jQuery('<option></option>').val(i).text(monthName));
+				});
 			
 				// year select field
 				var yearselect = jQuery('<select name="year"></select>');
