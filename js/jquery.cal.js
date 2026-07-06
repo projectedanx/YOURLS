@@ -84,18 +84,40 @@
 			table.append('<tbody></tbody>');
 			
 				// month select field
-				var monthselect = '<select name="month">';
-				for (var i in l10n_cal_month) monthselect += '<option value="'+i+'">'+l10n_cal_month[i]+'</option>';
-				monthselect += '</select>';
+				var monthselect = jQuery('<select name="month"></select>');
+				for (var i in l10n_cal_month) {
+					monthselect.append(jQuery('<option></option>').val(i).text(l10n_cal_month[i]));
+				}
 			
 				// year select field
-				var yearselect = '<select name="year">';
-				for (var i in years) yearselect += '<option>'+years[i]+'</option>';
-				yearselect += '</select>';
+				var yearselect = jQuery('<select name="year"></select>');
+				for (var i in years) {
+					yearselect.append(jQuery('<option></option>').text(years[i]));
+				}
 			
-			jQuery("thead",table).append('<tr class="controls"><th colspan="7"><span class="prevMonth">&laquo;</span>&nbsp;'+monthselect+yearselect+'&nbsp;<span class="nextMonth">&raquo;</span></th></tr>');
-			jQuery("thead",table).append('<tr class="days"><th>'+l10n_cal_days[0]+'</th><th>'+l10n_cal_days[1]+'</th><th>'+l10n_cal_days[2]+'</th><th>'+l10n_cal_days[3]+'</th><th>'+l10n_cal_days[4]+'</th><th>'+l10n_cal_days[5]+'</th><th>'+l10n_cal_days[6]+'</th></tr>');
-			jQuery("tfoot",table).append('<tr><td colspan="2"><span class="today">'+l10n_cal_today+'</span></td><td colspan="3">&nbsp;</td><td colspan="2"><span class="close">'+l10n_cal_close+'</span></td></tr>');
+			var controlsRow = jQuery('<tr class="controls"></tr>');
+			var controlsHeader = jQuery('<th colspan="7"></th>');
+			controlsHeader.append(jQuery('<span class="prevMonth"></span>').text('«'));
+			controlsHeader.append('\u00a0');
+			controlsHeader.append(monthselect);
+			controlsHeader.append(yearselect);
+			controlsHeader.append('\u00a0');
+			controlsHeader.append(jQuery('<span class="nextMonth"></span>').text('»'));
+			controlsRow.append(controlsHeader);
+			jQuery("thead",table).append(controlsRow);
+
+			var daysRow = jQuery('<tr class="days"></tr>');
+			for (var d = 0; d < 7; d++) {
+				daysRow.append(jQuery('<th></th>').text(l10n_cal_days[d]));
+			}
+			jQuery("thead",table).append(daysRow);
+
+			var tfootRow = jQuery('<tr></tr>');
+			tfootRow.append(jQuery('<td colspan="2"></td>').append(jQuery('<span class="today"></span>').text(l10n_cal_today)));
+			tfootRow.append(jQuery('<td colspan="3"></td>').html('&nbsp;'));
+			tfootRow.append(jQuery('<td colspan="2"></td>').append(jQuery('<span class="close"></span>').text(l10n_cal_close)));
+			jQuery("tfoot",table).append(tfootRow);
+
 			for (var i = 0; i < 6; i++) jQuery("tbody",table).append('<tr><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>');	
 			return table;
 		}
