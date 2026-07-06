@@ -5,6 +5,11 @@
 
 name: "DASM — Distributed Async State Machine"
 
+permissions:
+  contents: read
+  actions: read
+  artifacts: write
+
 on:
   workflow_dispatch:
     inputs:
