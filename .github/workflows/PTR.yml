@@ -15,6 +15,9 @@ on:
         default: "120"
         type: string
 
+permissions:
+  contents: read
+
 jobs:
   # PHASE 1: Rust Fuzz Corpus Generation
   rust-fuzz-oracle:
@@ -202,6 +205,8 @@ jobs:
     needs: [python-property-resonator]
     runs-on: ubuntu-24.04
     if: always()
+    permissions:
+      contents: write
     steps:
       - uses: actions/download-artifact@v8
         with:
