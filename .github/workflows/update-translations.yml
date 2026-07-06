@@ -6,6 +6,9 @@ on:
       - '*'
   workflow_dispatch:
 
+permissions:
+  contents: read
+
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
@@ -58,6 +61,9 @@ jobs:
     name: Submit updated translations
     if: ${{ github.event_name == 'workflow_dispatch' && github.repository == 'YOURLS/YOURLS' }}
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
     needs:
       - translations-check
     steps:
