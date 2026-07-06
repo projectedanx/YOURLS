@@ -309,6 +309,9 @@ function yourls_get_favicon_url($url) {
  * @return array The scaled array.
  */
 function yourls_scale_data($data ) {
+    if ( empty( $data ) ) {
+        return $data;
+    }
     $max = max( $data );
     if( $max > 100 ) {
         foreach( $data as $k=>$v ) {
@@ -332,6 +335,9 @@ function yourls_scale_data($data ) {
  * @return array The array with adjusted granularity.
  */
 function yourls_array_granularity($array, $grain = 100, $preserve_max = true) {
+    if ( empty( $array ) ) {
+        return $array;
+    }
     if ( count( $array ) > $grain ) {
         $max = max( $array );
         $step = intval( count( $array ) / $grain );
