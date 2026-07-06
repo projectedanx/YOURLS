@@ -150,6 +150,7 @@ if ( isset( $_GET['u'] ) or isset( $_GET['up'] ) ) {
             'short_url' => $short,
             'message'   => $message,
         );
+        header('Content-Type: application/javascript');
         echo yourls_apply_filter( 'bookmarklet_jsonp', 'yourls_callback(' . json_encode( $jsonp_data ) . ');' );
 
         die();

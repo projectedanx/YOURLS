@@ -139,7 +139,12 @@ function yourls_get_html_components( $context ) {
  * @return void
  */
 function yourls_html_head_output( $context, $title, $bodyclass, $components ) {
-    extract($components);
+    $share       = $components['share'] ?? false;
+    $insert      = $components['insert'] ?? false;
+    $tablesorter = $components['tablesorter'] ?? false;
+    $tabs        = $components['tabs'] ?? false;
+    $cal         = $components['cal'] ?? false;
+    $charts      = $components['charts'] ?? false;
     ?>
 <!DOCTYPE html>
 <html <?php yourls_html_language_attributes(); ?>>
