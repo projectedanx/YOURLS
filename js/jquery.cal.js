@@ -91,7 +91,7 @@
 			
 				// year select field
 				var yearselect = jQuery('<select name="year"></select>');
-				for (var i in years) {
+				for (var i = 0; i < years.length; i++) {
 					yearselect.append(jQuery('<option></option>').text(years[i]));
 				}
 			
