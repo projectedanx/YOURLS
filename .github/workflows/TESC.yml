@@ -31,6 +31,10 @@ env:
 
 jobs:
   tesc-operation:
+    permissions:
+      contents: read
+      actions: read
+      deployments: write
     runs-on: ubuntu-24.04
     steps:
       - name: Route TESC operation
