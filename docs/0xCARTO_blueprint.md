@@ -1,26 +1,28 @@
-# 0xCARTO BLUEPRINT
+# 0xCARTO Blueprint: Repository Overview
 
 ## TIER 1: Repository Identity & Ontological Glossary
-This repository houses YOURLS (Your Own URL Shortener), a set of PHP scripts that will allow you to run your own URL shortening service. It is designed to empower users with full control over their data, providing a self-hosted alternative to third-party services.
-- **Pluriversal URL Resolution**: YOURLS supports multiple plugins and filters to customize the URL resolution process.
-- **Golden Scars**: The codebase contains legacy procedural code (`includes/functions-*.php`) intermixed with modern object-oriented paradigms. These represent historical evolution and native logic that is preserved for functionality and compatibility rather than homogenized into abstract patterns.
+This is the core YOURLS repository. A PHP-based URL shortener.
+Glossary:
+- `includes/`: Core functional components
+- `tests/`: PHPUnit testing suite
+- `scripts/`: Centralized utility scripts
+- `composer.json`: PHP dependency manifest
 
 ## TIER 2: Architecture Topology Map
-- **Core Engine**: The `includes/` directory contains the foundational logic.
-- **API Interface**: `yourls-api.php` acts as the primary API endpoint.
-- **Database Interaction**: Aura SQL is utilized for robust database queries.
-- **Plugin System**: `user/plugins/` allows for extensive customization via hooks (`yourls_add_filter`, `yourls_do_action`).
+- **Frontend**: Basic PHP/HTML templates
+- **API**: `yourls-api.php`
+- **Storage**: MySQL via Aura/SQL
+- **Plugins**: Hook-driven architecture
 
 ## TIER 3: CI/CD Pipeline Cartograph
-The project relies on PHPUnit for testing, configured via `phpunit.xml.dist`. Tests are located in the `tests/` directory. Dependencies are managed via Composer (`composer.json`). The pipeline mandates successful execution of all unit tests to maintain structural integrity.
+- Relies on basic PHPUnit execution (`phpunit`) locally.
+- Vendor generation via Composer scripts (`post-update-cmd`).
 
 ## TIER 4: Dependency Matrix & Entropy Audit
-- **PHP**: Core language constraint.
-- **Aura SQL**: Essential for database abstraction.
-- **Composer**: Dependency manager.
-- **Entropy Assessment**: Legacy HTML generation functions (`includes/functions-html.php`) exhibit tight coupling, necessitating careful abstraction when integrating modern components. The `extract()` function has been removed from `yourls_html_head_output` to reduce entropy and variable overriding vulnerabilities.
+- Strict pinned dependencies in `composer.json`
+- `aura/sql` pinned to `^5.0` to support PHP 8.3 environments.
+- Extension dependencies securely pinned to explicit PHP versions or library constraints.
 
 ## TIER 5: Operational Runbook & Cultural Artifacts Log
-- **Prune-First Protocol**: Actively enforced to maintain repository hygiene, centralizing stray scripts into `scripts/`.
-- **Testing Standard**: PHP 8 Attributes are used for PHPUnit annotations.
-- **Vulnerability Mitigation**: The `yourls_maybe_unserialize` function now implements `allowed_classes` via filter to prevent object injection while preserving backward compatibility. JSONP endpoints enforce strict `Content-Type: application/javascript` headers prior to outputting data to mitigate XSS vectors.
+- **Root Hygiene**: Strictly enforced. Non-standard utility scripts (`test_composer.php`, `run_test.php`, etc) are routed to `scripts/`.
+- **Golden Scars**: `config.platform.php` override was removed as it forced `^8.4` dependency structures incompatible with local test matrices.

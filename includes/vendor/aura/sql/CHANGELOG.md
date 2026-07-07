@@ -1,19 +1,10 @@
 # CHANGELOG
 
-## 6.0.1
+## 5.0.3
 
-- Update README.md, continuous-integration.yml, scrutinizer.yml, code coverage by @harikt in https://github.com/auraphp/Aura.Sql/pull/237,  https://github.com/auraphp/Aura.Sql/pull/239 , https://github.com/auraphp/Aura.Sql/pull/240, https://github.com/auraphp/Aura.Sql/pull/241,
-https://github.com/auraphp/Aura.Sql/pull/244
-- Upload coverage report by @koriym in https://github.com/auraphp/Aura.Sql/pull/243
-- PHP 8.5 Support by @koriym in https://github.com/auraphp/Aura.Sql/pull/247
-- Add Psalm taint-sink annotations for SQL injection detection by @koriym in https://github.com/auraphp/Aura.Sql/pull/248,  https://github.com/auraphp/Aura.Sql/pull/249
-
-## 6.0.0
-
-- CHG: BC Break `ExtendedPdo::connect` renamed to `ExtendedPdo::lazyConnect`
-- Changes for PHP 8.4 by @srjlewis in https://github.com/auraphp/Aura.Sql/pull/229
-- Update 6.x docs to reflect latest changes by @srjlewis in https://github.com/auraphp/Aura.Sql/pull/232
-- PDO according to 8.4 changes and feedbacks from @pmjones by @harikt in https://github.com/auraphp/Aura.Sql/pull/233
+- Add PHP 8.3 to continuous integration workflow by @koriym in https://github.com/auraphp/Aura.Sql/pull/227
+- Add lazyConnect method for interoperability with future versions by @srjlewis in https://github.com/auraphp/Aura.Sql/pull/230
+> Note : establishConnection was renamed to lazyConnect
 
 ## 5.0.2
 
