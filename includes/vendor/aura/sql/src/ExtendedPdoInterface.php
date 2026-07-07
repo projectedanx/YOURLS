@@ -28,7 +28,7 @@ interface ExtendedPdoInterface extends PdoInterface
      * Connects to the database.
      *
      */
-    public function lazyConnect(): void;
+    public function connect(): void;
 
     /**
      *
@@ -47,7 +47,6 @@ interface ExtendedPdoInterface extends PdoInterface
      *
      * @return int
      *
-     * @psalm-taint-sink sql $statement
      */
     public function fetchAffected(string $statement, array $values = []): int;
 
@@ -62,7 +61,6 @@ interface ExtendedPdoInterface extends PdoInterface
      *
      * @return array
      *
-     * @psalm-taint-sink sql $statement
      */
     public function fetchAll(string $statement, array $values = []): array;
 
@@ -81,7 +79,6 @@ interface ExtendedPdoInterface extends PdoInterface
      *
      * @return array
      *
-     * @psalm-taint-sink sql $statement
      */
     public function fetchAssoc(string $statement, array $values = []): array;
 
@@ -95,7 +92,6 @@ interface ExtendedPdoInterface extends PdoInterface
      *
      * @return array
      *
-     * @psalm-taint-sink sql $statement
      */
     public function fetchCol(string $statement, array $values = []): array;
 
@@ -113,7 +109,6 @@ interface ExtendedPdoInterface extends PdoInterface
      *
      * @return array
      *
-     * @psalm-taint-sink sql $statement
      */
     public function fetchGroup(
         string $statement,
@@ -142,7 +137,6 @@ interface ExtendedPdoInterface extends PdoInterface
      *
      * @return object|false
      *
-     * @psalm-taint-sink sql $statement
      */
     public function fetchObject(
         string $statement,
@@ -174,7 +168,6 @@ interface ExtendedPdoInterface extends PdoInterface
      *
      * @return array
      *
-     * @psalm-taint-sink sql $statement
      */
     public function fetchObjects(
         string $statement,
@@ -193,7 +186,6 @@ interface ExtendedPdoInterface extends PdoInterface
      *
      * @return array|false
      *
-     * @psalm-taint-sink sql $statement
      */
     public function fetchOne(string $statement, array $values = []): array|false;
 
@@ -208,7 +200,6 @@ interface ExtendedPdoInterface extends PdoInterface
      *
      * @return array
      *
-     * @psalm-taint-sink sql $statement
      */
     public function fetchPairs(string $statement, array $values = []): array;
 
@@ -222,7 +213,6 @@ interface ExtendedPdoInterface extends PdoInterface
      *
      * @return mixed
      *
-     * @psalm-taint-sink sql $statement
      */
     public function fetchValue(string $statement, array $values = []): mixed;
 
@@ -261,7 +251,6 @@ interface ExtendedPdoInterface extends PdoInterface
      *
      * @return string The multi-part identifier name, quoted.
      *
-     * @psalm-taint-escape sql
      */
     public function quoteName(string $name): string;
 
@@ -273,7 +262,6 @@ interface ExtendedPdoInterface extends PdoInterface
      *
      * @return string The quoted identifier name.
      *
-     * @psalm-taint-escape sql
      */
     public function quoteSingleName(string $name): string;
 
@@ -314,7 +302,6 @@ interface ExtendedPdoInterface extends PdoInterface
      *
      * @return \Generator
      *
-     * @psalm-taint-sink sql $statement
      */
     public function yieldAll(string $statement, array $values = []): Generator;
 
@@ -328,7 +315,6 @@ interface ExtendedPdoInterface extends PdoInterface
      *
      * @return \Generator
      *
-     * @psalm-taint-sink sql $statement
      */
     public function yieldAssoc(string $statement, array $values = []): Generator;
 
@@ -342,7 +328,6 @@ interface ExtendedPdoInterface extends PdoInterface
      *
      * @return \Generator
      *
-     * @psalm-taint-sink sql $statement
      */
     public function yieldCol(string $statement, array $values = []): Generator;
 
@@ -367,7 +352,6 @@ interface ExtendedPdoInterface extends PdoInterface
      *
      * @return \Generator
      *
-     * @psalm-taint-sink sql $statement
      */
     public function yieldObjects(
         string $statement,
@@ -387,7 +371,6 @@ interface ExtendedPdoInterface extends PdoInterface
      *
      * @return \Generator
      *
-     * @psalm-taint-sink sql $statement
      */
     public function yieldPairs(string $statement, array $values = []): Generator;
 
@@ -402,7 +385,6 @@ interface ExtendedPdoInterface extends PdoInterface
      *
      * @return \PDOStatement
      *
-     * @psalm-taint-sink sql $statement
      */
     public function perform(string $statement, array $values = []): PDOStatement;
 
@@ -427,7 +409,6 @@ interface ExtendedPdoInterface extends PdoInterface
      *
      * @see http://php.net/manual/en/pdo.prepare.php
      *
-     * @psalm-taint-sink sql $statement
      */
     public function prepareWithValues(string $statement, array $values = []): PDOStatement;
 }

@@ -17,30 +17,27 @@
     },
     "require": {
         "php": "^8.1",
-        "ext-dom": "*",
-        "ext-filter": "*",
-        "ext-hash": "*",
-        "ext-pcre": "*",
-        "ext-pdo": "*",
-        "ext-pdo_mysql": "*",
+        "ext-dom": "^20031129",
+        "ext-filter": "^8.1",
+        "ext-hash": "^8.1",
+        "ext-pcre": "^8.1",
+        "ext-pdo": "^8.1",
+        "ext-pdo_mysql": "^8.1",
         "ozh/bookmarkletgen": "^1.2",
-        "rmccue/requests" : "^2.0",
-        "pomo/pomo" : "^1.4",
-        "geoip2/geoip2" : "^2.10",
-        "aura/sql": "^6.0",
+        "rmccue/requests": "^2.0",
+        "pomo/pomo": "^1.4",
+        "geoip2/geoip2": "^2.10",
+        "aura/sql": "^5.0",
         "jakeasmith/http_build_url": "^1.0",
         "symfony/polyfill-mbstring": "^1.15",
         "symfony/polyfill-intl-idn": "^1.17",
         "spatie/array-to-xml": "^2.14"
     },
     "require-dev": {
-        "ext-ctype": "*"
+        "ext-ctype": "^8.1"
     },
     "config": {
-        "vendor-dir": "includes/vendor",
-        "platform": {
-            "php": "8.3.6"
-        }
+        "vendor-dir": "includes/vendor"
     },
     "autoload": {
         "psr-4": {

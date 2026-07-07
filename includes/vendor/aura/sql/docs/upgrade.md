@@ -1,24 +1,3 @@
-# 6.x Upgrade Notes
-
-Most changes are to provide better compatability with PHP 8.4 and above.
-
-BC Break : With PHP 8.4 introducing `Pdo::connect()` as a way of creating driver specific connections.
-
-```php
-// does not connect to the database
-$pdo = ExtendedPdo::connect(
-    'mysql:host=localhost;dbname=test',
-    'username',
-    'password'
-);
-
-// automatically connects
-$pdo->exec('SELECT * FROM test');
-
-// explicitly forces a connection
-$pdo->lazyConnect();
-```
-
 # 5.x Upgrade Notes
 
 Most changes are to provide better typing and compatability with PHP 8.1 and above.
@@ -295,3 +274,4 @@ underlying PDO instance to make those methods available, if they exist.
 
 - When dumping an ExtendedPdo object, the username and password are omitted. This
 should help keep unexpected output of stack traces from revealing credentials.
+
